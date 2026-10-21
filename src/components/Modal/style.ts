@@ -8,13 +8,18 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
+  backdropPressable: {
+    ...StyleSheet.absoluteFill,
+  },
   content: {
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     gap: 12,
     maxHeight: '85%',
     maxWidth: 480,
+    minHeight: '30%',
     padding: 20,
     width: '100%',
+    zIndex: 1,
   },
 });

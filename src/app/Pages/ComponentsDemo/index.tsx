@@ -13,7 +13,6 @@ import {
   Card,
   CheckBox,
   Dialog,
-  ExampleComponent,
   InputField,
   LinkButton,
   Loader,
@@ -86,10 +85,6 @@ export const ComponentsDemo = () => {
                 <Buttons.Ghost onPress={() => setFeedback('Ghost button pressed.')} label='Ghost' />
               </View>
               <Text style={styles.resultText}>{feedback}</Text>
-              <ExampleComponent
-                label="Example component"
-                onPress={() => setFeedback('HeroUI example component pressed.')}
-              />
             </DemoSection>
 
             <DemoSection title="Pressable feedback">
@@ -205,7 +200,7 @@ export const ComponentsDemo = () => {
                 <Buttons.Secondary onPress={() => setModalVisible(true)} label="Open modal" />
                 <Buttons.Primary label="Open dialog" onPress={() => setDialogVisible(true)} />
               </View>
-              <Modal visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+              <Modal visible={modalVisible} onClose={() => setModalVisible(false)}>
                 <Text style={styles.cardTitle}>Modal content</Text>
                 <Text style={styles.cardDescription}>
                   A modal can contain any content and actions.
@@ -214,7 +209,7 @@ export const ComponentsDemo = () => {
               </Modal>
               <Dialog
                 visible={dialogVisible}
-                onRequestClose={() => setDialogVisible(false)}
+                onClose={() => setDialogVisible(false)}
                 title="Discard changes?"
                 description="Your unsaved changes will be lost."
               >
