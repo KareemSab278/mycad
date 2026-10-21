@@ -204,7 +204,7 @@ export const ComponentsDemo = () => {
                 <Text style={styles.cardDescription}>
                   A modal can contain any content and actions.
                 </Text>
-                <Buttons.Primary onPress={() => setModalVisible(false)} label="Close modal" />
+                <Buttons.Danger onPress={() => setModalVisible(false)} label="Close modal" />
               </Modal>
               <Dialog
                 visible={dialogVisible}

@@ -35,7 +35,7 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
   return (
     <HeroButton
       {...props}
-      style={[styles.button, variants[variant]?.button, style]}
+      style={[styles.button, variants[variant]?.button, style, { maxHeight: 50 }]}
       variant={variants[variant]?.hero ?? 'primary'}
       feedbackVariant="scale-ripple"
       animation={{ scale: { value: 0.9, ignoreScaleCoefficient: true } }}

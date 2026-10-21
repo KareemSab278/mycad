@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ModalProps as NativeModalProps } from 'react-native';
-import { Modal as NativeModal, View } from 'react-native';
+import { Modal as NativeModal, Pressable, View } from 'react-native';
 import { styles } from './style';
 
 export type ModalProps = Pick<NativeModalProps, 'animationType' | 'presentationStyle'> & {
@@ -29,7 +29,15 @@ export const Modal = ({
       onRequestClose={canClose ? onClose : undefined}
     >
       <View style={styles.backdrop}>
-        
+        {canClose && (
+          // the backdrop pressable allows closing the modal when tapping outside the content.
+          <Pressable
+            accessibilityLabel="Close modal"
+            accessibilityRole="button"
+            onPress={onClose}
+            style={styles.backdropPressable}
+          />
+        )}
         <View style={styles.content}>{children}</View>
       </View>
     </NativeModal>
