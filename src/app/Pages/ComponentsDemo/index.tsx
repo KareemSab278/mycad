@@ -54,6 +54,7 @@ export const ComponentsDemo = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [alertBatch, setAlertBatch] = useState(0);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -223,11 +224,17 @@ export const ComponentsDemo = () => {
             </DemoSection>
 
             <DemoSection title="Alerts">
+              <Buttons.Secondary
+                onPress={() => setAlertBatch((batch) => batch + 1)}
+                label="Reshow alerts"
+              />
               <View style={styles.formStack}>
-                <Alert tone="info" title="Information" message="Your profile is up to date." />
-                <Alert tone="success" message="Changes saved successfully." />
-                <Alert tone="warning" message="Check the details before continuing." />
-                <Alert tone="error" message="Something needs your attention." />
+                <View key={alertBatch} style={styles.formStack}>
+                  <Alert tone="info" title="Information" message="Your profile is up to date." />
+                  <Alert tone="success" message="Changes saved successfully." />
+                  <Alert tone="warning" message="Check the details before continuing." />
+                  <Alert tone="error" message="Something needs your attention." />
+                </View>
               </View>
             </DemoSection>
           </View>
