@@ -1,4 +1,4 @@
-import { ScrollView, Text } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { styles } from './style';
 
@@ -20,28 +20,33 @@ export const Tabs = <T extends string,>({
   onValueChange,
 }: TabsProps<T>) => {
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.tabList}
-      accessibilityRole="tablist"
-    >
-      {items.map((item) => {
-        const selected = item.value === value;
-        return (
-          <PressableFeedback
-            key={item.value}
-            accessibilityRole="tab"
-            accessibilityState={{ selected }}
-            onPress={() => onValueChange(item.value)}
-            style={[styles.tab, selected && styles.selectedTab]}
-          >
-            <Text style={[styles.label, selected && styles.selectedLabel]}>
-              {item.label}
-            </Text>
-          </PressableFeedback>
-        );
-      })}
-    </ScrollView>
+    <View style={styles.container}>
+      <View style={styles.pill}>
+        <ScrollView
+          horizontal
+          style={styles.scrollView}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tabList}
+          accessibilityRole="tablist"
+        >
+          {items.map((item) => {
+            const selected = item.value === value;
+            return (
+              <PressableFeedback
+                key={item.value}
+                accessibilityRole="tab"
+                accessibilityState={{ selected }}
+                onPress={() => onValueChange(item.value)}
+                style={[styles.tab, selected && styles.selectedTab]}
+              >
+                <Text style={[styles.label, selected && styles.selectedLabel]}>
+                  {item.label}
+                </Text>
+              </PressableFeedback>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </View>
   );
 };

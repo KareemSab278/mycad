@@ -1,14 +1,20 @@
 import type { ButtonRootProps } from 'heroui-native';
 import { Button as HeroButton } from 'heroui-native';
 import type { ReactNode } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { styles } from './style';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost';
-export type ButtonProps = Omit<
-  ButtonRootProps,
-  'animation' | 'children' | 'feedbackVariant' | 'style' | 'variant'
-> & {
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'disabled';
+
+type HeroButtonVariant = NonNullable<ButtonRootProps['variant']>;
+
+interface VariantStyles {
+  [key: string]: { button: StyleProp<ViewStyle>; hero: HeroButtonVariant, label: StyleProp<TextStyle> | undefined }
+}
+
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+export type ButtonProps = DistributiveOmit<ButtonRootProps, 'variant'> & {
   label?: string;
   children?: ReactNode;
   variant?: ButtonVariant;
@@ -16,54 +22,49 @@ export type ButtonProps = Omit<
 };
 
 // Example: <Button variant="danger" onPress={removeItem}>Delete</Button>.
-export const Button = ({
-  children,
-  label,
-  variant = 'primary',
-  style,
-  ...props
-}: ButtonProps) => {
-  const heroVariant =
-    variant === 'secondary' || variant === 'ghost' ? 'primary' : variant;
-  const buttonStyle = [
-    styles.button,
-    variant === 'secondary' && styles.secondary,
-    variant === 'ghost' && styles.ghost,
-    style,
-  ];
-  const labelStyle =
-    variant === 'secondary'
-      ? styles.secondaryLabel
-      : variant === 'ghost'
-        ? styles.ghostLabel
-        : undefined;
+export const Button = ({ children, label, variant = 'primary', style, ...props }: ButtonProps) => {
+
+  const variants: VariantStyles = {
+    'secondary': { button: styles.secondary, hero: 'primary', label: styles.secondaryLabel },
+    'ghost': { button: styles.ghost, hero: 'primary', label: styles.ghostLabel },
+    'primary': { button: styles.button, hero: 'primary', label: undefined },
+    'danger': { button: styles.button, hero: 'danger', label: undefined },
+    'disabled': { button: styles.disabled, hero: 'primary', label: styles.disabledLabel }
+  }
 
   return (
     <HeroButton
       {...props}
-      style={buttonStyle}
-      variant={heroVariant}
+      style={[styles.button, variants[variant]?.button, style]}
+      variant={variants[variant]?.hero ?? 'primary'}
       feedbackVariant="scale-ripple"
       animation={{ scale: { value: 0.9, ignoreScaleCoefficient: true } }}
     >
-      <HeroButton.Label style={labelStyle}>{label ?? children}</HeroButton.Label>
+      <HeroButton.Label style={variants[variant]?.label}>{label ?? children}</HeroButton.Label>
     </HeroButton>
   );
 };
 
 
-const buildButton = (variant: ButtonVariant) => (props: Omit<ButtonProps, 'variant'>) => (
-  <Button {...props} variant={variant} />
-);
+const buildButton = (variant: ButtonVariant) => (props: DistributiveOmit<ButtonProps, 'variant'>) => {
+  if (props.isDisabled) {
+    return <Button {...props} variant="disabled" />;
+  }
+  return (
+    <Button {...props} variant={variant} />
+  );
+};
 
 export const PrimaryButton = buildButton('primary');
 export const SecondaryButton = buildButton('secondary');
 export const DangerButton = buildButton('danger');
 export const GhostButton = buildButton('ghost');
+export const DisabledButton = buildButton('disabled');
 
 export const Buttons = {
   Primary: PrimaryButton,
   Secondary: SecondaryButton,
   Danger: DangerButton,
   Ghost: GhostButton,
+  Disabled: DisabledButton,
 };

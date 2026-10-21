@@ -57,6 +57,11 @@ export const ComponentsDemo = () => {
 
   return (
     <SafeAreaView style={styles.screen}>
+      <Tabs
+        items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
+        value={activeTab}
+        onValueChange={setActiveTab}
+      />
       <ScrollView contentContainerStyle={styles.pageContent}>
         <View style={styles.header}>
           <Text style={styles.eyebrow}>MyCAD component library</Text>
@@ -65,12 +70,6 @@ export const ComponentsDemo = () => {
             Interactive examples of the shared components. Choose a tab to explore each group.
           </Text>
         </View>
-
-        <Tabs
-          items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
-          value={activeTab}
-          onValueChange={setActiveTab}
-        />
 
         {activeTab === 'buttons' ? (
           <View style={styles.panel}>

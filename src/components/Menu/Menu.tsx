@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
-import { Button } from '../Buttons/Buttons';
+import { View } from 'react-native';
+import { Buttons } from '../Buttons/Buttons';
 import { Modal } from '../Modal/Modal';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { styles } from './style';
 
 export type MenuItem = {
@@ -15,32 +14,34 @@ export type MenuItem = {
 export const Menu = ({
   items,
   label = 'Menu',
+  canClose = true,
 }: {
   items: readonly MenuItem[];
   label?: string;
+  canClose?: boolean;
 }) => {
   const [visible, setVisible] = useState(false);
 
   return (
     <>
-      <Button style={styles.trigger} variant="secondary" onPress={() => setVisible(true)}>
-        {label}
-      </Button>
-      <Modal visible={visible} onRequestClose={() => setVisible(false)}>
+      <Buttons.Secondary onPress={() => setVisible(true)} label={label}/>
+
+      <Modal
+        visible={visible}
+        onClose={() => setVisible(false)}
+        canClose={canClose}
+      >
         <View style={styles.list}>
           {items.map((item) => (
-            <PressableFeedback
+            <Buttons.Secondary
               key={item.label}
-              accessibilityRole="button"
               isDisabled={item.isDisabled}
               onPress={() => {
                 item.onPress();
                 setVisible(false);
               }}
-              style={styles.listItem}
-            >
-              <Text>{item.label}</Text>
-            </PressableFeedback>
+              label={item.label}
+            />
           ))}
         </View>
       </Modal>

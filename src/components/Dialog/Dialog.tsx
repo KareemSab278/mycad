@@ -11,9 +11,10 @@ type DialogProps = Omit<ComponentProps<typeof Modal>, 'children'> & {
 
 export const Dialog = ({
   visible,
-  onRequestClose,
+  onClose,
   animationType,
   presentationStyle,
+  canClose,
   title,
   description,
   children,
@@ -21,9 +22,10 @@ export const Dialog = ({
   return (
     <Modal
       visible={visible}
-      onRequestClose={onRequestClose}
+      onClose={onClose}
       animationType={animationType}
       presentationStyle={presentationStyle}
+      canClose={canClose}
     >
       <Text style={styles.title}>{title}</Text>
       {description ? <Text style={styles.description}>{description}</Text> : null}

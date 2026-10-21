@@ -12,20 +12,21 @@ type CardProps = {
 };
 
 export const Card = ({ imageSource, children, onPress, style }: CardProps) => {
-  const content = (
+  const content = imageSource ? (
     <>
-      {imageSource ? (
+      <View style={styles.imageContainer}>
         <Image source={imageSource} resizeMode="cover" style={styles.image} />
-      ) : null}
-      {children}
+      </View>
+      <View style={styles.imageContent}>{children}</View>
     </>
-  );
+  ) : children;
+  const cardStyle = [styles.card, imageSource ? styles.imageCard : undefined, style];
 
   return onPress ? (
-    <PressableFeedback onPress={onPress} style={[styles.card, style]}>
+    <PressableFeedback onPress={onPress} style={cardStyle}>
       {content}
     </PressableFeedback>
   ) : (
-    <View style={[styles.card, style]}>{content}</View>
+    <View style={cardStyle}>{content}</View>
   );
 };
