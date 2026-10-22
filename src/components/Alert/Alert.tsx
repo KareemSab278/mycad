@@ -4,8 +4,8 @@ import { styles } from './style';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'error';
 
-const ALERT_DURATION = 3000;
-const ANIMATION_DURATION = 300;
+const ALERT_DURATION = 5000;
+const ANIMATION_DURATION = 600;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface AlertProps {
