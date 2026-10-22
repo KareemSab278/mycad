@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as C from '../../../components';
-import { DemoSection } from '../../../components/ComponentsDemo/components';
-import type { DemoTabId } from '../../../components/ComponentsDemo/helpers';
-import { countryOptions, demoTabs, demoTags } from '../../../components/ComponentsDemo/helpers';
-import { styles } from '../../../components/ComponentsDemo/styles';
+
+import type { ImageSourcePropType } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import type { DemoTabId } from './helpers';
+import { countryOptions, demoTabs, demoTags } from './helpers';
+import { styles } from './styles';
 
 const keyboardAvoidingBehavior =
   Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
@@ -41,18 +41,10 @@ export const ComponentsDemo = () => {
           }
         }}
       />
-      <ScrollView contentContainerStyle={styles.pageContent}>
-        <View style={styles.header}>
-          <Text style={styles.eyebrow}>MyCAD component library</Text>
-          <Text style={styles.title}>Components</Text>
-          <Text style={styles.subtitle}>
-            Interactive examples of the shared components. Choose a tab to explore each group.
-          </Text>
-        </View>
-
+      <C.Container>
         {activeTab === 'buttons' ? (
           <View style={styles.panel}>
-            <DemoSection
+            <C.Box
               title="Buttons"
               description="HeroUI buttons use the shared ripple and scale press feedback."
             >
@@ -63,9 +55,9 @@ export const ComponentsDemo = () => {
                 <C.Buttons.Ghost onPress={() => setFeedback('Ghost button pressed.')} label='Ghost' />
               </View>
               <Text style={styles.resultText}>{feedback}</Text>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Pressable feedback">
+            <C.Box title="Pressable feedback">
               <C.PressableFeedback
                 onPress={() => setFeedback('Ripple and 0.9 scale feedback pressed.')}
                 style={styles.feedbackSurface}
@@ -76,9 +68,9 @@ export const ComponentsDemo = () => {
                 Terms and conditions
               </C.LinkButton>
               <Text style={styles.resultText}>{feedback}</Text>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Tag group" description="Select one or more tags.">
+            <C.Box title="Tag group" description="Select one or more tags.">
               <C.TagGroup
                 tags={demoTags}
                 selectedTags={selectedTags}
@@ -87,13 +79,13 @@ export const ComponentsDemo = () => {
               <Text style={styles.resultText}>
                 Selected: {selectedTags.length ? selectedTags.join(', ') : 'none'}
               </Text>
-            </DemoSection>
+            </C.Box>
           </View>
         ) : null}
 
         {activeTab === 'forms' ? (
           <View style={styles.panel}>
-            <DemoSection title="Text inputs">
+            <C.Box title="Text inputs">
               <View style={styles.formStack}>
                 <C.InputField
                   label="Input field"
@@ -121,9 +113,9 @@ export const ComponentsDemo = () => {
                   helperText={`${notes.length} characters`}
                 />
               </View>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Selection controls">
+            <C.Box title="Selection controls">
               <View style={styles.formStack}>
                 <C.Toggler
                   label="Notifications"
@@ -147,8 +139,8 @@ export const ComponentsDemo = () => {
                   onValueChange={setCountry}
                 />
               </View>
-            </DemoSection>
-            <DemoSection title="Calendar" description="Choose a date and navigate between months.">
+            </C.Box>
+            <C.Box title="Calendar" description="Choose a date and navigate between months.">
               <C.Buttons.Primary
                 label="Choose date"
                 onPress={() => setCalendarModalVisible(true)}
@@ -173,13 +165,13 @@ export const ComponentsDemo = () => {
                   onPress={() => setCalendarModalVisible(false)}
                 />
               </C.Modal>
-            </DemoSection>
+            </C.Box>
           </View>
         ) : null}
 
         {activeTab === 'overlays' ? (
           <View style={styles.panel}>
-            <DemoSection title="Menu">
+            <C.Box title="Menu">
               <C.Menu
                 items={[
                   { label: 'Edit profile', onPress: () => setFeedback('Edit profile selected.') },
@@ -192,9 +184,9 @@ export const ComponentsDemo = () => {
                 ]}
               />
               <Text style={styles.resultText}>{feedback}</Text>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Modal and dialog">
+            <C.Box title="Modal and dialog">
               <View style={styles.buttonRow}>
                 <C.Buttons.Secondary onPress={() => setModalVisible(true)} label="Open modal" />
                 <C.Buttons.Primary label="Open dialog" onPress={() => setDialogVisible(true)} />
@@ -220,37 +212,37 @@ export const ComponentsDemo = () => {
                   <C.Buttons.Danger onPress={() => setDialogVisible(false)} label="Discard" />
                 </View>
               </C.Dialog>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Alerts">
+            <C.Box title="Alerts">
               <C.Buttons.Secondary
                 onPress={() => setAlertBatch((batch) => batch + 1)}
                 label="Reshow alerts"
               />
-            </DemoSection>
+            </C.Box>
           </View>
         ) : null}
 
         {activeTab === 'display' ? (
           <View style={styles.panel}>
-            <DemoSection title="Typography">
+            <C.Box title="Typography">
               <View style={styles.displayStack}>
                 <C.Typography variant="heading" text="Heading" />
                 <C.Typography variant="title" text="Title text" />
                 <C.Typography variant="body" text="Body text for regular content." />
                 <C.Typography variant="caption" text="Caption text for supporting details." />
               </View>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Loading states">
+            <C.Box title="Loading states">
               <View style={styles.buttonRow}>
                 <C.Loader />
                 <C.Skeleton width={180} />
                 <C.Skeleton width={260} height={28} />
               </View>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Cards">
+            <C.Box title="Cards">
               <View style={styles.displayStack}>
                 <C.Card>
                   <View style={styles.cardContent}>
@@ -270,18 +262,18 @@ export const ComponentsDemo = () => {
                   </View>
                 </C.Card>
               </View>
-            </DemoSection>
+            </C.Box>
 
-            <DemoSection title="Separators">
+            <C.Box title="Separators">
               <View style={styles.displayStack}>
                 <C.Separator variant="sm" />
                 <C.Separator variant="md" />
                 <C.Separator variant="lg" color="#208AEF" />
               </View>
-            </DemoSection>
+            </C.Box>
           </View>
         ) : null}
-      </ScrollView>
+      </C.Container>
       {activeTab === 'overlays' && alertBatch > 0 ? (
         <View pointerEvents="box-none" style={styles.alertOverlay}>
           <View key={alertBatch} pointerEvents="box-none" style={styles.alertStack}>

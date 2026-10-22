@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { Text, View } from 'react-native';
-import { styles } from './styles';
+import { styles } from './style';
 
-export const DemoSection = ({
+export const Box = ({
   title,
   description,
   children,
