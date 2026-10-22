@@ -5,8 +5,8 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     boxSizing: 'border-box',
     maxWidth: 720,
-    paddingHorizontal: 10,
-    paddingVertical: 12,
+    // paddingHorizontal: 10,
+    paddingVertical: 5,
     width: '100%',
   },
   pill: {

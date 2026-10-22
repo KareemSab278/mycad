@@ -1,5 +1,5 @@
-import { View } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { styles } from './style';
 
 export type SeparatorVariant = 'sm' | 'md' | 'lg';

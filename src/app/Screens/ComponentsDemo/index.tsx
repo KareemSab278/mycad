@@ -3,7 +3,6 @@ import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
 import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';
 import { styles } from './styles';
@@ -30,7 +29,7 @@ export const ComponentsDemo = () => {
 
   return (
     <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <C.Container>
         <C.Tabs
           items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
           value={activeTab}
@@ -285,7 +284,7 @@ export const ComponentsDemo = () => {
             </View>
           </View>
         ) : null}
-      </SafeAreaView>
+      </C.Container>
     </KeyboardAvoidingView>
   );
 };

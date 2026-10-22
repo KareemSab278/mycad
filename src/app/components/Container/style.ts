@@ -5,9 +5,10 @@ export const styles = StyleSheet.create({
         alignSelf: 'center',
         boxSizing: 'border-box',
         gap: 24,
+        flexGrow: 1,
+        justifyContent: 'center',
         maxWidth: 760,
-        paddingHorizontal: 20,
-        paddingVertical: 24,
+        padding: 5,
         width: '100%',
     },
 });
