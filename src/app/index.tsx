@@ -1,7 +1,7 @@
-import ComponentsDemo from './Pages/ComponentsDemo';
+import { Router } from '../components/Router/Router';
 
 export const Index = () => {
-  return <ComponentsDemo />;
+  return <Router />;
 };
 
 export default Index;

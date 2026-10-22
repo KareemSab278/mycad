@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Text } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, Text, useWindowDimensions } from 'react-native';
 import { styles } from './style';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'error';
 
 const ALERT_DURATION = 3000;
 const ANIMATION_DURATION = 300;
-const ENTRANCE_OFFSET = 48;
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface AlertProps {
   title?: string;
@@ -15,29 +15,25 @@ interface AlertProps {
 }
 
 export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
+  const { width: screenWidth } = useWindowDimensions();
   const [isVisible, setIsVisible] = useState(true);
-  const translateX = useRef(new Animated.Value(-ENTRANCE_OFFSET)).current;
+  const translateX = useRef(new Animated.Value(-screenWidth)).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const width = useRef(0);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDismissing = useRef(false);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(translateX, {
-        toValue: 0,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        duration: ANIMATION_DURATION,
-        toValue: 1,
-        useNativeDriver: true,
-      }),
-    ]).start();
+  const dismiss = useCallback(() => {
+    if (isDismissing.current) return;
+    if (timeout.current !== null) {
+      clearTimeout(timeout.current);
+    }
 
-    const timeout = setTimeout(() => {
+    timeout.current = setTimeout(() => {
+      isDismissing.current = true;
       Animated.parallel([
         Animated.timing(translateX, {
           duration: ANIMATION_DURATION,
-          toValue: -Math.max(width.current, ENTRANCE_OFFSET),
+          toValue: -screenWidth,
           useNativeDriver: true,
         }),
         Animated.timing(opacity, {
@@ -50,33 +46,54 @@ export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
           setIsVisible(false);
         }
       });
-    }, ALERT_DURATION);
+    }, 0);
+  }, [opacity, screenWidth, translateX]);
+
+  useEffect(() => {
+    isDismissing.current = false;
+    translateX.setValue(-screenWidth);
+    Animated.parallel([
+      Animated.timing(translateX, {
+        duration: ANIMATION_DURATION,
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        duration: ANIMATION_DURATION,
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    timeout.current = setTimeout(dismiss, ALERT_DURATION);
 
     return () => {
-      clearTimeout(timeout);
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current);
+      }
       translateX.stopAnimation();
       opacity.stopAnimation();
     };
-  }, [opacity, translateX]);
+  }, [dismiss, opacity, screenWidth, translateX]);
 
   if (!isVisible) {
     return null;
   }
 
   return (
-    <Animated.View
-      accessibilityRole="alert"
-      onLayout={(event) => {
-        width.current = event.nativeEvent.layout.width;
-      }}
+    <AnimatedPressable
+      accessibilityRole="button"
+      accessibilityLabel={title ? `${title}. ${message}` : message}
+      accessibilityHint="Dismiss alert"
+      onPress={dismiss}
       style={[
         styles.container,
         styles[tone],
         { opacity, transform: [{ translateX }] },
       ]}
     >
-    {title ? <Text style={styles.title}>{title}</Text> : null}
-    <Text>{message}</Text>
-    </Animated.View>
+      {title ? <Text style={styles.title}>{title}</Text> : null}
+      <Text>{message}</Text>
+    </AnimatedPressable>
   );
 };

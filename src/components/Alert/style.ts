@@ -4,8 +4,8 @@ export const styles = StyleSheet.create({
   container: {
     borderLeftWidth: 4,
     borderRadius: 8,
-    gap: 4,
     padding: 12,
+    width: '100%',
   },
   info: {
     backgroundColor: '#EFF8FF',

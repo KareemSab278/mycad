@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import { ScrollView, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as C from '../../../components';
 import { DemoSection } from '../../../components/ComponentsDemo/components';
 import type { DemoTabId } from '../../../components/ComponentsDemo/helpers';
 import { countryOptions, demoTabs, demoTags } from '../../../components/ComponentsDemo/helpers';
 import { styles } from '../../../components/ComponentsDemo/styles';
+
+const keyboardAvoidingBehavior =
+  Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
 
 export const ComponentsDemo = () => {
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
@@ -26,11 +29,17 @@ export const ComponentsDemo = () => {
   const [alertBatch, setAlertBatch] = useState<number>(0);
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={styles.screen}>
+      <SafeAreaView style={styles.screen}>
       <C.Tabs
         items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(tab) => {
+          setActiveTab(tab);
+          if (tab !== 'overlays') {
+            setAlertBatch(0);
+          }
+        }}
       />
       <ScrollView contentContainerStyle={styles.pageContent}>
         <View style={styles.header}>
@@ -218,14 +227,6 @@ export const ComponentsDemo = () => {
                 onPress={() => setAlertBatch((batch) => batch + 1)}
                 label="Reshow alerts"
               />
-              <View style={styles.formStack}>
-                <View key={alertBatch} style={styles.formStack}>
-                  <C.Alert tone="info" title="Information" message="Your profile is up to date." />
-                  <C.Alert tone="success" message="Changes saved successfully." />
-                  <C.Alert tone="warning" message="Check the details before continuing." />
-                  <C.Alert tone="error" message="Something needs your attention." />
-                </View>
-              </View>
             </DemoSection>
           </View>
         ) : null}
@@ -234,10 +235,10 @@ export const ComponentsDemo = () => {
           <View style={styles.panel}>
             <DemoSection title="Typography">
               <View style={styles.displayStack}>
-                <C.Typography variant="heading">Heading</C.Typography>
-                <C.Typography variant="title">Title text</C.Typography>
-                <C.Typography variant="body">Body text for regular content.</C.Typography>
-                <C.Typography variant="caption">Caption text for supporting details.</C.Typography>
+                <C.Typography variant="heading" text="Heading" />
+                <C.Typography variant="title" text="Title text" />
+                <C.Typography variant="body" text="Body text for regular content." />
+                <C.Typography variant="caption" text="Caption text for supporting details." />
               </View>
             </DemoSection>
 
@@ -253,10 +254,8 @@ export const ComponentsDemo = () => {
               <View style={styles.displayStack}>
                 <C.Card>
                   <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle}>Card without image</Text>
-                    <Text style={styles.cardDescription}>
-                      A simple content card. Tap to see its press feedback.
-                    </Text>
+                    <C.Typography variant="title" text="Card without image" />
+                    <C.Typography variant="body" text="A simple content card. Tap to see its press feedback." />
                   </View>
                 </C.Card>
                 <C.Card
@@ -266,8 +265,8 @@ export const ComponentsDemo = () => {
                   onPress={() => setFeedback('Image card pressed.')}
                 >
                   <View style={styles.cardContent}>
-                    <Text style={styles.cardTitle}>Card with image</Text>
-                    <Text style={styles.cardDescription}>The card image is optional.</Text>
+                    <C.Typography variant="title" text="Card with image" />
+                    <C.Typography variant="body" text="The card image is optional." />
                   </View>
                 </C.Card>
               </View>
@@ -283,8 +282,17 @@ export const ComponentsDemo = () => {
           </View>
         ) : null}
       </ScrollView>
-    </SafeAreaView>
+      {activeTab === 'overlays' && alertBatch > 0 ? (
+        <View pointerEvents="box-none" style={styles.alertOverlay}>
+          <View key={alertBatch} pointerEvents="box-none" style={styles.alertStack}>
+            <C.Alert tone="info" title="Information" message="Your profile is up to date." />
+            <C.Alert tone="success" message="Changes saved successfully." />
+            <C.Alert tone="warning" message="Check the details before continuing." />
+            <C.Alert tone="error" message="Something needs your attention." />
+          </View>
+        </View>
+      ) : null}
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
-
-export default ComponentsDemo;

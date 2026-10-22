@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
+    boxSizing: 'border-box',
     maxWidth: 720,
     paddingHorizontal: 10,
     paddingVertical: 12,
@@ -24,16 +25,18 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     flexGrow: 1,
     gap: 4,
+    width: '100%',
   },
   tab: {
     alignItems: 'center',
     borderRadius: 999,
+    flexBasis: 0,
     flexGrow: 1,
-    flexShrink: 0,
+    flexShrink: 1,
     justifyContent: 'center',
     minHeight: 20,
-    minWidth: 96,
-    paddingHorizontal: 20,
+    minWidth: 0,
+    paddingHorizontal: 4,
   },
   selectedTab: {
     backgroundColor: '#208AEF',
