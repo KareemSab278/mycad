@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
     gap: 12,
     maxHeight: '85%',
     maxWidth: 480,
-    // minHeight: '30%',
+    minHeight: '10%',
     padding: 20,
     width: '100%',
     zIndex: 1,

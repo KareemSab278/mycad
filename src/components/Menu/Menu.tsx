@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { View } from 'react-native';
 import { Buttons } from '../Buttons/Buttons';
 import { Modal } from '../Modal/Modal';
-import { styles } from './style';
 
 export type MenuItem = {
   label: string;
@@ -24,26 +22,24 @@ export const Menu = ({
 
   return (
     <>
-      <Buttons.Secondary onPress={() => setVisible(true)} label={label}/>
+      <Buttons.Secondary onPress={() => setVisible(true)} label={label} />
 
       <Modal
         visible={visible}
         onClose={() => setVisible(false)}
         canClose={canClose}
       >
-        <View style={styles.list}>
-          {items.map((item) => (
-            <Buttons.Secondary
-              key={item.label}
-              isDisabled={item.isDisabled}
-              onPress={() => {
-                item.onPress();
-                setVisible(false);
-              }}
-              label={item.label}
-            />
-          ))}
-        </View>
+        {items.map((item) => (
+          <Buttons.Primary
+            key={item.label}
+            isDisabled={item.isDisabled}
+            onPress={() => {
+              item.onPress();
+              setVisible(false);
+            }}
+            label={item.label}
+          />
+        ))}
       </Modal>
     </>
   );

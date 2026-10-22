@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
   },
   listItem: {
     borderRadius: 8,
+    flexGrow: 0,
     justifyContent: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
