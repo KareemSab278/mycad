@@ -11,7 +11,7 @@ import { styles } from '../../../components/ComponentsDemo/styles';
 export const ComponentsDemo = () => {
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
   const [selectedTags, setSelectedTags] = useState<string[]>(['Mobile']);
-  const [country, setCountry] = useState<string>('US');
+  const [country, setCountry] = useState<string|undefined>(undefined);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [sliderValue, setSliderValue] = useState<number>(35);
@@ -21,6 +21,7 @@ export const ComponentsDemo = () => {
   const [feedback, setFeedback] = useState<string>('Tap a control to see its response.');
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+  const [calendarModalVisible, setCalendarModalVisible] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<(Date)>(new Date());
   const [alertBatch, setAlertBatch] = useState<number>(0);
 
@@ -130,7 +131,8 @@ export const ComponentsDemo = () => {
                   <C.Slider value={sliderValue} onValueChange={(value) => setSliderValue(value)} />
                 </View>
                 <C.Selector
-                  label="Country"
+                  label="Select Country"
+                  placeholder="Not selected"
                   options={countryOptions}
                   value={country}
                   onValueChange={setCountry}
@@ -138,10 +140,30 @@ export const ComponentsDemo = () => {
               </View>
             </DemoSection>
             <DemoSection title="Calendar" description="Choose a date and navigate between months.">
-              <C.Calendar value={selectedDate} onChange={setSelectedDate} />
+              <C.Buttons.Primary
+                label="Choose date"
+                onPress={() => setCalendarModalVisible(true)}
+              />
               <Text style={styles.resultText}>
                 Selected date: {selectedDate.toLocaleDateString()}
               </Text>
+              <C.Modal
+                visible={calendarModalVisible}
+                onClose={() => setCalendarModalVisible(false)}
+              >
+                <Text style={styles.cardTitle}>Select a date</Text>
+                <C.Calendar
+                  value={selectedDate}
+                  onChange={(date) => {
+                    setSelectedDate(date);
+                    setCalendarModalVisible(false);
+                  }}
+                />
+                <C.Buttons.Secondary
+                  label="Cancel"
+                  onPress={() => setCalendarModalVisible(false)}
+                />
+              </C.Modal>
             </DemoSection>
           </View>
         ) : null}

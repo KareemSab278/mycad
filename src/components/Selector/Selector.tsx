@@ -39,7 +39,7 @@ export const Selector = ({
       >
         <Text style={styles.triggerText}>{selectedOption?.label ?? placeholder}</Text>
       </PressableFeedback>
-      <Modal visible={visible} onRequestClose={() => setVisible(false)}>
+      <Modal visible={visible} onClose={() => setVisible(false)}>
         <ScrollView style={styles.list}>
           {options.map((option) => (
             <PressableFeedback
