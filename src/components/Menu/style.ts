@@ -7,12 +7,12 @@ export const styles = StyleSheet.create({
   list: {
     gap: 8,
     maxHeight: '80%',
+    minHeight: 0,
     width: '100%',
   },
   listItem: {
     borderRadius: 8,
     justifyContent: 'center',
-    minHeight: 44,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },

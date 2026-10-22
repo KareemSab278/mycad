@@ -7,11 +7,13 @@ import { SignIn } from '../../app/Screens/SignIn';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 
+const dev = process.env.EXPO_PUBLIC_DEV_MODE === 'true';
+const devDemo = dev ? { label: 'Demo', Screen: ComponentsDemo } : null;
+
 const routes = [
   { label: 'Home', Screen: Home },
   { label: 'Sign in', Screen: SignIn },
-  { label: 'Demo', Screen: ComponentsDemo },
-] as const;
+];
 
 type Route = (typeof routes)[number];
 
@@ -19,14 +21,14 @@ export const Router = () => {
   const insets = useSafeAreaInsets();
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const ActiveScreen = activeRoute.Screen;
-
+  const allRoutes = devDemo ? [...routes, devDemo] : routes;
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <ActiveScreen />
       </View>
       <View style={[styles.navigation, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-        {routes.map((route) => (
+        {allRoutes.map((route) => (
           <Button
             key={route.label}
             label={route.label}
