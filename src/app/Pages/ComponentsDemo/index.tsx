@@ -1,64 +1,32 @@
 import { useState } from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import {
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Alert,
-  Buttons,
-  Calendar,
-  Card,
-  CheckBox,
-  Dialog,
-  InputField,
-  LinkButton,
-  Loader,
-  Menu,
-  Modal,
-  PressableFeedback,
-  SearchField,
-  Selector,
-  Separator,
-  Skeleton,
-  Slider,
-  Tabs,
-  TagGroup,
-  TextArea,
-  TextField,
-  Toggler,
-  Typography
-} from '../../../components';
+import * as C from '../../../components';
 import { DemoSection } from '../../../components/ComponentsDemo/components';
 import type { DemoTabId } from '../../../components/ComponentsDemo/helpers';
-import {
-  countryOptions,
-  demoTabs,
-  demoTags,
-} from '../../../components/ComponentsDemo/helpers';
+import { countryOptions, demoTabs, demoTags } from '../../../components/ComponentsDemo/helpers';
 import { styles } from '../../../components/ComponentsDemo/styles';
 
 export const ComponentsDemo = () => {
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
   const [selectedTags, setSelectedTags] = useState<string[]>(['Mobile']);
   const [country, setCountry] = useState<string>('US');
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
-  const [sliderValue, setSliderValue] = useState(35);
-  const [displayName, setDisplayName] = useState('');
-  const [search, setSearch] = useState('');
-  const [notes, setNotes] = useState('');
-  const [feedback, setFeedback] = useState('Tap a control to see its response.');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [alertBatch, setAlertBatch] = useState(0);
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [sliderValue, setSliderValue] = useState<number>(35);
+  const [displayName, setDisplayName] = useState<string>('');
+  const [search, setSearch] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
+  const [feedback, setFeedback] = useState<string>('Tap a control to see its response.');
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [dialogVisible, setDialogVisible] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<(Date)>(new Date());
+  const [alertBatch, setAlertBatch] = useState<number>(0);
 
   return (
     <SafeAreaView style={styles.screen}>
-      <Tabs
+      <C.Tabs
         items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
         value={activeTab}
         onValueChange={setActiveTab}
@@ -79,29 +47,29 @@ export const ComponentsDemo = () => {
               description="HeroUI buttons use the shared ripple and scale press feedback."
             >
               <View style={styles.buttonRow}>
-                <Buttons.Primary onPress={() => setFeedback('Primary button pressed.')} label='Primary' />
-                <Buttons.Secondary onPress={() => setFeedback('Secondary button pressed.')} label='Secondary' />
-                <Buttons.Danger onPress={() => setFeedback('Danger button pressed.')} label='Danger' />
-                <Buttons.Ghost onPress={() => setFeedback('Ghost button pressed.')} label='Ghost' />
+                <C.Buttons.Primary onPress={() => setFeedback('Primary button pressed.')} label='Primary' />
+                <C.Buttons.Secondary onPress={() => setFeedback('Secondary button pressed.')} label='Secondary' />
+                <C.Buttons.Danger onPress={() => setFeedback('Danger button pressed.')} label='Danger' />
+                <C.Buttons.Ghost onPress={() => setFeedback('Ghost button pressed.')} label='Ghost' />
               </View>
               <Text style={styles.resultText}>{feedback}</Text>
             </DemoSection>
 
             <DemoSection title="Pressable feedback">
-              <PressableFeedback
+              <C.PressableFeedback
                 onPress={() => setFeedback('Ripple and 0.9 scale feedback pressed.')}
                 style={styles.feedbackSurface}
               >
                 <Text style={styles.feedbackText}>Tap to see ripple + scale</Text>
-              </PressableFeedback>
-              <LinkButton onPress={() => setFeedback('Terms and conditions link pressed.')}>
+              </C.PressableFeedback>
+              <C.LinkButton onPress={() => setFeedback('Terms and conditions link pressed.')}>
                 Terms and conditions
-              </LinkButton>
+              </C.LinkButton>
               <Text style={styles.resultText}>{feedback}</Text>
             </DemoSection>
 
             <DemoSection title="Tag group" description="Select one or more tags.">
-              <TagGroup
+              <C.TagGroup
                 tags={demoTags}
                 selectedTags={selectedTags}
                 onSelectionChange={setSelectedTags}
@@ -117,25 +85,25 @@ export const ComponentsDemo = () => {
           <View style={styles.panel}>
             <DemoSection title="Text inputs">
               <View style={styles.formStack}>
-                <InputField
+                <C.InputField
                   label="Input field"
                   placeholder="Your name"
                   value={displayName}
                   onChangeText={setDisplayName}
                   helperText="A labeled field with helper text."
                 />
-                <TextField
+                <C.TextField
                   label="Text field"
                   placeholder="you@example.com"
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />
-                <SearchField
+                <C.SearchField
                   placeholder="Search components"
                   value={search}
                   onChangeText={setSearch}
                 />
-                <TextArea
+                <C.TextArea
                   label="Text area"
                   placeholder="Write a note..."
                   value={notes}
@@ -147,21 +115,21 @@ export const ComponentsDemo = () => {
 
             <DemoSection title="Selection controls">
               <View style={styles.formStack}>
-                <Toggler
+                <C.Toggler
                   label="Notifications"
                   value={isEnabled}
                   onValueChange={setIsEnabled}
                 />
-                <CheckBox
+                <C.CheckBox
                   label="I agree to the terms"
                   checked={isChecked}
                   onValueChange={setIsChecked}
                 />
                 <View style={styles.formStack}>
                   <Text style={styles.resultText}>Slider value: {sliderValue}</Text>
-                  <Slider value={sliderValue} onValueChange={(value) => setSliderValue(value)} />
+                  <C.Slider value={sliderValue} onValueChange={(value) => setSliderValue(value)} />
                 </View>
-                <Selector
+                <C.Selector
                   label="Country"
                   options={countryOptions}
                   value={country}
@@ -170,7 +138,7 @@ export const ComponentsDemo = () => {
               </View>
             </DemoSection>
             <DemoSection title="Calendar" description="Choose a date and navigate between months.">
-              <Calendar value={selectedDate} onChange={setSelectedDate} />
+              <C.Calendar value={selectedDate} onChange={setSelectedDate} />
               <Text style={styles.resultText}>
                 Selected date: {selectedDate.toLocaleDateString()}
               </Text>
@@ -181,7 +149,7 @@ export const ComponentsDemo = () => {
         {activeTab === 'overlays' ? (
           <View style={styles.panel}>
             <DemoSection title="Menu">
-              <Menu
+              <C.Menu
                 items={[
                   { label: 'Edit profile', onPress: () => setFeedback('Edit profile selected.') },
                   { label: 'Share', onPress: () => setFeedback('Share selected.') },
@@ -197,43 +165,43 @@ export const ComponentsDemo = () => {
 
             <DemoSection title="Modal and dialog">
               <View style={styles.buttonRow}>
-                <Buttons.Secondary onPress={() => setModalVisible(true)} label="Open modal" />
-                <Buttons.Primary label="Open dialog" onPress={() => setDialogVisible(true)} />
+                <C.Buttons.Secondary onPress={() => setModalVisible(true)} label="Open modal" />
+                <C.Buttons.Primary label="Open dialog" onPress={() => setDialogVisible(true)} />
               </View>
-              <Modal visible={modalVisible} onClose={() => setModalVisible(false)}>
+              <C.Modal visible={modalVisible} onClose={() => setModalVisible(false)}>
                 <Text style={styles.cardTitle}>Modal content</Text>
                 <Text style={styles.cardDescription}>
                   A modal can contain any content and actions.
                 </Text>
-                <Buttons.Danger onPress={() => setModalVisible(false)} label="Close modal" />
-              </Modal>
-              <Dialog
+                <C.Buttons.Danger onPress={() => setModalVisible(false)} label="Close modal" />
+              </C.Modal>
+              <C.Dialog
                 visible={dialogVisible}
                 onClose={() => setDialogVisible(false)}
                 title="Discard changes?"
                 description="Your unsaved changes will be lost."
               >
                 <View style={styles.buttonRow}>
-                  <Buttons.Secondary
+                  <C.Buttons.Secondary
                     onPress={() => setDialogVisible(false)}
                     label="Cancel"
                   />
-                  <Buttons.Danger onPress={() => setDialogVisible(false)} label="Discard" />
+                  <C.Buttons.Danger onPress={() => setDialogVisible(false)} label="Discard" />
                 </View>
-              </Dialog>
+              </C.Dialog>
             </DemoSection>
 
             <DemoSection title="Alerts">
-              <Buttons.Secondary
+              <C.Buttons.Secondary
                 onPress={() => setAlertBatch((batch) => batch + 1)}
                 label="Reshow alerts"
               />
               <View style={styles.formStack}>
                 <View key={alertBatch} style={styles.formStack}>
-                  <Alert tone="info" title="Information" message="Your profile is up to date." />
-                  <Alert tone="success" message="Changes saved successfully." />
-                  <Alert tone="warning" message="Check the details before continuing." />
-                  <Alert tone="error" message="Something needs your attention." />
+                  <C.Alert tone="info" title="Information" message="Your profile is up to date." />
+                  <C.Alert tone="success" message="Changes saved successfully." />
+                  <C.Alert tone="warning" message="Check the details before continuing." />
+                  <C.Alert tone="error" message="Something needs your attention." />
                 </View>
               </View>
             </DemoSection>
@@ -244,32 +212,32 @@ export const ComponentsDemo = () => {
           <View style={styles.panel}>
             <DemoSection title="Typography">
               <View style={styles.displayStack}>
-                <Typography variant="heading">Heading</Typography>
-                <Typography variant="title">Title text</Typography>
-                <Typography variant="body">Body text for regular content.</Typography>
-                <Typography variant="caption">Caption text for supporting details.</Typography>
+                <C.Typography variant="heading">Heading</C.Typography>
+                <C.Typography variant="title">Title text</C.Typography>
+                <C.Typography variant="body">Body text for regular content.</C.Typography>
+                <C.Typography variant="caption">Caption text for supporting details.</C.Typography>
               </View>
             </DemoSection>
 
             <DemoSection title="Loading states">
               <View style={styles.buttonRow}>
-                <Loader />
-                <Skeleton width={180} />
-                <Skeleton width={260} height={28} />
+                <C.Loader />
+                <C.Skeleton width={180} />
+                <C.Skeleton width={260} height={28} />
               </View>
             </DemoSection>
 
             <DemoSection title="Cards">
               <View style={styles.displayStack}>
-                <Card>
+                <C.Card>
                   <View style={styles.cardContent}>
                     <Text style={styles.cardTitle}>Card without image</Text>
                     <Text style={styles.cardDescription}>
                       A simple content card. Tap to see its press feedback.
                     </Text>
                   </View>
-                </Card>
-                <Card
+                </C.Card>
+                <C.Card
                   imageSource={
                     require('../../../../assets/images/tutorial-web.png') as ImageSourcePropType
                   }
@@ -279,15 +247,15 @@ export const ComponentsDemo = () => {
                     <Text style={styles.cardTitle}>Card with image</Text>
                     <Text style={styles.cardDescription}>The card image is optional.</Text>
                   </View>
-                </Card>
+                </C.Card>
               </View>
             </DemoSection>
 
             <DemoSection title="Separators">
               <View style={styles.displayStack}>
-                <Separator variant="sm" />
-                <Separator variant="md" />
-                <Separator variant="lg" color="#208AEF" />
+                <C.Separator variant="sm" />
+                <C.Separator variant="md" />
+                <C.Separator variant="lg" color="#208AEF" />
               </View>
             </DemoSection>
           </View>
