@@ -1,10 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  screen: {
-    backgroundColor: '#F9FAFB',
-    flex: 1,
-  },
   pageContent: {
     alignSelf: 'center',
     boxSizing: 'border-box',

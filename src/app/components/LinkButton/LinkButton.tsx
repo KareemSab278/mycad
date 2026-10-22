@@ -8,13 +8,15 @@ type LinkButtonProps = Omit<
   ComponentProps<typeof PressableFeedback>,
   'children' | 'style'
 > & {
-  children: ReactNode;
+  text: string;
+  children?: ReactNode;
   style?: StyleProp<ViewStyle>;
 };
 
 export const LinkButton = ({
-  children,
+  text,
   onPress,
+  children,
   style,
   ...props
 }: LinkButtonProps) => {
@@ -25,7 +27,8 @@ export const LinkButton = ({
       onPress={onPress}
       style={[styles.link, style]}
     >
-      <Text style={styles.label}>{children}</Text>
+      <Text style={styles.label}>{text}</Text>
+      {children}
     </PressableFeedback>
   );
 };

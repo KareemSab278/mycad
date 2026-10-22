@@ -8,20 +8,20 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   info: {
-    backgroundColor: '#EFF8FF',
-    borderLeftColor: '#2E90FA',
+    backgroundColor: '#addcff',
+    borderLeftColor: '#2085f1',
   },
   success: {
-    backgroundColor: '#ECFDF3',
-    borderLeftColor: '#12B76A',
+    backgroundColor: '#bbfcd6',
+    borderLeftColor: '#0cb547',
   },
   warning: {
-    backgroundColor: '#FFFAEB',
+    backgroundColor: '#feeebe',
     borderLeftColor: '#F79009',
   },
   error: {
-    backgroundColor: '#FEF3F2',
-    borderLeftColor: '#F04438',
+    backgroundColor: '#ffd2ce',
+    borderLeftColor: '#eb3629',
   },
   title: {
     color: '#344054',

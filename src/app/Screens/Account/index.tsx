@@ -1,4 +1,4 @@
-import { Typography } from '@/components';
+import { Typography } from '@/app/components';
 import { View } from 'react-native';
 import { styles } from './styles';
 
