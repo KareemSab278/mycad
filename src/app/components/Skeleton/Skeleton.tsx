@@ -1,6 +1,6 @@
 import { View } from 'react-native';
-import type { ViewProps, ViewStyle } from 'react-native';
-import type { StyleProp } from 'react-native';
+import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { styles } from './style';
 
 type SkeletonProps = Omit<ViewProps, 'style'> & {
@@ -16,11 +16,13 @@ export const Skeleton = ({
   style,
   ...props
 }: SkeletonProps) => {
+  const theme = useTheme();
+
   return (
     <View
       {...props}
       accessibilityLabel="Loading content"
-      style={[styles.skeleton, { width, height }, style]}
+      style={[styles.skeleton, { width, height, backgroundColor: theme.backgroundSelected }, style]}
     />
   );
 };

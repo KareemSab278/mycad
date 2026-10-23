@@ -1,4 +1,5 @@
 import { ScrollView, View } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
@@ -19,9 +20,11 @@ export const Tabs = <T extends string,>({
   value,
   onValueChange,
 }: TabsProps<T>) => {
+  const theme = useTheme();
+
   return (
     <View style={styles.container}>
-      <View style={styles.pill}>
+      <View style={[styles.pill, { backgroundColor: theme.backgroundSelected }]}>
         <ScrollView
           horizontal
           style={styles.scrollView}
@@ -37,9 +40,19 @@ export const Tabs = <T extends string,>({
                 accessibilityRole="tab"
                 accessibilityState={{ selected }}
                 onPress={() => onValueChange(item.value)}
-                style={[styles.tab, selected && styles.selectedTab]}
+                style={[
+                  styles.tab,
+                  selected && [styles.selectedTab, { backgroundColor: theme.button }],
+                ]}
               >
-                <Typography text={item.label} variant='body' style={selected ? styles.selectedLabel : undefined} />
+                <Typography
+                  text={item.label}
+                  variant="body"
+                  style={{
+                    ...(selected ? styles.selectedLabel : undefined),
+                    color: selected ? theme.buttonText : theme.text,
+                  }}
+                />
               </PressableFeedback>
             );
           })}

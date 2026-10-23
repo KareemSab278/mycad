@@ -2,8 +2,6 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EAECF0',
     borderRadius: 12,
     borderWidth: 1,
     overflow: 'hidden',

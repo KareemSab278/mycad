@@ -2,6 +2,7 @@ import type { ButtonRootProps } from 'heroui-native';
 import { Button as HeroButton } from 'heroui-native';
 import type { ReactNode } from 'react';
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { styles } from './style';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'disabled';
@@ -23,13 +24,26 @@ export type ButtonProps = DistributiveOmit<ButtonRootProps, 'variant'> & {
 
 // Example: <Button variant="danger" onPress={removeItem}>Delete</Button>.
 export const Button = ({ children, label, variant = 'primary', style, ...props }: ButtonProps) => {
+  const theme = useTheme();
 
   const variants: VariantStyles = {
-    'secondary': { button: styles.secondary, hero: 'primary', label: styles.secondaryLabel },
-    'ghost': { button: styles.ghost, hero: 'primary', label: styles.ghostLabel },
+    'secondary': {
+      button: [styles.secondary, { backgroundColor: theme.backgroundSelected }],
+      hero: 'primary',
+      label: [styles.secondaryLabel, { color: theme.text }],
+    },
+    'ghost': {
+      button: styles.ghost,
+      hero: 'primary',
+      label: [styles.ghostLabel, { color: theme.button }],
+    },
     'primary': { button: styles.button, hero: 'primary', label: undefined },
     'danger': { button: styles.button, hero: 'danger', label: undefined },
-    'disabled': { button: styles.disabled, hero: 'primary', label: styles.disabledLabel }
+    'disabled': {
+      button: [styles.disabled, { backgroundColor: theme.backgroundSelected }],
+      hero: 'primary',
+      label: [styles.disabledLabel, { color: theme.textSecondary }],
+    }
   }
 
   return (

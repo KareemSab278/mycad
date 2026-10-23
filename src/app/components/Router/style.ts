@@ -2,13 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F9FAFB',
     flex: 1,
     width: '100%',
   },
   navigation: {
-    backgroundColor: '#FFFFFF',
-    borderTopColor: '#EAECF0',
     borderTopWidth: 1,
     flexDirection: 'row',
     flexWrap: 'nowrap',

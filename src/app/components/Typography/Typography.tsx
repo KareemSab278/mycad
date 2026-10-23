@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { Text } from 'react-native';
-import { styles } from './style';
+import { useColorScheme } from '../../hooks/use-color-scheme';
+import { darkStyles, lightStyles } from './style';
 
 interface TypographyProps {
   variant?: 'caption' | 'body' | 'title' | 'heading' | 'link';
@@ -14,5 +15,12 @@ export const Typography = ({
   text,
   style,
 }: TypographyProps) => {
-  return <Text style={[styles.base,...(Array.isArray(style) ? style : [style]), styles[variant]]}>{text}</Text>;
+  const colorScheme = useColorScheme();
+  const styles = colorScheme === 'dark' ? darkStyles : lightStyles;
+
+  return (
+    <Text style={[styles.base, styles[variant], ...(Array.isArray(style) ? style : [style])]}>
+      {text}
+    </Text>
+  );
 };

@@ -29,7 +29,7 @@ export const Toggler = ({
           <View style={[styles.thumb, value && styles.thumbOn]} />
         </View>
       </PressableFeedback>
-      {label ? <Typography text={label} variant='body' /> : null}
+      {label ? <Typography text={label} variant='caption' /> : null}
     </View>
   );
 };

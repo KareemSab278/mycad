@@ -1,4 +1,5 @@
 import { View } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
@@ -12,6 +13,8 @@ export const TagGroup = ({
   selectedTags: readonly string[];
   onSelectionChange: (selected: string[]) => void;
 }) => {
+  const theme = useTheme();
+
   const toggleTag = (tag: string) => {
     onSelectionChange(
       selectedTags.includes(tag)
@@ -30,9 +33,16 @@ export const TagGroup = ({
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
             onPress={() => toggleTag(tag)}
-            style={[styles.tag, isSelected && styles.selectedTag]}
+            style={[
+              styles.tag,
+              { backgroundColor: isSelected ? theme.button : theme.backgroundSelected },
+            ]}
           >
-            <Typography text={tag} variant='body' />
+            <Typography
+              text={tag}
+              variant="body"
+              style={{ color: isSelected ? theme.buttonText : theme.text }}
+            />
           </PressableFeedback>
         );
       })}

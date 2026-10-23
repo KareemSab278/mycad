@@ -82,7 +82,6 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
   cardTitle: {
-    color: '#101828',
     fontSize: 16,
     fontWeight: '600',
   },

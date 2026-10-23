@@ -1,5 +1,6 @@
 import type { ActivityIndicatorProps, StyleProp, ViewStyle } from 'react-native';
 import { ActivityIndicator } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { styles } from './style';
 
 type LoaderProps = Omit<ActivityIndicatorProps, 'style'> & {
@@ -7,5 +8,7 @@ type LoaderProps = Omit<ActivityIndicatorProps, 'style'> & {
 };
 
 export const Loader = ({ style, ...props }: LoaderProps) => {
-  return <ActivityIndicator {...props} style={[styles.loader, style]} />;
+  const theme = useTheme();
+
+  return <ActivityIndicator {...props} color={props.color ?? theme.button} style={[styles.loader, style]} />;
 };

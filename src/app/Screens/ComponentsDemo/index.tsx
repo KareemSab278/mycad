@@ -3,6 +3,8 @@ import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { useColorScheme } from '../../hooks/use-color-scheme';
+import { useColorSchemePreference } from '../../hooks/color-scheme-context';
 import { ChartsDemo } from './ChartsDemo';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';
@@ -15,7 +17,8 @@ export const ComponentsDemo = () => {
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
   const [selectedTags, setSelectedTags] = useState<string[]>(['Mobile']);
   const [country, setCountry] = useState<string | undefined>(undefined);
-  const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const colorScheme = useColorScheme();
+  const { setPreference } = useColorSchemePreference();
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [sliderValue, setSliderValue] = useState<number>(35);
   const [displayName, setDisplayName] = useState<string>('');
@@ -117,9 +120,11 @@ export const ComponentsDemo = () => {
               <C.Box title="Selection controls">
                 <View style={styles.formStack}>
                   <C.Toggler
-                    label="Notifications"
-                    value={isEnabled}
-                    onValueChange={setIsEnabled}
+                    label={colorScheme === 'dark' ? 'Dark mode' : 'Light mode'}
+                    value={colorScheme === 'dark'}
+                    onValueChange={(isDarkMode) =>
+                      setPreference(isDarkMode ? 'dark' : 'light')
+                    }
                   />
                   <C.CheckBox
                     label="I agree to the terms"

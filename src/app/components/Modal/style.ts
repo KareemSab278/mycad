@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   backdrop: {
     alignItems: 'center',
-    backgroundColor: 'rgba(16, 24, 40, 0.45)',
     flex: 1,
     justifyContent: 'center',
     padding: 24,
@@ -12,7 +11,8 @@ export const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
   },
   content: {
-    backgroundColor: '#FFFFFF',
+    borderColor: '#EAECF0',
+    borderWidth: 1,
     borderRadius: 14,
     gap: 12,
     maxHeight: '85%',

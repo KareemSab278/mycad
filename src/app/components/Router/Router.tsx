@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../../hooks/use-theme';
 import { ComponentsDemo } from '../../Screens/ComponentsDemo';
 import { Home } from '../../Screens/Home';
 import { SignIn } from '../../Screens/SignIn';
@@ -19,15 +20,22 @@ type Route = (typeof routes)[number];
 
 export const Router = () => {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const ActiveScreen = activeRoute.Screen;
   const allRoutes = devDemo ? [...routes, devDemo] : routes;
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.content, { backgroundColor: theme.background }]}>
         <ActiveScreen />
       </View>
-      <View style={[styles.navigation, { paddingBottom: Math.max(insets.bottom, 8) }]}>
+      <View
+        style={[
+          styles.navigation,
+          { backgroundColor: theme.backgroundElement, borderTopColor: theme.border },
+          { paddingBottom: Math.max(insets.bottom, 8) },
+        ]}
+      >
         {allRoutes.map((route) => (
           <Button
             key={route.label}

@@ -93,8 +93,8 @@ export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
         { opacity, transform: [{ translateX }] },
       ]}
     >
-      {title ? <Typography text={title} /> : null}
-      <Typography text={message} />
+      {title ? <Typography text={title} style={{ color: '#000000', fontWeight: '600' }} /> : null}
+      <Typography text={message} style={{ color: '#000000' }} />
     </AnimatedPressable>
   );
 };

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { Modal } from '../Modal/Modal';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
@@ -27,6 +28,7 @@ export const Selector = ({
   onValueChange,
 }: SelectorProps) => {
   const [visible, setVisible] = useState(false);
+  const theme = useTheme();
   const selectedOption = options.find((option) => option.value === value);
 
   return (
@@ -36,7 +38,13 @@ export const Selector = ({
         accessibilityRole="button"
         accessibilityLabel={label ?? placeholder}
         onPress={() => setVisible(true)}
-        style={styles.trigger}
+        style={[
+          styles.trigger,
+          {
+            backgroundColor: theme.backgroundSelected,
+            borderColor: theme.border,
+          },
+        ]}
       >
         <Typography text={selectedOption?.label ?? placeholder} variant='body' />
       </PressableFeedback>

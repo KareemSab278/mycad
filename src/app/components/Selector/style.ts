@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   trigger: {
     alignItems: 'center',
-    backgroundColor: '#E6F4FE',
+    borderWidth: 1,
     borderRadius: 10,
     justifyContent: 'center',
     minHeight: 44,
