@@ -3,8 +3,8 @@ import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
 import { KeyboardAvoidingView, Platform, View } from 'react-native';
-import { useColorScheme } from '../../hooks/use-color-scheme';
 import { useColorSchemePreference } from '../../hooks/color-scheme-context';
+import { useColorScheme } from '../../hooks/use-color-scheme';
 import { ChartsDemo } from './ChartsDemo';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';

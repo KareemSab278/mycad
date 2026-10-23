@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
 import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
-import { Image, View } from 'react-native';
+import { Image, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { styles } from './style';
@@ -14,9 +14,11 @@ type CardProps = {
 
 export const Card = ({ imageSource, children, onPress, style }: CardProps) => {
   const theme = useTheme();
+  const { width } = useWindowDimensions();
+  const isCompact = width < 600;
   const content = imageSource ? (
     <>
-      <View style={styles.imageContainer}>
+      <View style={isCompact ? styles.compactImageContainer : styles.imageContainer}>
         <Image source={imageSource} resizeMode="cover" style={styles.image} />
       </View>
       <View style={styles.imageContent}>{children}</View>
@@ -25,7 +27,7 @@ export const Card = ({ imageSource, children, onPress, style }: CardProps) => {
   const cardStyle = [
     styles.card,
     { backgroundColor: theme.backgroundElement, borderColor: theme.border },
-    imageSource ? styles.imageCard : undefined,
+    imageSource ? (isCompact ? styles.compactImageCard : styles.imageCard) : undefined,
     style,
   ];
 

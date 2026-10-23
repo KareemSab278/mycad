@@ -33,7 +33,7 @@ export const Router = () => {
         style={[
           styles.navigation,
           { backgroundColor: theme.backgroundElement, borderTopColor: theme.border },
-          { paddingBottom: Math.max(insets.bottom, 8) },
+          { paddingBottom: Math.max(insets.bottom, 24) },
         ]}
       >
         {allRoutes.map((route) => (

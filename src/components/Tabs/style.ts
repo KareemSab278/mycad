@@ -8,6 +8,9 @@ export const styles = StyleSheet.create({
     // paddingHorizontal: 10,
     paddingVertical: 5,
     width: '100%',
+    marginTop: 30,
+    top: 0,
+    position: 'fixed'
   },
   pill: {
     backgroundColor: '#E6F4FE',

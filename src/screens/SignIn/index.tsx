@@ -1,19 +1,8 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Linking, Platform, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView, View } from 'react-native';
 import * as C from './../../components';
+import { goToPage, keyboardAvoidingBehavior } from './helpers';
 import { styles } from './styles';
-
-const keyboardAvoidingBehavior =
-  Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
-
-const goToPage = (page: 'forgot' | 'join') => {
-  const url = page === 'forgot'
-    ? 'https://my.coin-a-drink.co.uk/forgotten_password.php'
-    : 'https://coin-a-drink.co.uk/contact-us/';
-
-  return Linking.openURL(url);
-};
 
 export const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -21,10 +10,8 @@ export const SignIn = () => {
 
   return (
     <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1 }}>
         <C.Container>
           <C.Box title="Sign in">
-            <View style={styles.form}>
               <C.InputField
                 label="Email"
                 placeholder="Enter your email"
@@ -63,10 +50,8 @@ export const SignIn = () => {
                   onPress={() => { goToPage('join') }}
                 />
               </View>
-            </View>
           </C.Box>
         </C.Container>
-      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };

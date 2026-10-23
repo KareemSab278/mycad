@@ -11,13 +11,22 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 0,
   },
+  compactImageCard: {
+    flexDirection: 'column',
+    padding: 0,
+  },
   imageContainer: {
     minHeight: 140,
     position: 'relative',
     width: '40%',
   },
+  compactImageContainer: {
+    height: 180,
+    position: 'relative',
+    width: '100%',
+  },
   image: {
-    height: '100%',
+    flex: 1,
     width: '100%',
   },
   imageContent: {
