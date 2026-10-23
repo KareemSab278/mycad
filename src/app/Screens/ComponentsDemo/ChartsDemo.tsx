@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import * as C from '../../components';
 import { Charts } from '../../components';
-import { categorySales, monthlySales } from './chartData';
+import { busyTimesLastWeek, categorySales, monthlySales } from './chartData';
 
 const keyboardAvoidingBehavior =
   Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
@@ -20,11 +20,10 @@ export const ChartsDemo = () => (
       title="Monthly sales"
     />
     <Charts.Line
-      data={monthlySales}
+      data={busyTimesLastWeek}
       description="Compare sales and order trends"
       series={[
-        { key: 'sales', name: 'Sales', color: '#2563EB' },
-        { key: 'orders', name: 'Orders', color: '#16A34A' },
+        { key: 'purchases', name: 'Purchases That Day', color: '#2563EB' },
       ]}
       title="Sales line chart"
     />

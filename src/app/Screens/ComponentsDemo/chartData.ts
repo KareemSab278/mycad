@@ -5,6 +5,16 @@ export const monthlySales = [
   { label: 'Apr', sales: 74, orders: 61 },
 ];
 
+export const busyTimesLastWeek = [
+  { label: 'Mon', purchases: 42 },
+  { label: 'Tue', purchases: 58 },
+  { label: 'Wed', purchases: 47 },
+  { label: 'Thu', purchases: 74 },
+  { label: 'Fri', purchases: 63 },
+  { label: 'Sat', purchases: 50 },
+  { label: 'Sun', purchases: 45 },
+];
+
 export const categorySales = [
   { label: 'Coffee', value: 42, color: '#2563EB' },
   { label: 'Tea', value: 28, color: '#16A34A' },
