@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, useWindowDimensions } from 'react-native';
+import { Animated, Pressable, useWindowDimensions } from 'react-native';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'error';
@@ -92,8 +93,8 @@ export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
         { opacity, transform: [{ translateX }] },
       ]}
     >
-      {title ? <Text style={styles.title}>{title}</Text> : null}
-      <Text>{message}</Text>
+      {title ? <Typography text={title} /> : null}
+      <Typography text={message} />
     </AnimatedPressable>
   );
 };

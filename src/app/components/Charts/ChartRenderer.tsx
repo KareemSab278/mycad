@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { chartStyles } from './style';
 import {
@@ -11,6 +11,8 @@ import {
   type ChartProps,
   type ChartSeries,
 } from './types';
+                
+import { Typography } from '../Typography/Typography';
 
 const width = 360;
 const padding = { top: 18, right: 16, bottom: 38, left: 42 };
@@ -53,8 +55,8 @@ const ChartFrame = ({
   children: ReactNode;
 }) => (
   <View style={chartStyles.card}>
-    <Text style={chartStyles.title}>{title}</Text>
-    {description ? <Text style={chartStyles.description}>{description}</Text> : null}
+    <Typography text={title} variant='title' />
+    {description ? <Typography text={description} variant='caption' /> : null}
     {children}
   </View>
 );
@@ -300,9 +302,7 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
           return (
             <View key={`${datum.label}-${index}`} style={chartStyles.legendItem}>
               <View style={[chartStyles.legendDot, { backgroundColor: color }]} />
-              <Text style={chartStyles.legendText}>
-                {datum.label} · {percent}%
-              </Text>
+              <Typography text={`${datum.label} · ${percent}%`} variant='caption' />
             </View>
           );
         })}
@@ -324,7 +324,7 @@ export const ChartRenderer = ({
   return (
     <ChartFrame title={title} description={description}>
       {data.length === 0 ? (
-        <Text style={chartStyles.empty}>No data available.</Text>
+        <Typography text="No data available." variant='caption'/>
       ) : kind === 'pie' ? (
         <PieChart data={data} height={Math.max(200, Math.min(height, 260))} series={chartSeries} />
       ) : kind === 'horizontal-bar' ? (

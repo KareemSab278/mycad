@@ -22,4 +22,8 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 36,
   },
+  link: {
+    color: '#1D4ED8',
+    fontSize: 12,
+  },
 });

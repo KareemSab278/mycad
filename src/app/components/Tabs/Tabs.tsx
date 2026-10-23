@@ -1,7 +1,7 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
-
 export type TabOption<T extends string = string> = {
   label: string;
   value: T;
@@ -39,9 +39,7 @@ export const Tabs = <T extends string,>({
                 onPress={() => onValueChange(item.value)}
                 style={[styles.tab, selected && styles.selectedTab]}
               >
-                <Text style={[styles.label, selected && styles.selectedLabel]}>
-                  {item.label}
-                </Text>
+                <Typography text={item.label} variant='body' style={selected ? styles.selectedLabel : undefined} />
               </PressableFeedback>
             );
           })}

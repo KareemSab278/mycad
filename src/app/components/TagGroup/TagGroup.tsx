@@ -1,7 +1,7 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
-
 // Use to display and select a set of tags or categories.
 export const TagGroup = ({
   tags,
@@ -32,7 +32,7 @@ export const TagGroup = ({
             onPress={() => toggleTag(tag)}
             style={[styles.tag, isSelected && styles.selectedTag]}
           >
-            <Text style={styles.label}>{tag}</Text>
+            <Typography text={tag} variant='body' />
           </PressableFeedback>
         );
       })}

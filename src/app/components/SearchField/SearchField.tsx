@@ -1,5 +1,6 @@
-import { Text, TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
+import { TextInput, View } from 'react-native';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 // Use to filter a list or collection of results.
@@ -10,9 +11,7 @@ export const SearchField = ({
 }: TextInputProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.icon} accessibilityElementsHidden>
-        ⌕
-      </Text>
+      <Typography text="⌕" variant="body" />
       <TextInput
         {...props}
         placeholder={placeholder}

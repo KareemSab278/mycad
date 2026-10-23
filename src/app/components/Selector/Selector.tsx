@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Modal } from '../Modal/Modal';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 export type SelectorOption = {
@@ -30,14 +31,14 @@ export const Selector = ({
 
   return (
     <View style={styles.fieldGroup}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Typography text={label} variant='heading' /> : null}
       <PressableFeedback
         accessibilityRole="button"
         accessibilityLabel={label ?? placeholder}
         onPress={() => setVisible(true)}
         style={styles.trigger}
       >
-        <Text style={styles.triggerText}>{selectedOption?.label ?? placeholder}</Text>
+        <Typography text={selectedOption?.label ?? placeholder} variant='body' />
       </PressableFeedback>
       <Modal visible={visible} onClose={() => setVisible(false)}>
         <ScrollView style={styles.list}>
@@ -55,7 +56,7 @@ export const Selector = ({
                 option.value === value && styles.listItemSelected,
               ]}
             >
-              <Text>{option.label}</Text>
+              <Typography text={option.label} variant='body' />
             </PressableFeedback>
           ))}
         </ScrollView>

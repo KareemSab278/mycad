@@ -1,7 +1,7 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
-
 type CheckBoxProps = {
   checked: boolean;
   onValueChange: (checked: boolean) => void;
@@ -24,9 +24,9 @@ export const CheckBox = ({
       style={styles.row}
     >
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked ? <Text style={styles.mark}>✓</Text> : null}
+        {checked ? <Typography text="✓" variant='caption' /> : null}
       </View>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Typography text={label} variant='caption' /> : null}
     </PressableFeedback>
   );
 };

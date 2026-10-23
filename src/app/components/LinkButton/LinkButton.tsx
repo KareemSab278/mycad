@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { Text } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 type LinkButtonProps = Omit<
@@ -27,7 +27,7 @@ export const LinkButton = ({
       onPress={onPress}
       style={[styles.link, style]}
     >
-      <Text style={styles.label}>{text}</Text>
+      <Typography text={text} variant="link" />
       {children}
     </PressableFeedback>
   );

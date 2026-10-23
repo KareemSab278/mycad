@@ -1,7 +1,7 @@
-import { Text, TextInput, View } from 'react-native';
 import type { TextInputProps } from 'react-native';
+import { TextInput, View } from 'react-native';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
-
 export type TextAreaProps = TextInputProps & {
   label?: string;
   helperText?: string;
@@ -19,7 +19,7 @@ export const TextArea = ({
 }: TextAreaProps) => {
   return (
     <View style={styles.fieldGroup}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Typography text={label} variant='body' /> : null}
       <TextInput
         {...props}
         accessibilityLabel={accessibilityLabel ?? label}
@@ -27,9 +27,9 @@ export const TextArea = ({
         style={[styles.input, style]}
       />
       {error ? (
-        <Text style={styles.error}>{error}</Text>
+        <Typography text={error} variant='body' />
       ) : helperText ? (
-        <Text style={styles.helper}>{helperText}</Text>
+        <Typography text={helperText} variant='body' />
       ) : null}
     </View>
   );

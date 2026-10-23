@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 type CalendarProps = {
@@ -46,26 +47,26 @@ export const Calendar = ({ value, onChange, minDate, maxDate }: CalendarProps) =
           onPress={() => changeMonth(-1)}
           style={styles.monthButton}
         >
-          <Text style={styles.monthButtonLabel}>‹</Text>
+          <Typography text="‹" variant='caption' />
         </PressableFeedback>
-        <Text accessibilityLiveRegion="polite" style={styles.monthLabel}>
-          {visibleMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-        </Text>
+        <Typography
+          // accessibilityLiveRegion="polite"
+          text={visibleMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+          style={styles.monthLabel}
+        />
         <PressableFeedback
           accessibilityRole="button"
           accessibilityLabel="Next month"
           onPress={() => changeMonth(1)}
           style={styles.monthButton}
         >
-          <Text style={styles.monthButtonLabel}>›</Text>
+          <Typography text="›" variant='caption' />
         </PressableFeedback>
       </View>
 
       <View style={styles.grid}>
         {weekDays.map((day) => (
-          <Text key={day} style={styles.weekDay}>
-            {day}
-          </Text>
+          <Typography key={day} text={day} variant='caption' />
         ))}
         {cells.map((date, index) => {
           if (!date) return <View key={`empty-${index}`} style={styles.dayCell} />;
@@ -92,15 +93,7 @@ export const Calendar = ({ value, onChange, minDate, maxDate }: CalendarProps) =
                 isDisabled && styles.disabledDay,
               ]}
             >
-              <Text
-                style={[
-                  styles.dayLabel,
-                  isSelected && styles.selectedDayLabel,
-                  isDisabled && styles.disabledDayLabel,
-                ]}
-              >
-                {date.getDate()}
-              </Text>
+              <Typography text={date.getDate().toString()} variant='caption' />
             </PressableFeedback>
           );
         })}

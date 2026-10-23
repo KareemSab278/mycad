@@ -2,11 +2,11 @@ import { useState } from 'react';
 import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
-import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { ChartsDemo } from './ChartsDemo';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';
 import { styles } from './styles';
-import { ChartsDemo } from './ChartsDemo';
 
 const keyboardAvoidingBehavior =
   Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
@@ -54,7 +54,7 @@ export const ComponentsDemo = () => {
                   <C.Buttons.Danger onPress={() => setFeedback('Danger button pressed.')} label='Danger' />
                   <C.Buttons.Ghost onPress={() => setFeedback('Ghost button pressed.')} label='Ghost' />
                 </View>
-                <Text style={styles.resultText}>{feedback}</Text>
+                <C.Typography variant='caption' text={feedback} />
               </C.Box>
 
               <C.Box title="Pressable feedback">
@@ -62,13 +62,13 @@ export const ComponentsDemo = () => {
                   onPress={() => setFeedback('Ripple and 0.9 scale feedback pressed.')}
                   style={styles.feedbackSurface}
                 >
-                  <Text style={styles.feedbackText}>Tap to see ripple + scale</Text>
+                  <C.Typography variant='caption' text="Tap to see ripple + scale" />
                 </C.PressableFeedback>
                 <C.LinkButton
                   onPress={() => setFeedback('Terms and conditions link pressed.')}
                   text="Terms and conditions"
                 />
-                <Text style={styles.resultText}>{feedback}</Text>
+                <C.Typography variant='caption' text={feedback} />
               </C.Box>
 
               <C.Box title="Tag group" description="Select one or more tags.">
@@ -77,9 +77,7 @@ export const ComponentsDemo = () => {
                   selectedTags={selectedTags}
                   onSelectionChange={setSelectedTags}
                 />
-                <Text style={styles.resultText}>
-                  Selected: {selectedTags.length ? selectedTags.join(', ') : 'none'}
-                </Text>
+                <C.Typography variant='caption' text={`Selected: ${selectedTags.length ? selectedTags.join(', ') : 'none'}`} />
               </C.Box>
             </View>
           ) : null}
@@ -129,7 +127,7 @@ export const ComponentsDemo = () => {
                     onValueChange={setIsChecked}
                   />
                   <View style={styles.formStack}>
-                    <Text style={styles.resultText}>Slider value: {sliderValue}</Text>
+                    <C.Typography variant='caption' text={`Slider value: ${sliderValue}`} />
                     <C.Slider value={sliderValue} onValueChange={(value) => setSliderValue(value)} />
                   </View>
                   <C.Selector
@@ -146,14 +144,12 @@ export const ComponentsDemo = () => {
                   label="Choose date"
                   onPress={() => setCalendarModalVisible(true)}
                 />
-                <Text style={styles.resultText}>
-                  Selected date: {selectedDate.toLocaleDateString()}
-                </Text>
+                <C.Typography variant='caption' text={`Selected date: ${selectedDate.toLocaleDateString()}`} />
                 <C.Modal
                   visible={calendarModalVisible}
                   onClose={() => setCalendarModalVisible(false)}
                 >
-                  <Text style={styles.cardTitle}>Select a date</Text>
+                  <C.Typography style={styles.cardTitle} text="Select a date" />
                   <C.Calendar
                     value={selectedDate}
                     onChange={(date) => {
@@ -184,7 +180,7 @@ export const ComponentsDemo = () => {
                     },
                   ]}
                 />
-                <Text style={styles.resultText}>{feedback}</Text>
+                <C.Typography text={feedback}/>
               </C.Box>
 
               <C.Box title="Modal and dialog">
@@ -193,10 +189,8 @@ export const ComponentsDemo = () => {
                   <C.Buttons.Primary label="Open dialog" onPress={() => setDialogVisible(true)} />
                 </View>
                 <C.Modal visible={modalVisible} onClose={() => setModalVisible(false)}>
-                  <Text style={styles.cardTitle}>Modal content</Text>
-                  <Text style={styles.cardDescription}>
-                    A modal can contain any content and actions.
-                  </Text>
+                  <C.Typography text="Modal content" />
+                  <C.Typography variant="caption" text="A modal can contain any content and actions." />
                   <C.Buttons.Danger onPress={() => setModalVisible(false)} label="Close modal" />
                 </C.Modal>
                 <C.Dialog

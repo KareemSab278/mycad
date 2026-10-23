@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
+
 
 export const Box = ({
   title,
@@ -14,8 +16,8 @@ export const Box = ({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeading}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {description ? <Text style={styles.sectionDescription}>{description}</Text> : null}
+        <Typography text={title} variant='title' />
+        {description ? <Typography text={description} variant='caption' /> : null}
       </View>
       {children}
     </View>

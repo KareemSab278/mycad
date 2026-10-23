@@ -1,5 +1,6 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
 type TogglerProps = {
@@ -28,7 +29,7 @@ export const Toggler = ({
           <View style={[styles.thumb, value && styles.thumbOn]} />
         </View>
       </PressableFeedback>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <Typography text={label} variant='body' /> : null}
     </View>
   );
 };

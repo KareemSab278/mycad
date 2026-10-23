@@ -2,9 +2,8 @@ import type { CSSProperties } from 'react';
 import { Text } from 'react-native';
 import { styles } from './style';
 
-
 interface TypographyProps {
-  variant?: 'caption' | 'body' | 'title' | 'heading';
+  variant?: 'caption' | 'body' | 'title' | 'heading' | 'link';
   text: string;
   style?: CSSProperties;
 }

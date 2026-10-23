@@ -1,8 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { Text } from 'react-native';
 import { Modal } from '../Modal/Modal';
-import { styles } from './style';
-
+import { Typography } from '../Typography/Typography';
 type DialogProps = Omit<ComponentProps<typeof Modal>, 'children'> & {
   title: string;
   description?: string;
@@ -27,8 +25,8 @@ export const Dialog = ({
       presentationStyle={presentationStyle}
       canClose={canClose}
     >
-      <Text style={styles.title}>{title}</Text>
-      {description ? <Text style={styles.description}>{description}</Text> : null}
+      <Typography text={title} variant="title" />
+      {description ? <Typography text={description} variant="caption" /> : null}
       {children}
     </Modal>
   );
