@@ -3,6 +3,7 @@ export * from './Box/Box';
 export * from './Buttons/Buttons';
 export * from './Calendar/Calendar';
 export * from './Card/Card';
+export * from './Charts/Charts';
 export * from './CheckBox/CheckBox';
 export * from './Container/Container';
 export * from './Dialog/Dialog';
@@ -23,4 +24,3 @@ export * from './TextArea/TextArea';
 export * from './TextField/TextField';
 export * from './Toggler/Toggler';
 export * from './Typography/Typography';
-

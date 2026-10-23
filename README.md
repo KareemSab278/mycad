@@ -56,6 +56,7 @@ import * as C from '@/app/components';
 | --- | --- |
 | `Container` | Scrollable screen content wrapper |
 | `Box` | Titled section with optional description |
+| `Charts` | Reusable bar, line, area/graph, horizontal bar, and pie charts |
 | `Typography` | Text with shared `caption`, `body`, `title`, and `heading` variants |
 | `Buttons` | Primary, secondary, danger, ghost, and disabled actions |
 | `LinkButton` | Inline or secondary text action |
@@ -71,6 +72,27 @@ import * as C from '@/app/components';
 | `Separator` | Visual divider; `sm`, `md`, and `lg` variants |
 
 See `src/app/Screens/ComponentsDemo` for examples of the controls and their current APIs. Use the shared components before creating screen-specific equivalents.
+
+### Charts
+
+Charts accept data and series configuration as props, so they can be reused with different datasets. Web uses Recharts; iOS and Android use SVG rendering.
+
+```tsx
+import * as C from '@/app/components';
+
+const sales = [
+  { label: 'Jan', sales: 42 },
+  { label: 'Feb', sales: 58 },
+];
+
+<C.Charts.Bar
+  data={sales}
+  title="Monthly sales"
+  series={[{ key: 'sales', name: 'Sales', color: '#2563EB' }]}
+/>
+```
+
+Use `Charts.Line`, `Charts.Graph`, `Charts.HorizontalBar`, or `Charts.Pie` for the other chart types. Data points use `label` for their category; series `key` selects the numeric field to render.
 
 ## Page and component standards
 

@@ -3,6 +3,7 @@ export const demoTabs = [
   { id: 'forms', label: 'Forms' },
   { id: 'overlays', label: 'Overlays' },
   { id: 'display', label: 'Display' },
+  { id: 'charts', label: 'Charts' },
 ] as const;
 
 export type DemoTabId = (typeof demoTabs)[number]['id'];

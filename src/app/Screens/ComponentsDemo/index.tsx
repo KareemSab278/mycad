@@ -6,6 +6,7 @@ import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';
 import { styles } from './styles';
+import { ChartsDemo } from './ChartsDemo';
 
 const keyboardAvoidingBehavior =
   Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
@@ -273,6 +274,8 @@ export const ComponentsDemo = () => {
               </C.Box>
             </View>
           ) : null}
+
+          {activeTab === 'charts' ? <ChartsDemo /> : null}
         </C.Container>
         {activeTab === 'overlays' && alertBatch > 0 ? (
           <View pointerEvents="box-none" style={styles.alertOverlay}>

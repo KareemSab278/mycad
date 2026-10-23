@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   pageContent: {
@@ -90,5 +90,34 @@ export const styles = StyleSheet.create({
     color: '#667085',
     fontSize: 14,
     lineHeight: 20,
+  },
+  chartCard: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E4E7EC',
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 4,
+    overflow: 'hidden',
+    padding: 16,
+    ...Platform.select({
+      web: { boxSizing: 'border-box' as const, width: '100%' as const },
+    }),
+  },
+  chartTitle: {
+    color: '#101828',
+    fontSize: 16,
+    fontWeight: '600' as const,
+    margin: 0,
+  },
+  chartDescription: {
+    color: '#667085',
+    fontSize: 13,
+    lineHeight: 19,
+    margin: 0,
+  },
+  chartSummary: {
+    color: '#475467',
+    fontSize: 13,
+    margin: 0,
   },
 });
