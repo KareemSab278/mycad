@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
-import { ComponentsDemo } from '../../Screens/ComponentsDemo';
-import { Home } from '../../Screens/Home';
-import { SignIn } from '../../Screens/SignIn';
+import { ComponentsDemo } from '../../screens/ComponentsDemo';
+import { Home } from '../../screens/Home';
+import { SignIn } from '../../screens/SignIn';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 

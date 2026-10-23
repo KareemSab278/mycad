@@ -252,7 +252,7 @@ export const ComponentsDemo = () => {
                   </C.Card>
                   <C.Card
                     imageSource={
-                      require('../../../../assets/images/tutorial-web.png') as ImageSourcePropType
+                      require('../../../assets/images/tutorial-web.png') as ImageSourcePropType
                     }
                     onPress={() => setFeedback('Image card pressed.')}
                   >

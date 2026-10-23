@@ -1,4 +1,4 @@
-import { Typography } from '@/app/components';
+import { Typography } from '@/components';
 import { View } from 'react-native';
 import { styles } from './styles';
 
@@ -12,4 +12,3 @@ export const Account = () => {
     </View>
   );
 };
-
