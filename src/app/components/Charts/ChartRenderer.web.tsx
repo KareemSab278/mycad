@@ -162,7 +162,6 @@ const ChartContent = ({
   return (
     <RechartsPieChart>
       <Tooltip contentStyle={tooltipStyle} />
-      <Legend />
       <Pie data={data} dataKey={valueKey} innerRadius="48%" nameKey="label" outerRadius="78%">
         {data.map((datum, index) => (
           <Cell
@@ -172,6 +171,49 @@ const ChartContent = ({
         ))}
       </Pie>
     </RechartsPieChart>
+  );
+};
+
+const PieLegend = ({
+  data,
+  valueKey,
+}: {
+  data: ChartProps['data'];
+  valueKey: string;
+}) => {
+  const total = data.reduce((sum, datum) => sum + Math.max(0, Number(datum[valueKey]) || 0), 0);
+
+  return (
+    <div
+      aria-label="Category shares"
+      role="list"
+      style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px', justifyContent: 'center' }}
+    >
+      {data.map((datum, index) => {
+        const value = Math.max(0, Number(datum[valueKey]) || 0);
+        const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+        return (
+          <div
+            key={`${datum.label}-${index}`}
+            role="listitem"
+            style={{ alignItems: 'center', display: 'inline-flex', gap: 6 }}
+          >
+            <span
+              aria-hidden="true"
+              style={{
+                backgroundColor: datum.color ?? chartPalette[index % chartPalette.length],
+                borderRadius: '50%',
+                height: 10,
+                width: 10,
+              }}
+            />
+            <span style={{ color: '#475467', fontSize: 12 }}>
+              {datum.label} · {percent}%
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
@@ -198,5 +240,8 @@ export const ChartRenderer = ({
         </ResponsiveContainer>
       </div>
     )}
+    {kind === 'pie' && data.length > 0 ? (
+      <PieLegend data={data} valueKey={series[0]?.key ?? 'value'} />
+    ) : null}
   </section>
 );

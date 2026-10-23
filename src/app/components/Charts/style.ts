@@ -50,10 +50,4 @@ export const chartStyles = StyleSheet.create({
     color: '#475467',
     fontSize: 12,
   },
-  pieSelection: {
-    color: '#344054',
-    fontSize: 13,
-    marginTop: 4,
-    textAlign: 'center',
-  },
 });

@@ -1,5 +1,5 @@
-import { Fragment, useState, type ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Fragment, type ReactNode } from 'react';
+import { Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { chartStyles } from './style';
 import {
@@ -262,8 +262,6 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
   const radius = 82;
   const valueKey = series[0].key;
   const total = data.reduce((sum, datum) => sum + Math.max(0, getChartValue(datum, valueKey)), 0);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const selectedDatum = selectedIndex === null ? undefined : data[selectedIndex];
   let angle = -90;
 
   return (
@@ -271,7 +269,7 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
       <Svg
         accessibilityLabel="Pie chart"
         height={height}
-        role="img"
+        role="group"
         viewBox="0 0 200 200"
         width={200}
       >
@@ -285,13 +283,10 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
               return (
                 <Path
                   key={`${datum.label}-${index}`}
-                  accessibilityLabel={`${datum.label}, ${value} (${Math.round((value / total) * 100)}%). Tap for details.`}
-                  accessibilityRole="button"
                   d={path}
                   fill={color}
-                  onPress={() => setSelectedIndex(index)}
                   stroke="#FFFFFF"
-                  strokeWidth={selectedIndex === index ? 4 : 2}
+                  strokeWidth={2}
                 />
               );
             })
@@ -303,28 +298,15 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
           const value = Math.max(0, getChartValue(datum, valueKey));
           const percent = total > 0 ? Math.round((value / total) * 100) : 0;
           return (
-            <Pressable
-              key={`${datum.label}-${index}`}
-              accessibilityRole="button"
-              accessibilityState={{ selected: selectedIndex === index }}
-              onPress={() => setSelectedIndex(index)}
-              style={chartStyles.legendItem}
-            >
+            <View key={`${datum.label}-${index}`} style={chartStyles.legendItem}>
               <View style={[chartStyles.legendDot, { backgroundColor: color }]} />
               <Text style={chartStyles.legendText}>
                 {datum.label} · {percent}%
               </Text>
-            </Pressable>
+            </View>
           );
         })}
       </View>
-      <Text style={chartStyles.pieSelection} accessibilityLiveRegion="polite">
-        {selectedDatum
-          ? `${selectedDatum.label}: ${getChartValue(selectedDatum, valueKey)} (${Math.round(
-              (Math.max(0, getChartValue(selectedDatum, valueKey)) / total) * 100,
-            )}%)`
-          : 'Tap a slice or label for details.'}
-      </Text>
     </View>
   );
 };
