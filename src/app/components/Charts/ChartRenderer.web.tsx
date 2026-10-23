@@ -70,7 +70,7 @@ const Axes = ({ horizontal = false }: { horizontal?: boolean }) => (
       tick={axisStyle}
       tickLine={false}
       type={horizontal ? 'category' : 'number'}
-      width={horizontal ? 92 : 40}
+      width={horizontal ? 56 : 40}
     />
     <Tooltip contentStyle={tooltipStyle} />
   </>
