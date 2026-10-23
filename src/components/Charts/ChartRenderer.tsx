@@ -1,5 +1,5 @@
-import { Fragment, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { Fragment, useState, type ReactNode } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { useTheme } from '../../hooks/use-theme';
 import { chartStyles } from './style';
@@ -66,6 +66,75 @@ const ChartFrame = ({
   );
 };
 
+type ChartTooltipEntry = {
+  name: string;
+  value: number;
+  color: string;
+};
+
+type ChartTooltipData = {
+  label: string;
+  entries: ChartTooltipEntry[];
+  x: number;
+  y: number;
+};
+
+const ChartTooltip = ({
+  tooltip,
+  width,
+  height,
+}: {
+  tooltip: ChartTooltipData | null;
+  width: number;
+  height: number;
+}) => {
+  const theme = useTheme();
+
+  if (!tooltip || width <= 0) {
+    return null;
+  }
+
+  const tooltipWidth = Math.min(width - 16, 220);
+  const tooltipHeight = 42 + tooltip.entries.length * 22;
+  const left = Math.max(8, Math.min(tooltip.x + 8, width - tooltipWidth - 8));
+  const top = Math.max(8, Math.min(tooltip.y - tooltipHeight - 8, height - tooltipHeight - 8));
+
+  return (
+    <View
+      accessibilityLiveRegion="polite"
+      pointerEvents="none"
+      style={{
+        backgroundColor: theme.backgroundElement,
+        borderColor: theme.border,
+        borderRadius: 8,
+        borderWidth: 1,
+        elevation: 4,
+        left,
+        maxWidth: tooltipWidth,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        position: 'absolute',
+        top,
+        zIndex: 1,
+      }}
+    >
+      <Typography
+        style={{ fontWeight: '600', marginBottom: 4 }}
+        text={tooltip.label}
+        variant="caption"
+      />
+      {tooltip.entries.map((entry) => (
+        <View key={entry.name} style={{ alignItems: 'center', flexDirection: 'row', gap: 6 }}>
+          <View
+            style={{ backgroundColor: entry.color, borderRadius: 4, height: 8, width: 8 }}
+          />
+          <Typography text={`${entry.name}: ${entry.value}`} variant="caption" />
+        </View>
+      ))}
+    </View>
+  );
+};
+
 const AxisLabels = ({
   data,
   height,
@@ -127,6 +196,8 @@ const VerticalChart = ({
   series: ChartSeries[];
   height: number;
 }) => {
+  const [tooltip, setTooltip] = useState<ChartTooltipData | null>(null);
+  const [chartWidth, setChartWidth] = useState(0);
   const plotWidth = width - padding.left - padding.right;
   const plotHeight = height - padding.top - padding.bottom;
   const maximum = Math.max(1, ...data.flatMap((datum) => series.map(({ key }) => getChartValue(datum, key))));
@@ -136,77 +207,127 @@ const VerticalChart = ({
   const barWidth = Math.min(42, (slotWidth * 0.68) / series.length);
 
   return (
-    <Svg
-      accessibilityLabel={`${kind} chart`}
-      height={height}
-      role="img"
-      viewBox={`0 0 ${width} ${height}`}
-      width="100%"
-    >
-      <AxisLabels
-        data={data}
-        height={height}
-        plotHeight={plotHeight}
-        plotWidth={plotWidth}
-      />
-      {kind === 'bar'
-        ? series.flatMap((item, seriesIndex) =>
-            data.map((datum, index) => {
-              const value = getChartValue(datum, item.key);
-              const barHeight = plotHeight * (value / maximum);
-              const centerX =
-                padding.left +
-                (plotWidth * (index + 0.5)) / Math.max(data.length, 1);
-              const x = centerX - (series.length * barWidth) / 2 + seriesIndex * barWidth;
-              return (
-                <Rect
-                  key={`${item.key}-${datum.label}`}
-                  fill={item.color}
-                  height={barHeight}
-                  rx={4}
-                  width={barWidth * 0.82}
-                  x={x}
-                  y={baseline - barHeight}
-                />
-              );
-            }),
-          )
-        : series.map((item, index) => {
-            const linePoints = points[index].map(({ x, y }) => `${x},${y}`).join(' ');
-            const areaPoints = `${points[index][0]?.x ?? padding.left},${baseline} ${linePoints} ${
-              points[index][points[index].length - 1]?.x ?? padding.left
-            },${baseline}`;
-            return (
-              <Fragment key={item.key}>
-                {kind === 'area' ? (
-                  <Polyline
-                    fill={item.color}
-                    fillOpacity={0.12}
-                    points={areaPoints}
-                    stroke="none"
-                  />
-                ) : null}
-                <Polyline
-                  fill="none"
-                  points={linePoints}
-                  stroke={item.color}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                />
-                {points[index].map(({ x, y }, pointIndex) => (
-                  <Circle
-                    key={`${item.key}-${data[pointIndex].label}`}
-                    cx={x}
-                    cy={y}
-                    fill={item.color}
-                    r={3.5}
-                  />
-                ))}
-              </Fragment>
+    <>
+      <View
+        onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
+        style={{ position: 'relative' }}
+      >
+        <Svg
+          accessibilityLabel={`${kind} chart`}
+          height={height}
+          role="img"
+          viewBox={`0 0 ${width} ${height}`}
+          width="100%"
+        >
+          <AxisLabels
+            data={data}
+            height={height}
+            plotHeight={plotHeight}
+            plotWidth={plotWidth}
+          />
+          {kind === 'bar'
+            ? series.flatMap((item, seriesIndex) =>
+                data.map((datum, index) => {
+                  const value = getChartValue(datum, item.key);
+                  const barHeight = plotHeight * (value / maximum);
+                  const centerX =
+                    padding.left +
+                    (plotWidth * (index + 0.5)) / Math.max(data.length, 1);
+                  const x = centerX - (series.length * barWidth) / 2 + seriesIndex * barWidth;
+                  return (
+                    <Rect
+                      key={`${item.key}-${datum.label}`}
+                      fill={item.color}
+                      height={barHeight}
+                      rx={4}
+                      width={barWidth * 0.82}
+                      x={x}
+                      y={baseline - barHeight}
+                    />
+                  );
+                }),
+              )
+            : series.map((item, index) => {
+                const linePoints = points[index].map(({ x, y }) => `${x},${y}`).join(' ');
+                const areaPoints = `${points[index][0]?.x ?? padding.left},${baseline} ${linePoints} ${
+                  points[index][points[index].length - 1]?.x ?? padding.left
+                },${baseline}`;
+                return (
+                  <Fragment key={item.key}>
+                    {kind === 'area' ? (
+                      <Polyline
+                        fill={item.color}
+                        fillOpacity={0.12}
+                        points={areaPoints}
+                        stroke="none"
+                      />
+                    ) : null}
+                    <Polyline
+                      fill="none"
+                      points={linePoints}
+                      stroke={item.color}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2.5}
+                    />
+                    {points[index].map(({ x, y }, pointIndex) => (
+                      <Circle
+                        key={`${item.key}-${data[pointIndex].label}`}
+                        cx={x}
+                        cy={y}
+                        fill={item.color}
+                        r={3.5}
+                      />
+                    ))}
+                  </Fragment>
+                );
+              })}
+        </Svg>
+        <Pressable
+          accessibilityLabel={`Show ${kind} chart data`}
+          accessibilityRole="button"
+          onPress={(event) => {
+            if (chartWidth === 0) {
+              return;
+            }
+
+            const scale = Math.min(chartWidth / width, 1);
+            const offsetX = (chartWidth - width * scale) / 2;
+            const offsetY = (height - height * scale) / 2;
+            const { locationX, locationY } = event.nativeEvent;
+            const chartX = (locationX - offsetX) / scale;
+            const chartY = (locationY - offsetY) / scale;
+            if (
+              chartX < padding.left ||
+              chartX > padding.left + plotWidth ||
+              chartY < padding.top ||
+              chartY > baseline
+            ) {
+              setTooltip(null);
+              return;
+            }
+
+            const slotWidth = plotWidth / data.length;
+            const pointIndex = Math.max(
+              0,
+              Math.min(data.length - 1, Math.round((chartX - padding.left) / slotWidth - 0.5)),
             );
-          })}
-    </Svg>
+            setTooltip({
+              label: data[pointIndex].label,
+              entries: series.map((item) => ({
+                name: item.name,
+                value: getChartValue(data[pointIndex], item.key),
+                color: item.color,
+              })),
+              x: locationX,
+              y: locationY,
+            });
+          }}
+          style={StyleSheet.absoluteFill}
+        />
+        <ChartTooltip height={height} tooltip={tooltip} width={chartWidth} />
+      </View>
+    </>
   );
 };
 
@@ -220,6 +341,8 @@ const HorizontalBarChart = ({
   height: number;
 }) => {
   const theme = useTheme();
+  const [chartWidth, setChartWidth] = useState(0);
+  const [tooltip, setTooltip] = useState<ChartTooltipData | null>(null);
   const left = 56;
   const right = 16;
   const top = 12;
@@ -231,41 +354,86 @@ const HorizontalBarChart = ({
   const barHeight = Math.min(24, rowHeight * 0.62);
 
   return (
-    <Svg
-      accessibilityLabel="Horizontal bar chart"
-      height={height}
-      role="img"
-      viewBox={`0 0 ${width} ${height}`}
-      width="100%"
+    <View
+      onLayout={(event) => setChartWidth(event.nativeEvent.layout.width)}
+      style={{ position: 'relative' }}
     >
-      {data.map((datum, index) => {
-        const y = top + index * rowHeight + (rowHeight - barHeight) / 2;
-        const value = getChartValue(datum, series[0].key);
-        return (
-          <Fragment key={`${datum.label}-${index}`}>
-            <SvgText fill={theme.textSecondary} fontSize="12" textAnchor="end" x={left - 12} y={y + barHeight * 0.72}>
-              {datum.label}
-            </SvgText>
-            <Rect
-              fill={theme.backgroundSelected}
-              height={barHeight}
-              rx={5}
-              width={plotWidth}
-              x={left}
-              y={y}
-            />
-            <Rect
-              fill={datum.color ?? series[0].color}
-              height={barHeight}
-              rx={5}
-              width={plotWidth * (value / maximum)}
-              x={left}
-              y={y}
-            />
-          </Fragment>
-        );
-      })}
-    </Svg>
+      <Svg
+        accessibilityLabel="Horizontal bar chart"
+        height={height}
+        role="img"
+        viewBox={`0 0 ${width} ${height}`}
+        width="100%"
+      >
+        {data.map((datum, index) => {
+          const y = top + index * rowHeight + (rowHeight - barHeight) / 2;
+          const value = getChartValue(datum, series[0].key);
+          return (
+            <Fragment key={`${datum.label}-${index}`}>
+              <SvgText fill={theme.textSecondary} fontSize="12" textAnchor="end" x={left - 12} y={y + barHeight * 0.72}>
+                {datum.label}
+              </SvgText>
+              <Rect
+                fill={theme.backgroundSelected}
+                height={barHeight}
+                rx={5}
+                width={plotWidth}
+                x={left}
+                y={y}
+              />
+              <Rect
+                fill={datum.color ?? series[0].color}
+                height={barHeight}
+                rx={5}
+                width={plotWidth * (value / maximum)}
+                x={left}
+                y={y}
+              />
+            </Fragment>
+          );
+        })}
+      </Svg>
+      <Pressable
+        accessibilityLabel="Show horizontal bar chart data"
+        accessibilityRole="button"
+        onPress={(event) => {
+          if (chartWidth === 0) {
+            return;
+          }
+
+          const scale = Math.min(chartWidth / width, 1);
+          const offsetX = (chartWidth - width * scale) / 2;
+          const offsetY = (height - height * scale) / 2;
+          const { locationX, locationY } = event.nativeEvent;
+          const chartX = (locationX - offsetX) / scale;
+          const chartY = (locationY - offsetY) / scale;
+          if (
+            chartX < left ||
+            chartX > left + plotWidth ||
+            chartY < top ||
+            chartY > top + plotHeight
+          ) {
+            setTooltip(null);
+            return;
+          }
+
+          const index = Math.min(data.length - 1, Math.floor((chartY - top) / rowHeight));
+          const datum = data[index];
+          setTooltip({
+            label: datum.label,
+            entries: [{
+              name: series[0].name,
+              value: getChartValue(datum, series[0].key),
+              color: datum.color ?? series[0].color,
+            }],
+            x: locationX,
+            y: locationY,
+          });
+        }}
+        style={StyleSheet.absoluteFill}
+      />
+      <ChartTooltip height={height} tooltip={tooltip} width={chartWidth} />
+    </View>
   );
 };
 
@@ -275,36 +443,83 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
   const radius = 82;
   const valueKey = series[0].key;
   const total = data.reduce((sum, datum) => sum + Math.max(0, getChartValue(datum, valueKey)), 0);
+  const [tooltip, setTooltip] = useState<ChartTooltipData | null>(null);
   let angle = -90;
 
   return (
     <View style={chartStyles.pieLayout}>
-      <Svg
-        accessibilityLabel="Pie chart"
-        height={height}
-        role="group"
-        viewBox="0 0 200 200"
-        width={200}
-      >
-        {total > 0
-          ? data.map((datum, index) => {
+      <View style={{ height, position: 'relative', width: 200 }}>
+        <Svg
+          accessibilityLabel="Pie chart"
+          height={height}
+          role="group"
+          viewBox="0 0 200 200"
+          width={200}
+        >
+          {total > 0
+            ? data.map((datum, index) => {
+                const value = Math.max(0, getChartValue(datum, valueKey));
+                const nextAngle = angle + (value / total) * 360;
+                const path = getWedgePath(center, radius, angle, nextAngle);
+                const color = datum.color ?? chartPalette[index % chartPalette.length];
+                angle = nextAngle;
+                return (
+                  <Path
+                    key={`${datum.label}-${index}`}
+                    d={path}
+                    fill={color}
+                    stroke={theme.backgroundElement}
+                    strokeWidth={2}
+                  />
+                );
+              })
+            : null}
+        </Svg>
+        <Pressable
+          accessibilityLabel="Show pie chart data"
+          accessibilityRole="button"
+          onPress={(event) => {
+            const scale = Math.min(height / 200, 1);
+            const offsetY = (height - 200 * scale) / 2;
+            const chartX = event.nativeEvent.locationX;
+            const chartY = (event.nativeEvent.locationY - offsetY) / scale;
+            const distance = Math.hypot(chartX - center, chartY - center);
+            if (total <= 0 || distance > radius) {
+              setTooltip(null);
+              return;
+            }
+
+            const touchAngle =
+              (Math.atan2(chartY - center, chartX - center) * 180 / Math.PI + 450) % 360;
+            let angleStart = 0;
+            const index = data.findIndex((datum) => {
               const value = Math.max(0, getChartValue(datum, valueKey));
-              const nextAngle = angle + (value / total) * 360;
-              const path = getWedgePath(center, radius, angle, nextAngle);
-              const color = datum.color ?? chartPalette[index % chartPalette.length];
-              angle = nextAngle;
-              return (
-                <Path
-                  key={`${datum.label}-${index}`}
-                  d={path}
-                  fill={color}
-                  stroke={theme.backgroundElement}
-                  strokeWidth={2}
-                />
-              );
-            })
-          : null}
-      </Svg>
+              const angleEnd = angleStart + (value / total) * 360;
+              const containsTouch = touchAngle >= angleStart && touchAngle < angleEnd;
+              angleStart = angleEnd;
+              return containsTouch;
+            });
+            if (index < 0) {
+              setTooltip(null);
+              return;
+            }
+
+            const datum = data[index];
+            setTooltip({
+              label: datum.label,
+              entries: [{
+                name: series[0].name,
+                value: getChartValue(datum, valueKey),
+                color: datum.color ?? chartPalette[index % chartPalette.length],
+              }],
+              x: event.nativeEvent.locationX,
+              y: event.nativeEvent.locationY,
+            });
+          }}
+          style={StyleSheet.absoluteFill}
+        />
+        <ChartTooltip height={height} tooltip={tooltip} width={200} />
+      </View>
       <View style={chartStyles.legend}>
         {data.map((datum, index) => {
           const color = datum.color ?? chartPalette[index % chartPalette.length];

@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import * as C from '../../components';
 import { Charts } from '../../components';
 import { busyTimesLastWeek, categorySales, monthlySales } from './chartData';
@@ -8,7 +8,6 @@ const keyboardAvoidingBehavior =
 
 export const ChartsDemo = () => (
   <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
-    <SafeAreaView style={{ flex: 1 }}>
       <C.Container>
     <Charts.Bar
       data={monthlySales}
@@ -46,6 +45,5 @@ export const ChartsDemo = () => (
       title="Category mix"
     />
       </C.Container>
-    </SafeAreaView>
   </KeyboardAvoidingView>
 );
