@@ -2,8 +2,6 @@ import { StyleSheet } from 'react-native';
 
 export const chartStyles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E4E7EC',
     borderRadius: 12,
     borderWidth: 1,
     gap: 6,

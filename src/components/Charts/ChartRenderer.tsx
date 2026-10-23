@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
+import { useTheme } from '../../hooks/use-theme';
 import { chartStyles } from './style';
 import {
   chartPalette,
@@ -53,13 +54,17 @@ const ChartFrame = ({
   title: string;
   description?: string;
   children: ReactNode;
-}) => (
-  <View style={chartStyles.card}>
-    <Typography text={title} variant='title' />
-    {description ? <Typography text={description} variant='caption' /> : null}
-    {children}
-  </View>
-);
+}) => {
+  const theme = useTheme();
+
+  return (
+    <View style={[chartStyles.card, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+      <Typography text={title} variant='title' />
+      {description ? <Typography text={description} variant='caption' /> : null}
+      {children}
+    </View>
+  );
+};
 
 const AxisLabels = ({
   data,
@@ -71,41 +76,45 @@ const AxisLabels = ({
   height: number;
   plotWidth: number;
   plotHeight: number;
-}) => (
-  <>
-    {[0, 1, 2, 3, 4].map((step) => {
-      const y = padding.top + plotHeight * (1 - step / 4);
-      return (
-        <Line
-          key={step}
-          stroke="#E4E7EC"
-          strokeDasharray="3 4"
-          x1={padding.left}
-          x2={padding.left + plotWidth}
-          y1={y}
-          y2={y}
-        />
-      );
-    })}
-    {data.map((datum, index) => {
-      const x =
-        padding.left +
-        (plotWidth * (index + 0.5)) / Math.max(data.length, 1);
-      return (
-        <SvgText
-          key={`${datum.label}-${index}`}
-          fill="#667085"
-          fontSize="11"
-          textAnchor="middle"
-          x={x}
-          y={height - 10}
-        >
-          {datum.label}
-        </SvgText>
-      );
-    })}
-  </>
-);
+}) => {
+  const theme = useTheme();
+
+  return (
+    <>
+      {[0, 1, 2, 3, 4].map((step) => {
+        const y = padding.top + plotHeight * (1 - step / 4);
+        return (
+          <Line
+            key={step}
+            stroke={theme.border}
+            strokeDasharray="3 4"
+            x1={padding.left}
+            x2={padding.left + plotWidth}
+            y1={y}
+            y2={y}
+          />
+        );
+      })}
+      {data.map((datum, index) => {
+        const x =
+          padding.left +
+          (plotWidth * (index + 0.5)) / Math.max(data.length, 1);
+        return (
+          <SvgText
+            key={`${datum.label}-${index}`}
+            fill={theme.textSecondary}
+            fontSize="11"
+            textAnchor="middle"
+            x={x}
+            y={height - 10}
+          >
+            {datum.label}
+          </SvgText>
+        );
+      })}
+    </>
+  );
+};
 
 const VerticalChart = ({
   kind,
@@ -210,6 +219,7 @@ const HorizontalBarChart = ({
   series: ChartSeries[];
   height: number;
 }) => {
+  const theme = useTheme();
   const left = 56;
   const right = 16;
   const top = 12;
@@ -233,11 +243,11 @@ const HorizontalBarChart = ({
         const value = getChartValue(datum, series[0].key);
         return (
           <Fragment key={`${datum.label}-${index}`}>
-            <SvgText fill="#475467" fontSize="12" textAnchor="end" x={left - 12} y={y + barHeight * 0.72}>
+            <SvgText fill={theme.textSecondary} fontSize="12" textAnchor="end" x={left - 12} y={y + barHeight * 0.72}>
               {datum.label}
             </SvgText>
             <Rect
-              fill="#F2F4F7"
+              fill={theme.backgroundSelected}
               height={barHeight}
               rx={5}
               width={plotWidth}
@@ -260,6 +270,7 @@ const HorizontalBarChart = ({
 };
 
 const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartSeries[]; height: number }) => {
+  const theme = useTheme();
   const center = 100;
   const radius = 82;
   const valueKey = series[0].key;
@@ -287,7 +298,7 @@ const PieChart = ({ data, series, height }: { data: ChartDatum[]; series: ChartS
                   key={`${datum.label}-${index}`}
                   d={path}
                   fill={color}
-                  stroke="#FFFFFF"
+                  stroke={theme.backgroundElement}
                   strokeWidth={2}
                 />
               );

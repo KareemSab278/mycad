@@ -16,11 +16,10 @@ import {
   YAxis,
 } from 'recharts';
 import type { CSSProperties } from 'react';
+import { useTheme } from '../../hooks/use-theme';
 import { chartPalette, defaultSeries, type ChartKind, type ChartProps } from './types';
 
 const cardStyle: CSSProperties = {
-  backgroundColor: '#FFFFFF',
-  border: '1px solid #E4E7EC',
   borderRadius: 12,
   boxSizing: 'border-box',
   display: 'flex',
@@ -32,49 +31,60 @@ const cardStyle: CSSProperties = {
 };
 
 const chartStyle: CSSProperties = { height: 240, minWidth: 0, width: '100%' };
-const gridColor = '#E4E7EC';
-const axisStyle = { fill: '#667085', fontSize: 12 };
 const tooltipStyle: CSSProperties = {
-  backgroundColor: '#FFFFFF',
-  border: '1px solid #E4E7EC',
   borderRadius: 8,
-  color: '#101828',
   fontSize: 13,
   padding: '8px 12px',
 };
 
-const Heading = ({ title, description }: { title: string; description?: string }) => (
-  <header>
-    <h3 style={{ color: '#101828', fontSize: 16, fontWeight: 600, margin: 0 }}>{title}</h3>
-    {description ? (
-      <p style={{ color: '#667085', fontSize: 13, lineHeight: '19px', margin: '4px 0 0' }}>
-        {description}
-      </p>
-    ) : null}
-  </header>
-);
+const Heading = ({ title, description }: { title: string; description?: string }) => {
+  const theme = useTheme();
 
-const Axes = ({ horizontal = false }: { horizontal?: boolean }) => (
-  <>
-    <CartesianGrid stroke={gridColor} strokeDasharray="3 4" vertical={false} />
-    <XAxis
-      axisLine={false}
-      dataKey={horizontal ? undefined : 'label'}
-      tick={axisStyle}
-      tickLine={false}
-      type={horizontal ? 'number' : 'category'}
-    />
-    <YAxis
-      axisLine={false}
-      dataKey={horizontal ? 'label' : undefined}
-      tick={axisStyle}
-      tickLine={false}
-      type={horizontal ? 'category' : 'number'}
-      width={horizontal ? 56 : 40}
-    />
-    <Tooltip contentStyle={tooltipStyle} />
-  </>
-);
+  return (
+    <header>
+      <h3 style={{ color: theme.text, fontSize: 16, fontWeight: 600, margin: 0 }}>{title}</h3>
+      {description ? (
+        <p style={{ color: theme.textSecondary, fontSize: 13, lineHeight: '19px', margin: '4px 0 0' }}>
+          {description}
+        </p>
+      ) : null}
+    </header>
+  );
+};
+
+const Axes = ({ horizontal = false }: { horizontal?: boolean }) => {
+  const theme = useTheme();
+  const axisStyle = { fill: theme.textSecondary, fontSize: 12 };
+
+  return (
+    <>
+      <CartesianGrid stroke={theme.border} strokeDasharray="3 4" vertical={false} />
+      <XAxis
+        axisLine={false}
+        dataKey={horizontal ? undefined : 'label'}
+        tick={axisStyle}
+        tickLine={false}
+        type={horizontal ? 'number' : 'category'}
+      />
+      <YAxis
+        axisLine={false}
+        dataKey={horizontal ? 'label' : undefined}
+        tick={axisStyle}
+        tickLine={false}
+        type={horizontal ? 'category' : 'number'}
+        width={horizontal ? 56 : 40}
+      />
+      <Tooltip
+        contentStyle={{
+          ...tooltipStyle,
+          backgroundColor: theme.backgroundElement,
+          border: `1px solid ${theme.border}`,
+          color: theme.text,
+        }}
+      />
+    </>
+  );
+};
 
 const ChartContent = ({
   kind,
@@ -85,6 +95,8 @@ const ChartContent = ({
   data: ChartProps['data'];
   series: NonNullable<ChartProps['series']>;
 }) => {
+  const theme = useTheme();
+
   if (kind === 'bar') {
     return (
       <RechartsBarChart data={data} margin={{ top: 12, right: 8, bottom: 0, left: -16 }}>
@@ -98,7 +110,7 @@ const ChartContent = ({
             radius={[5, 5, 0, 0]}
           />
         ))}
-        {series.length > 1 ? <Legend /> : null}
+        {series.length > 1 ? <Legend wrapperStyle={{ color: theme.textSecondary }} /> : null}
       </RechartsBarChart>
     );
   }
@@ -118,7 +130,7 @@ const ChartContent = ({
             type="monotone"
           />
         ))}
-        {series.length > 1 ? <Legend /> : null}
+        {series.length > 1 ? <Legend wrapperStyle={{ color: theme.textSecondary }} /> : null}
       </RechartsLineChart>
     );
   }
@@ -139,7 +151,7 @@ const ChartContent = ({
             type="monotone"
           />
         ))}
-        {series.length > 1 ? <Legend /> : null}
+        {series.length > 1 ? <Legend wrapperStyle={{ color: theme.textSecondary }} /> : null}
       </RechartsAreaChart>
     );
   }
@@ -161,7 +173,14 @@ const ChartContent = ({
   const valueKey = series[0].key;
   return (
     <RechartsPieChart>
-      <Tooltip contentStyle={tooltipStyle} />
+      <Tooltip
+        contentStyle={{
+          ...tooltipStyle,
+          backgroundColor: theme.backgroundElement,
+          border: `1px solid ${theme.border}`,
+          color: theme.text,
+        }}
+      />
       <Pie data={data} dataKey={valueKey} innerRadius="48%" nameKey="label" outerRadius="78%">
         {data.map((datum, index) => (
           <Cell
@@ -181,6 +200,7 @@ const PieLegend = ({
   data: ChartProps['data'];
   valueKey: string;
 }) => {
+  const theme = useTheme();
   const total = data.reduce((sum, datum) => sum + Math.max(0, Number(datum[valueKey]) || 0), 0);
 
   return (
@@ -207,7 +227,7 @@ const PieLegend = ({
                 width: 10,
               }}
             />
-            <span style={{ color: '#475467', fontSize: 12 }}>
+            <span style={{ color: theme.textSecondary, fontSize: 12 }}>
               {datum.label} · {percent}%
             </span>
           </div>
@@ -224,24 +244,36 @@ export const ChartRenderer = ({
   description,
   series = defaultSeries,
   height = 240,
-}: ChartProps & { kind: ChartKind }) => (
-  <section style={cardStyle}>
-    <Heading title={title} description={description} />
-    {data.length === 0 ? (
-      <p style={{ color: '#667085', fontSize: 14, margin: '12px 0' }}>No data available.</p>
-    ) : (
-      <div
-        aria-label={`${title} ${kind} chart`}
-        role="img"
-        style={{ ...chartStyle, height: kind === 'pie' ? Math.max(220, height) : height }}
-      >
-        <ResponsiveContainer height="100%" width="100%">
-          <ChartContent data={data} kind={kind} series={series} />
-        </ResponsiveContainer>
-      </div>
-    )}
-    {kind === 'pie' && data.length > 0 ? (
-      <PieLegend data={data} valueKey={series[0]?.key ?? 'value'} />
-    ) : null}
-  </section>
-);
+}: ChartProps & { kind: ChartKind }) => {
+  const theme = useTheme();
+
+  return (
+    <section
+      style={{
+        ...cardStyle,
+        backgroundColor: theme.backgroundElement,
+        border: `1px solid ${theme.border}`,
+      }}
+    >
+      <Heading title={title} description={description} />
+      {data.length === 0 ? (
+        <p style={{ color: theme.textSecondary, fontSize: 14, margin: '12px 0' }}>
+          No data available.
+        </p>
+      ) : (
+        <div
+          aria-label={`${title} ${kind} chart`}
+          role="img"
+          style={{ ...chartStyle, height: kind === 'pie' ? Math.max(220, height) : height }}
+        >
+          <ResponsiveContainer height="100%" width="100%">
+            <ChartContent data={data} kind={kind} series={series} />
+          </ResponsiveContainer>
+        </div>
+      )}
+      {kind === 'pie' && data.length > 0 ? (
+        <PieLegend data={data} valueKey={series[0]?.key ?? 'value'} />
+      ) : null}
+    </section>
+  );
+};
