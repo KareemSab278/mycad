@@ -115,7 +115,7 @@ export const Access = () => {
       </C.Modal>
 
       {saveNotice > 0 && (
-        <C.Alert key={saveNotice} tone="info" message="Saving is not available yet. This rule has not been sent." />
+        <C.Alert key={saveNotice} tone="info" title="Saving is not available yet." message="This rule has not been sent." />
       )}
 
     </SafeAreaView>

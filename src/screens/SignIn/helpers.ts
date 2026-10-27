@@ -8,7 +8,4 @@ const goToPage = (page: 'forgot' | 'join') => {
     return Linking.openURL(urls[page]);
 };
 
-export { goToPage, signIn };
-
-
-const signIn = () => { };
+export { goToPage };

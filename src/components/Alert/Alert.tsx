@@ -1,7 +1,14 @@
 import { Portal } from 'heroui-native';
 import type { PropsWithChildren } from 'react';
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, View, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  Keyboard,
+  Platform,
+  Pressable,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
@@ -89,24 +96,63 @@ const AlertItem = ({ id, title, message, tone, onDismiss }: AlertEntry & { onDis
   );
 };
 
+
 export const AlertProvider = ({ children }: PropsWithChildren) => {
   const insets = useSafeAreaInsets();
   const [alerts, setAlerts] = useState<AlertEntry[]>([]);
-  const add = useCallback((alert: AlertEntry) => {
-    setAlerts((current) => [...current.filter((item) => item.id !== alert.id), alert]);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showSubscription = Keyboard.addListener(showEvent, (event) => {
+      setKeyboardHeight(event.endCoordinates.height);
+    });
+
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
   }, []);
+
+  const add = useCallback((alert: AlertEntry) => {
+    setAlerts((current) => [
+      ...current.filter((item) => item.id !== alert.id),
+      alert,
+    ]);
+  }, []);
+
   const remove = useCallback((id: string) => {
     setAlerts((current) => current.filter((item) => item.id !== id));
   }, []);
+
   const context = useMemo(() => ({ add, remove }), [add, remove]);
 
   return (
     <AlertContext.Provider value={context}>
       {children}
+
       {alerts.length > 0 && (
         <Portal name="mycad-alerts">
-          <View pointerEvents="box-none" style={[styles.overlay, { top: insets.top + 12 }]}>
-            {alerts.map((alert) => <AlertItem key={alert.id} {...alert} onDismiss={remove} />)}
+          <View
+            pointerEvents="box-none"
+            style={[
+              styles.overlay,
+              {
+                bottom: keyboardHeight > 0
+                  ? keyboardHeight + 12
+                  : insets.bottom + 100,
+              },
+            ]}
+          >
+            {alerts.map((alert) => (
+              <AlertItem key={alert.id} {...alert} onDismiss={remove} />
+            ))}
           </View>
         </Portal>
       )}
