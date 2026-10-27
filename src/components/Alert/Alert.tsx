@@ -1,6 +1,6 @@
 import { Portal } from 'heroui-native';
-import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../Typography/Typography';
@@ -9,7 +9,7 @@ import { styles } from './style';
 export type AlertTone = 'info' | 'success' | 'warning' | 'error';
 
 const ALERT_DURATION = 5000;
-const ANIMATION_DURATION = 600;
+const ANIMATION_DURATION = 500;
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface AlertProps {
@@ -39,12 +39,12 @@ const AlertItem = ({ id, title, message, tone, onDismiss }: AlertEntry & { onDis
       Animated.timing(translateX, {
         duration: ANIMATION_DURATION,
         toValue: -width,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
       Animated.timing(opacity, {
         duration: ANIMATION_DURATION,
         toValue: 0,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
     ]).start(({ finished }) => {
       if (finished) onDismiss(id);
@@ -58,12 +58,12 @@ const AlertItem = ({ id, title, message, tone, onDismiss }: AlertEntry & { onDis
       Animated.timing(translateX, {
         duration: ANIMATION_DURATION,
         toValue: 0,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
       Animated.timing(opacity, {
         duration: ANIMATION_DURATION,
         toValue: 1,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
     ]).start();
     const timeout = setTimeout(dismiss, ALERT_DURATION);
