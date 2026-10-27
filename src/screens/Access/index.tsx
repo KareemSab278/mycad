@@ -14,7 +14,7 @@ const emptyBreaks = (): BreakPeriod[] => Array.from({ length: 3 }, () => ({ star
 export const Access = () => {
   const { width } = useWindowDimensions();
   const wide = width >= 800;
-  const [ruleType, setRuleType] = useState<RuleType>('Closed Dates');
+  const [ruleType, setRuleType] = useState<RuleType | null>(null);
   const [fromDate, setFromDate] = useState(() => new Date());
   const [untilDate, setUntilDate] = useState(() => new Date());
   const [untilFurtherNotice, setUntilFurtherNotice] = useState(false);
@@ -46,18 +46,22 @@ export const Access = () => {
           <C.Typography text="Site Access Rules" variant="heading" />
           <C.Typography text="Keep your site information up to date so our operators know when they can visit." />
 
-          <C.Selector
+          {ruleTypes.length > 0 && <C.Selector
             label="Select A Rule Type"
             placeholder="Rule Type"
             options={ruleTypes.map((option) => ({ label: option, value: option }))}
-            value={ruleType}
+            value={ruleType ?? 'Select a rule type'}
             onValueChange={(value) => {
               if (isRuleType(value)) { setRuleType(value); setSaveNotice(0); }
             }}
-          />
+          />}
         </C.Box>
 
         <C.Box title="Rule Details">
+
+          {ruleType === null && (
+            <C.Typography text="Please select a rule type to continue." />
+          )}
 
           {ruleType === 'Closed Dates' && (
             <ClosedDatesEditor dateRange={dateRange} {...informationProps} />
@@ -91,10 +95,15 @@ export const Access = () => {
               {...informationProps}
             />
           )}
+
           {ruleType === 'Information' && <InformationEditor {...informationProps} />}
-          <View style={styles.buttons}>
-            <C.Buttons.Primary label="Save" onPress={() => setSaveNotice((count) => count + 1)} />
-          </View>
+
+          {ruleType !== null && (
+            <View style={styles.buttons}>
+              <C.Buttons.Primary label="Save" onPress={() => setSaveNotice((count) => count + 1)} />
+            </View>
+          )}
+
         </C.Box>
       </C.Container>
 
