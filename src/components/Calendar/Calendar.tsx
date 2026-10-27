@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View } from 'react-native';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Pressable, View } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
@@ -22,6 +22,7 @@ const dayStart = (date: Date) => new Date(date.getFullYear(), date.getMonth(), d
 
 // Use to select a date from a month view.
 export const Calendar = ({ value, onChange, minDate, maxDate }: CalendarProps) => {
+  const theme = useTheme();
   const [visibleMonth, setVisibleMonth] = useState(
     () => new Date((value ?? new Date()).getFullYear(), (value ?? new Date()).getMonth(), 1),
   );
@@ -39,35 +40,36 @@ export const Calendar = ({ value, onChange, minDate, maxDate }: CalendarProps) =
   };
 
   return (
-    <View style={styles.calendar}>
+    <View style={[styles.calendar, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
       <View style={styles.header}>
-        <PressableFeedback
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel="Previous month"
           onPress={() => changeMonth(-1)}
           style={styles.monthButton}
         >
-          <Typography text="‹" variant='caption' />
-        </PressableFeedback>
+          <Typography text="‹" style={{ ...styles.monthButtonLabel, color: theme.text }} />
+        </Pressable>
         <Typography
-          // accessibilityLiveRegion="polite"
           text={visibleMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
           style={styles.monthLabel}
         />
-        <PressableFeedback
+        <Pressable
           accessibilityRole="button"
           accessibilityLabel="Next month"
           onPress={() => changeMonth(1)}
           style={styles.monthButton}
         >
-          <Typography text="›" variant='caption' />
-        </PressableFeedback>
+          <Typography text="›" style={{ ...styles.monthButtonLabel, color: theme.text }} />
+        </Pressable>
       </View>
 
-      <View style={styles.grid}>
+      <View style={styles.weekRow}>
         {weekDays.map((day) => (
-          <Typography key={day} text={day} variant='caption' />
+          <Typography key={day} text={day} variant="caption" style={styles.weekDay} />
         ))}
+      </View>
+      <View style={styles.grid}>
         {cells.map((date, index) => {
           if (!date) return <View key={`empty-${index}`} style={styles.dayCell} />;
 
@@ -79,22 +81,26 @@ export const Calendar = ({ value, onChange, minDate, maxDate }: CalendarProps) =
             (maxDate !== undefined && timestamp > dayStart(maxDate));
 
           return (
-            <PressableFeedback
+            <Pressable
               key={date.toISOString()}
               accessibilityRole="button"
               accessibilityLabel={date.toLocaleDateString()}
               accessibilityState={{ selected: isSelected, disabled: isDisabled }}
-              isDisabled={isDisabled}
+              disabled={isDisabled}
               onPress={() => onChange(date)}
-              style={[
-                styles.dayCell,
-                isToday && styles.today,
-                isSelected && styles.selectedDay,
-                isDisabled && styles.disabledDay,
-              ]}
+              style={[styles.dayCell, isDisabled && styles.disabledDay]}
             >
-              <Typography text={date.getDate().toString()} variant='caption' />
-            </PressableFeedback>
+              <View style={[
+                styles.dayIndicator,
+                isToday && { borderColor: theme.button, borderWidth: 1 },
+                isSelected && { backgroundColor: theme.button },
+              ]}>
+                <Typography
+                  text={date.getDate().toString()}
+                  style={{ ...styles.dayLabel, color: isSelected ? theme.buttonText : theme.text }}
+                />
+              </View>
+            </Pressable>
           );
         })}
       </View>

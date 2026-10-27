@@ -3,6 +3,7 @@ import '../global.css';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { HeroUINativeProvider } from 'heroui-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { ColorSchemeProvider } from '../hooks/color-scheme-context';
 import { useColorScheme } from '../hooks/use-color-scheme';
 
@@ -22,9 +23,11 @@ const AppNavigation = () => {
 export const TabLayout = () => (
   <ColorSchemeProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <HeroUINativeProvider>
-        <AppNavigation />
-      </HeroUINativeProvider>
+      <KeyboardProvider>
+        <HeroUINativeProvider>
+          <AppNavigation />
+        </HeroUINativeProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   </ColorSchemeProvider>
 );

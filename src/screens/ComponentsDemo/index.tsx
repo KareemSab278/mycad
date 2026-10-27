@@ -2,16 +2,13 @@ import { useState } from 'react';
 import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useColorSchemePreference } from '../../hooks/color-scheme-context';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { ChartsDemo } from './ChartsDemo';
 import type { DemoTabId } from './helpers';
 import { countryOptions, demoTabs, demoTags } from './helpers';
 import { styles } from './styles';
-
-const keyboardAvoidingBehavior =
-  Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
 
 export const ComponentsDemo = () => {
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
@@ -32,7 +29,6 @@ export const ComponentsDemo = () => {
   const [alertBatch, setAlertBatch] = useState<number>(0);
 
   return (
-    <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
       <C.Container>
         <C.Tabs
           items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
@@ -44,12 +40,11 @@ export const ComponentsDemo = () => {
             }
           }}
         />
-        <C.Container>
           {activeTab === 'buttons' ? (
             <View style={styles.panel}>
               <C.Box
                 title="Buttons"
-                description="HeroUI buttons use the shared ripple and scale press feedback."
+                description="Shared button variants for common actions."
               >
                 <View style={styles.buttonRow}>
                   <C.Buttons.Primary onPress={() => setFeedback('Primary button pressed.')} label='Primary' />
@@ -60,13 +55,14 @@ export const ComponentsDemo = () => {
                 <C.Typography variant='caption' text={feedback} />
               </C.Box>
 
-              <C.Box title="Pressable feedback">
-                <C.PressableFeedback
-                  onPress={() => setFeedback('Ripple and 0.9 scale feedback pressed.')}
+              <C.Box title="Pressable surface">
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setFeedback('Pressable surface pressed.')}
                   style={styles.feedbackSurface}
                 >
-                  <C.Typography variant='caption' text="Tap to see ripple + scale" />
-                </C.PressableFeedback>
+                  <C.Typography variant='caption' text="Tap to interact" />
+                </Pressable>
                 <C.LinkButton
                   onPress={() => setFeedback('Terms and conditions link pressed.')}
                   text="Terms and conditions"
@@ -275,7 +271,6 @@ export const ComponentsDemo = () => {
           ) : null}
 
           {activeTab === 'charts' ? <ChartsDemo /> : null}
-        </C.Container>
         {activeTab === 'overlays' && alertBatch > 0 ? (
           <View pointerEvents="box-none" style={styles.alertOverlay}>
             <View key={alertBatch} pointerEvents="box-none" style={styles.alertStack}>
@@ -287,6 +282,5 @@ export const ComponentsDemo = () => {
           </View>
         ) : null}
       </C.Container>
-    </KeyboardAvoidingView>
   );
 };

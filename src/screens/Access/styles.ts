@@ -1,0 +1,31 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  page: { flex: 1 },
+  content: {
+    alignSelf: 'center',
+    alignItems: 'flex-start',
+    gap: 20,
+    justifyContent: 'flex-start',
+    maxWidth: 1400,
+    paddingHorizontal: 20,
+    paddingVertical: 28,
+    width: '100%',
+  },
+  layoutWide: { flexDirection: 'row' },
+  form: { gap: 20, width: '100%' },
+  formWide: { flex: 1, minWidth: 0 },
+  sidebar: { width: '100%' },
+  sidebarWide: { flex: 0.48, minWidth: 250 },
+  section: { gap: 6 },
+  sectionTitle: { fontSize: 15, fontWeight: '700', lineHeight: 21 },
+  description: { fontSize: 14, lineHeight: 21 },
+  note: { fontSize: 12, lineHeight: 18 },
+  fields: { gap: 14, marginTop: 10 },
+  buttons: { alignSelf: 'flex-start', flexDirection: 'row', gap: 10, marginTop: 4 },
+  saveButton: { backgroundColor: '#16bdb3', flexGrow: 0, paddingHorizontal: 24 },
+  cancelButton: { flexGrow: 0, paddingHorizontal: 24 },
+  message: { borderRadius: 8, padding: 12 },
+  rule: { borderTopWidth: 1, gap: 4, paddingTop: 12 },
+  modal: { gap: 16 },
+});

@@ -24,6 +24,7 @@ export const TextArea = ({
         {...props}
         accessibilityLabel={accessibilityLabel ?? label}
         multiline
+        placeholderTextColor={props.placeholderTextColor ?? styles.helper.color}
         style={[styles.input, style]}
       />
       {error ? (

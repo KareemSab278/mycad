@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import { useKeyboardState } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
 import { ComponentsDemo } from '../../screens/ComponentsDemo';
+import { Access } from '../../screens/Access';
 import { Home } from '../../screens/Home';
 import { SignIn } from '../../screens/SignIn';
 import { Button } from '../Buttons/Buttons';
@@ -13,6 +15,7 @@ const devDemo = dev ? { label: 'Demo', Screen: ComponentsDemo } : null;
 
 const routes = [
   { label: 'Home', Screen: Home },
+  { label: 'Access', Screen: Access },
   { label: 'Sign in', Screen: SignIn },
 ];
 
@@ -21,6 +24,7 @@ type Route = (typeof routes)[number];
 export const Router = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const ActiveScreen = activeRoute.Screen;
   const allRoutes = devDemo ? [...routes, devDemo] : routes;
@@ -29,7 +33,7 @@ export const Router = () => {
       <View style={[styles.content, { backgroundColor: theme.background }]}>
         <ActiveScreen />
       </View>
-      <View
+      {!keyboardVisible && <View
         style={[
           styles.navigation,
           { backgroundColor: theme.backgroundElement, borderTopColor: theme.border },
@@ -45,7 +49,7 @@ export const Router = () => {
             onPress={() => setActiveRoute(route)}
           />
         ))}
-      </View>
+      </View>}
     </View>
   );
 };

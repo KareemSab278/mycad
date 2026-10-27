@@ -12,7 +12,6 @@ export * from './LinkButton/LinkButton';
 export * from './Loader/Loader';
 export * from './Menu/Menu';
 export * from './Modal/Modal';
-export * from './PressableFeedback/PressableFeedback';
 export * from './SearchField/SearchField';
 export * from './Selector/Selector';
 export * from './Separator/Separator';
@@ -24,3 +23,4 @@ export * from './TextArea/TextArea';
 export * from './TextField/TextField';
 export * from './Toggler/Toggler';
 export * from './Typography/Typography';
+

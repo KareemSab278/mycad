@@ -1,5 +1,4 @@
-import { View } from 'react-native';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
+import { Pressable, View } from 'react-native';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
@@ -19,16 +18,19 @@ export const Toggler = ({
 }: TogglerProps) => {
   return (
     <View style={styles.row}>
-      <PressableFeedback
+      <Pressable
         accessibilityRole="switch"
+        accessibilityLabel={label}
         accessibilityState={{ checked: value, disabled: isDisabled }}
-        isDisabled={isDisabled}
+        aria-checked={value}
+        aria-disabled={isDisabled}
+        disabled={isDisabled}
         onPress={() => onValueChange(!value)}
       >
         <View style={[styles.track, value && styles.trackOn]}>
           <View style={[styles.thumb, value && styles.thumbOn]} />
         </View>
-      </PressableFeedback>
+      </Pressable>
       {label ? <Typography text={label} variant='caption' /> : null}
     </View>
   );

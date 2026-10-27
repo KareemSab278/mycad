@@ -15,7 +15,7 @@ interface VariantStyles {
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
-export type ButtonProps = DistributiveOmit<ButtonRootProps, 'variant'> & {
+export type ButtonProps = DistributiveOmit<ButtonRootProps, 'variant' | 'feedbackVariant' | 'animation'> & {
   label?: string;
   children?: ReactNode;
   variant?: ButtonVariant;
@@ -51,8 +51,7 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
       {...props}
       style={[styles.button, variants[variant]?.button, style, { maxHeight: 50 }]}
       variant={variants[variant]?.hero ?? 'primary'}
-      feedbackVariant="scale-ripple"
-      animation={{ scale: { value: 0.9, ignoreScaleCoefficient: true } }}
+      feedbackVariant="none"
     >
       <HeroButton.Label style={variants[variant]?.label}>{label ?? children}</HeroButton.Label>
     </HeroButton>
@@ -60,7 +59,7 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
 };
 
 
-const buildButton = (variant: ButtonVariant) => (props: DistributiveOmit<ButtonProps, 'variant'>) => {
+const buildButton = (variant: ButtonVariant) => function VariantButton(props: DistributiveOmit<ButtonProps, 'variant'>) {
   if (props.isDisabled) {
     return <Button {...props} variant="disabled" />;
   }

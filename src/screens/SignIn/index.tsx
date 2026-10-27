@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, View } from 'react-native';
+import { View } from 'react-native';
 import * as C from './../../components';
-import { goToPage, keyboardAvoidingBehavior } from './helpers';
+import { goToPage, signIn } from './helpers';
+
 import { styles } from './styles';
 
 export const SignIn = () => {
@@ -9,7 +10,6 @@ export const SignIn = () => {
   const [password, setPassword] = useState('');
 
   return (
-    <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
         <C.Container>
           <C.Box title="Sign in">
               <C.InputField
@@ -38,7 +38,7 @@ export const SignIn = () => {
                 onPress={() => { goToPage('forgot') }}
               />
 
-              <C.Buttons.Primary label="Sign in" />
+              <C.Buttons.Primary label="Sign in" onPress={() => { signIn() }} />
 
               <View style={styles.joinUs}>
                 <C.Typography
@@ -52,6 +52,5 @@ export const SignIn = () => {
               </View>
           </C.Box>
         </C.Container>
-    </KeyboardAvoidingView>
   );
 };

@@ -5,25 +5,30 @@ export const styles = StyleSheet.create({
     gap: 6,
   },
   label: {
-    color: '#344054',
     fontSize: 14,
     fontWeight: '500',
+    lineHeight: 20,
   },
   trigger: {
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 10,
-    justifyContent: 'center',
+    borderRadius: 8,
+    flexDirection: 'row',
     minHeight: 44,
     paddingHorizontal: 16,
   },
   triggerText: {
-    color: '#1565A8',
-    fontSize: 16,
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  chevron: {
+    fontSize: 18,
+    lineHeight: 22,
   },
   list: {
-    gap: 8,
-    maxHeight: '80%',
+    flexGrow: 0,
+    flexShrink: 1,
     width: '100%',
   },
   listItem: {
@@ -33,7 +38,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  listItemSelected: {
-    backgroundColor: '#E6F4FE',
+  optionText: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

@@ -15,6 +15,7 @@ export const SearchField = ({
       <TextInput
         {...props}
         placeholder={placeholder}
+        placeholderTextColor={props.placeholderTextColor ?? styles.icon.color}
         accessibilityLabel={props.accessibilityLabel ?? placeholder}
         returnKeyType={props.returnKeyType ?? 'search'}
         style={[styles.input, style]}

@@ -2,11 +2,9 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   calendar: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EAECF0',
     borderRadius: 12,
     borderWidth: 1,
-    gap: 12,
+    gap: 8,
     padding: 14,
     width: '100%',
   },
@@ -23,25 +21,26 @@ export const styles = StyleSheet.create({
     width: 40,
   },
   monthButtonLabel: {
-    color: '#344054',
     fontSize: 24,
+    lineHeight: 28,
   },
   monthLabel: {
-    color: '#101828',
     fontSize: 16,
     fontWeight: '600',
+  },
+  weekRow: {
+    flexDirection: 'row',
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
   weekDay: {
-    color: '#667085',
+    flex: 1,
     fontSize: 12,
     fontWeight: '500',
     paddingVertical: 8,
     textAlign: 'center',
-    width: `${100 / 7}%`,
   },
   dayCell: {
     alignItems: 'center',
@@ -51,24 +50,16 @@ export const styles = StyleSheet.create({
     width: `${100 / 7}%`,
   },
   dayLabel: {
-    color: '#344054',
     fontSize: 14,
   },
-  today: {
-    borderColor: '#208AEF',
-    borderWidth: 1,
-  },
-  selectedDay: {
-    backgroundColor: '#208AEF',
-  },
-  selectedDayLabel: {
-    color: '#FFFFFF',
-    fontWeight: '600',
+  dayIndicator: {
+    alignItems: 'center',
+    borderRadius: 999,
+    height: 32,
+    justifyContent: 'center',
+    width: 32,
   },
   disabledDay: {
     opacity: 0.4,
-  },
-  disabledDayLabel: {
-    color: '#98A2B3',
   },
 });

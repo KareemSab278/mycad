@@ -1,14 +1,8 @@
-import { KeyboardAvoidingView, Platform } from 'react-native';
-import * as C from '../../components';
 import { Charts } from '../../components';
 import { busyTimesLastWeek, categorySales, monthlySales } from './chartData';
 
-const keyboardAvoidingBehavior =
-  Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
-
 export const ChartsDemo = () => (
-  <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
-      <C.Container>
+  <>
     <Charts.Bar
       data={monthlySales}
       description="Orders and sales, in thousands"
@@ -44,6 +38,5 @@ export const ChartsDemo = () => (
       series={[{ key: 'value', name: 'Share', color: '#2563EB' }]}
       title="Category mix"
     />
-      </C.Container>
-  </KeyboardAvoidingView>
+  </>
 );

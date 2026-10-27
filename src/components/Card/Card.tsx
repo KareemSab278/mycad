@@ -1,14 +1,13 @@
-import type { ComponentProps, ReactNode } from 'react';
-import type { ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
-import { Image, useWindowDimensions, View } from 'react-native';
+import type { ReactNode } from 'react';
+import type { ImageSourcePropType, PressableProps, StyleProp, ViewStyle } from 'react-native';
+import { Image, Pressable, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { styles } from './style';
 
 type CardProps = {
   imageSource?: ImageSourcePropType;
   children: ReactNode;
-  onPress?: NonNullable<ComponentProps<typeof PressableFeedback>['onPress']>;
+  onPress?: NonNullable<PressableProps['onPress']>;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -32,9 +31,9 @@ export const Card = ({ imageSource, children, onPress, style }: CardProps) => {
   ];
 
   return onPress ? (
-    <PressableFeedback onPress={onPress} style={cardStyle}>
+    <Pressable accessibilityRole="button" onPress={onPress} style={cardStyle}>
       {content}
-    </PressableFeedback>
+    </Pressable>
   ) : (
     <View style={cardStyle}>{content}</View>
   );

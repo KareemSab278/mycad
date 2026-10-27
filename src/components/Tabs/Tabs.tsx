@@ -1,6 +1,5 @@
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 export type TabOption<T extends string = string> = {
@@ -35,10 +34,11 @@ export const Tabs = <T extends string,>({
           {items.map((item) => {
             const selected = item.value === value;
             return (
-              <PressableFeedback
+              <Pressable
                 key={item.value}
                 accessibilityRole="tab"
                 accessibilityState={{ selected }}
+                aria-selected={selected}
                 onPress={() => onValueChange(item.value)}
                 style={[
                   styles.tab,
@@ -53,7 +53,7 @@ export const Tabs = <T extends string,>({
                     color: selected ? theme.buttonText : theme.text,
                   }}
                 />
-              </PressableFeedback>
+              </Pressable>
             );
           })}
         </ScrollView>

@@ -1,6 +1,5 @@
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 // Use to display and select a set of tags or categories.
@@ -28,7 +27,7 @@ export const TagGroup = ({
       {tags.map((tag) => {
         const isSelected = selectedTags.includes(tag);
         return (
-          <PressableFeedback
+          <Pressable
             key={tag}
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
@@ -43,7 +42,7 @@ export const TagGroup = ({
               variant="body"
               style={{ color: isSelected ? theme.buttonText : theme.text }}
             />
-          </PressableFeedback>
+          </Pressable>
         );
       })}
     </View>

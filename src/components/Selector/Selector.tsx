@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
 import { Modal } from '../Modal/Modal';
-import { PressableFeedback } from '../PressableFeedback/PressableFeedback';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
@@ -29,29 +28,33 @@ export const Selector = ({
 }: SelectorProps) => {
   const [visible, setVisible] = useState(false);
   const theme = useTheme();
+  const { height } = useWindowDimensions();
   const selectedOption = options.find((option) => option.value === value);
 
   return (
     <View style={styles.fieldGroup}>
-      {label ? <Typography text={label} variant='heading' /> : null}
-      <PressableFeedback
+      {label ? <Typography text={label} style={styles.label} /> : null}
+      <Pressable
         accessibilityRole="button"
-        accessibilityLabel={label ?? placeholder}
+        accessibilityLabel={`${label ?? placeholder}: ${selectedOption?.label ?? placeholder}`}
+        accessibilityState={{ expanded: visible }}
+        aria-expanded={visible}
         onPress={() => setVisible(true)}
         style={[
           styles.trigger,
           {
-            backgroundColor: theme.backgroundSelected,
+            backgroundColor: theme.backgroundElement,
             borderColor: theme.border,
           },
         ]}
       >
-        <Typography text={selectedOption?.label ?? placeholder} variant='body' />
-      </PressableFeedback>
+        <Typography text={selectedOption?.label ?? placeholder} style={{ ...styles.triggerText, color: selectedOption ? theme.text : theme.textSecondary }} />
+        <Typography text="⌄" style={{ ...styles.chevron, color: theme.textSecondary }} />
+      </Pressable>
       <Modal visible={visible} onClose={() => setVisible(false)}>
-        <ScrollView style={styles.list}>
+        <ScrollView style={[styles.list, { maxHeight: Math.max(0, Math.min(400, (height - 48) * 0.85 - 40)) }]} keyboardShouldPersistTaps="handled">
           {options.map((option) => (
-            <PressableFeedback
+            <Pressable
               key={option.value}
               accessibilityRole="button"
               accessibilityState={{ selected: option.value === value }}
@@ -61,11 +64,11 @@ export const Selector = ({
               }}
               style={[
                 styles.listItem,
-                option.value === value && styles.listItemSelected,
+                option.value === value && { backgroundColor: theme.backgroundSelected },
               ]}
             >
-              <Typography text={option.label} variant='body' />
-            </PressableFeedback>
+              <Typography text={option.label} style={styles.optionText} />
+            </Pressable>
           ))}
         </ScrollView>
       </Modal>

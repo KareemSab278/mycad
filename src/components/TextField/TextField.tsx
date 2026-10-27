@@ -23,6 +23,7 @@ export const TextField = ({
       <TextInput
         {...props}
         accessibilityLabel={accessibilityLabel ?? label}
+        placeholderTextColor={props.placeholderTextColor ?? styles.helper.color}
         style={[styles.input, style]}
       />
       {error ? (

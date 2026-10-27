@@ -1,5 +1,4 @@
-import { Linking, Platform } from 'react-native';
-const keyboardAvoidingBehavior = Platform.OS === 'ios' ? 'padding' : undefined;
+import { Linking } from 'react-native';
 
 const goToPage = (page: 'forgot' | 'join') => {
     const urls: Record<'forgot' | 'join', string> = {
@@ -9,4 +8,7 @@ const goToPage = (page: 'forgot' | 'join') => {
     return Linking.openURL(urls[page]);
 };
 
-export { goToPage, keyboardAvoidingBehavior };
+export { goToPage, signIn };
+
+
+const signIn = () => { };

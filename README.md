@@ -38,7 +38,9 @@ The root layout installs the gesture-handler, HeroUI Native, and Expo Router the
 
 The app currently enters through Expo Router's `src/app/index.tsx`, which renders `Router`. `src/app/components/Router/Router.tsx` switches between screens using local React state; it is not currently using one Expo Router file-based route per screen.
 
-- **Home** and **Sign in** are the screens currently listed in the custom navigation.
+- **Home**, **Access**, and **Sign in** are the screens currently listed in the custom navigation.
+- **Access** provides a site access rule form for closed dates, staff changes, opening hours, and information. Rules are stored on the current device only; they are not sent to Coinadrink while there is no API.
+- The four Access rule editors live in `src/screens/Access/RuleEditors`; the Access screen owns their shared form state and save validation.
 - **ComponentsDemo** is added to that navigation only when `EXPO_PUBLIC_DEV_MODE=true`.
 - **Account** exists as a screen but is not currently connected to navigation.
 
@@ -54,13 +56,12 @@ import * as C from '@/app/components';
 
 | Component | Intended use |
 | --- | --- |
-| `Container` | Scrollable screen content wrapper |
-| `Box` | Titled section with optional description |
+| `Container` | Scrollable screen content wrapper; accepts `ScrollView` props, including `contentContainerStyle` |
+| `Box` | Titled section with optional description and layout `style` |
 | `Charts` | Reusable bar, line, area/graph, horizontal bar, and pie charts |
 | `Typography` | Text with shared `caption`, `body`, `title`, and `heading` variants |
 | `Buttons` | Primary, secondary, danger, ghost, and disabled actions |
 | `LinkButton` | Inline or secondary text action |
-| `PressableFeedback` | Ripple and scale feedback for custom tappable surfaces |
 | `Card` | Content card, with optional image and press handler |
 | `InputField`, `TextField`, `TextArea`, `SearchField` | Labeled, plain, multiline, and search inputs |
 | `CheckBox`, `Toggler`, `Slider`, `Selector`, `TagGroup` | Selection and value controls |
@@ -105,26 +106,22 @@ Use `Charts.Line`, `Charts.Graph`, `Charts.HorizontalBar`, or `Charts.Pie` for t
 
 ### Safe areas and the keyboard
 
-Screens with text inputs must wrap the safe-area content in a `KeyboardAvoidingView` (keyboard avoidance outside, `SafeAreaView` inside). Use `padding` on iOS and `height` on Android; web can leave `behavior` undefined. Keep both containers flexed so the screen can resize:
+Use one shared `Container` per screen for scrollable content. On iOS and Android it automatically scrolls focused inputs above the keyboard; the router hides its bottom navigation while typing. Do not nest containers or add a separate `KeyboardAvoidingView`, which can cause competing layout changes. The root layout supplies the keyboard provider.
+
+The keyboard controller requires a development build and is not included in Expo Go. Rebuild the native app after installing or updating it.
 
 ```tsx
-import { KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as C from '@/app/components';
-
-const keyboardAvoidingBehavior =
-  Platform.OS === 'ios' ? 'padding' : Platform.OS === 'android' ? 'height' : undefined;
+import * as C from '@/components';
 
 export const ExampleScreen = () => (
-  <KeyboardAvoidingView behavior={keyboardAvoidingBehavior} style={{ flex: 1 }}>
-    <SafeAreaView style={{ flex: 1 }}>
-      <C.Container>
-        <C.Box title="Example">
-          {/* Screen content - EVERYTHING should be in a C.Box component for visual clarity */}
-        </C.Box>
-      </C.Container>
-    </SafeAreaView>
-  </KeyboardAvoidingView>
+  <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <C.Container>
+      <C.Box title="Example">
+        {/* Screen content */}
+      </C.Box>
+    </C.Container>
+  </SafeAreaView>
 );
 ```
 
@@ -132,7 +129,7 @@ Screens without keyboard input still need safe-area handling when their content 
 
 ### Interaction and accessibility
 
-- Every tappable element should give immediate visual feedback. Use the feedback built into shared controls; for a custom pressable surface, use `PressableFeedback`, which supplies a ripple and a `0.9` press scale. Set `rippleColor` when a custom color is needed. Avoid wrapping a control that already provides feedback a second time.
+- Use React Native `Pressable` for custom tappable surfaces, without ripple or scale animations. Preserve clear selected, checked, and disabled states where applicable.
 - Use the semantic shared control for the job (for example, `Buttons` for actions, `LinkButton` for inline navigation, and `Selector` for a list choice) rather than styling a plain `View` to imitate it.
 - Give controls clear visible labels, preserve disabled states, and provide accessible labels or hints for icon-only or otherwise unclear actions. Do not communicate status by color alone.
 - Keep touch targets usable and ensure forms remain scrollable when the keyboard is open.
