@@ -1,14 +1,11 @@
-import { Typography } from '@/components';
-import { View } from 'react-native';
-import { styles } from './styles';
+import * as C from '@/components';
 
 export const Account = () => {
   return (
-    <View style={styles.container}>
-      <View style={styles.panel}>
-        <Typography text="Account" variant="title" />
-        <Typography text="This is a simple placeholder screen." variant="body" />
-      </View>
-    </View>
+    <C.Container>
+      <C.Box title='Account'>
+        <C.Typography text="This is a simple placeholder screen." variant="body" />
+      </C.Box>
+    </C.Container>
   );
 };

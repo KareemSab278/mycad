@@ -11,7 +11,8 @@ export const SignIn = () => {
 
   return (
         <C.Container>
-          <C.Box title="Sign in">
+          <C.Box>
+            <C.Typography text="Sign in" variant="heading" />
               <C.InputField
                 label="Email"
                 placeholder="Enter your email"

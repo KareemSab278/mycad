@@ -11,7 +11,7 @@ export const Box = ({
   children,
   style,
 }: {
-  title: string;
+  title?: string;
   description?: string;
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -21,7 +21,7 @@ export const Box = ({
   return (
     <View style={[styles.section, { backgroundColor: theme.backgroundElement, borderColor: theme.border }, style]}>
       <View style={styles.sectionHeading}>
-        <Typography text={title} variant='title' />
+        {title ? <Typography text={title} variant='title' /> : null}
         {description ? <Typography text={description} variant='caption' /> : null}
       </View>
       {children}

@@ -14,7 +14,7 @@ const emptyBreaks = (): BreakPeriod[] => Array.from({ length: 3 }, () => ({ star
 export const Access = () => {
   const { width } = useWindowDimensions();
   const wide = width >= 800;
-  const [type, setType] = useState<RuleType>('Closed Dates');
+  const [ruleType, setRuleType] = useState<RuleType>('Closed Dates');
   const [fromDate, setFromDate] = useState(() => new Date());
   const [untilDate, setUntilDate] = useState(() => new Date());
   const [untilFurtherNotice, setUntilFurtherNotice] = useState(false);
@@ -42,26 +42,28 @@ export const Access = () => {
     <SafeAreaView style={styles.page} edges={['top']}>
       <C.Container style={styles.page} keyboardShouldPersistTaps="handled">
 
-        <C.Box title="Site Access">
+        <C.Box>
+          <C.Typography text="Site Access Rules" variant="heading" />
           <C.Typography text="Keep your site information up to date so our operators know when they can visit." />
+
+          <C.Selector
+            label="Select A Rule Type"
+            placeholder="Rule Type"
+            options={ruleTypes.map((option) => ({ label: option, value: option }))}
+            value={ruleType}
+            onValueChange={(value) => {
+              if (isRuleType(value)) { setRuleType(value); setSaveNotice(0); }
+            }}
+          />
         </C.Box>
-        <C.Box title="New Site Access Rule">
-          <View style={styles.section}>
-            <C.Typography text="Rule Type" style={styles.sectionTitle} />
-            <C.Typography text="Select the type of rule and fill in the related fields." style={styles.description} />
-            <C.Typography text="You can create as many rules as you need." variant="caption" style={styles.note} />
-            <View style={styles.fields}>
-              <C.Selector placeholder="Rule Type" options={ruleTypes.map((option) => ({ label: option, value: option }))} value={type} onValueChange={(value) => {
-                if (isRuleType(value)) { setType(value); setSaveNotice(0); }
-              }} />
-            </View>
-          </View>
-        </C.Box>
+
         <C.Box title="Rule Details">
-          {type === 'Closed Dates' && (
+
+          {ruleType === 'Closed Dates' && (
             <ClosedDatesEditor dateRange={dateRange} {...informationProps} />
           )}
-          {type === 'Staff Changes' && (
+
+          {ruleType === 'Staff Changes' && (
             <StaffChangesEditor
               dateRange={dateRange}
               staffLevel={staffLevel}
@@ -74,7 +76,8 @@ export const Access = () => {
               {...informationProps}
             />
           )}
-          {type === 'Opening Hours' && (
+
+          {ruleType === 'Opening Hours' && (
             <OpeningHoursEditor
               wide={wide}
               opening={opening}
@@ -88,13 +91,12 @@ export const Access = () => {
               {...informationProps}
             />
           )}
-          {type === 'Information' && <InformationEditor {...informationProps} />}
+          {ruleType === 'Information' && <InformationEditor {...informationProps} />}
           <View style={styles.buttons}>
             <C.Buttons.Primary label="Save" onPress={() => setSaveNotice((count) => count + 1)} />
           </View>
         </C.Box>
       </C.Container>
-
 
       <C.Modal visible={datePicker !== null} onClose={() => setDatePicker(null)}>
         <C.Typography text={datePicker === 'from' ? 'Select start date' : 'Select end date'} variant="title" />
@@ -115,7 +117,7 @@ export const Access = () => {
       {saveNotice > 0 && (
         <C.Alert key={saveNotice} tone="info" message="Saving is not available yet. This rule has not been sent." />
       )}
-    </SafeAreaView>
 
+    </SafeAreaView>
   );
 };

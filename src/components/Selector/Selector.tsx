@@ -33,7 +33,7 @@ export const Selector = ({
 
   return (
     <View style={styles.fieldGroup}>
-      {label ? <Typography text={label} style={styles.label} /> : null}
+      {label ? <Typography variant="caption" text={label}/> : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${label ?? placeholder}: ${selectedOption?.label ?? placeholder}`}
