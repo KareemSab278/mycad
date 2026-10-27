@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import * as C from './../../components';
+import * as T from './../../types';
 import { goToPage } from './helpers';
 
 import { styles } from './styles';
@@ -14,15 +15,15 @@ const signInCall = (email: string, password: string): boolean => {
 };
 
 export const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [credentials, setCredentials] = useState<T.Login>({ email: '', password: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [alertBatch, setAlertBatch] = useState(0);
 
   const handleSignIn = () => {
     try {
-      if (signInCall(email, password)) { setError(''); setMessage('Sign in successful (not really)'); }
+      if (signInCall(credentials.email, credentials.password)) { setError(''); setMessage('Sign in successful (not really)'); }
+      
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     } finally {
@@ -37,8 +38,8 @@ export const SignIn = () => {
         <C.InputField
           label="Email"
           placeholder="Enter your email"
-          value={email}
-          onChangeText={setEmail}
+          value={credentials.email}
+          onChangeText={(text) => setCredentials({ ...credentials, email: text })}
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
@@ -47,8 +48,8 @@ export const SignIn = () => {
         <C.InputField
           label="Password"
           placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
+          value={credentials.password}
+          onChangeText={(text) => setCredentials({ ...credentials, password: text })}
           secureTextEntry
           autoComplete="current-password"
           textContentType="password"

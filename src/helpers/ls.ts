@@ -1,10 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-
 const isWeb = Platform.OS === 'web';
 
-
-const Try = {
+export const Try = {
     save: async (key: string, value: any) => {
         try {
             await Storage.saveObjToKey(key, value);
