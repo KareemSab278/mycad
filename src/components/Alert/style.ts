@@ -1,9 +1,18 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  overlay: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    gap: 8,
+    left: 12,
+    position: 'absolute',
+    right: 12,
+  },
   container: {
     borderLeftWidth: 4,
     borderRadius: 8,
+    maxWidth: 480,
     padding: 12,
     width: '100%',
   },

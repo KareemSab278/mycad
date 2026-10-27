@@ -63,21 +63,6 @@ export const styles = StyleSheet.create({
   displayStack: {
     gap: 14,
   },
-  alertOverlay: {
-    alignItems: 'flex-start',
-    bottom: 0,
-    left: 0,
-    // paddingHorizontal: 16,
-    paddingBottom: 16,
-    position: 'absolute',
-    right: 0,
-    zIndex: 10,
-  },
-  alertStack: {
-    gap: 8,
-    maxWidth: 480,
-    width: '100%',
-  },
   cardContent: {
     gap: 8,
   },

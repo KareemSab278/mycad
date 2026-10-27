@@ -1,5 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, useWindowDimensions } from 'react-native';
+import { Portal } from 'heroui-native';
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { Animated, Pressable, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
 
@@ -15,44 +18,42 @@ interface AlertProps {
   tone?: AlertTone;
 }
 
-export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
-  const { width: screenWidth } = useWindowDimensions();
-  const [isVisible, setIsVisible] = useState(true);
-  const translateX = useRef(new Animated.Value(-screenWidth)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDismissing = useRef(false);
+type AlertEntry = AlertProps & { id: string; tone: AlertTone };
+type AlertContextValue = {
+  add: (alert: AlertEntry) => void;
+  remove: (id: string) => void;
+};
+
+const AlertContext = createContext<AlertContextValue | null>(null);
+
+const AlertItem = ({ id, title, message, tone, onDismiss }: AlertEntry & { onDismiss: (id: string) => void }) => {
+  const { width } = useWindowDimensions();
+  const [translateX] = useState(() => new Animated.Value(-width));
+  const [opacity] = useState(() => new Animated.Value(0));
+  const dismissing = useRef(false);
 
   const dismiss = useCallback(() => {
-    if (isDismissing.current) return;
-    if (timeout.current !== null) {
-      clearTimeout(timeout.current);
-    }
-
-    timeout.current = setTimeout(() => {
-      isDismissing.current = true;
-      Animated.parallel([
-        Animated.timing(translateX, {
-          duration: ANIMATION_DURATION,
-          toValue: -screenWidth,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          duration: ANIMATION_DURATION,
-          toValue: 0,
-          useNativeDriver: true,
-        }),
-      ]).start(({ finished }) => {
-        if (finished) {
-          setIsVisible(false);
-        }
-      });
-    }, 0);
-  }, [opacity, screenWidth, translateX]);
+    if (dismissing.current) return;
+    dismissing.current = true;
+    Animated.parallel([
+      Animated.timing(translateX, {
+        duration: ANIMATION_DURATION,
+        toValue: -width,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        duration: ANIMATION_DURATION,
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) onDismiss(id);
+    });
+  }, [id, onDismiss, opacity, translateX, width]);
 
   useEffect(() => {
-    isDismissing.current = false;
-    translateX.setValue(-screenWidth);
+    dismissing.current = false;
+    translateX.setValue(-width);
     Animated.parallel([
       Animated.timing(translateX, {
         duration: ANIMATION_DURATION,
@@ -65,21 +66,14 @@ export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
         useNativeDriver: true,
       }),
     ]).start();
-
-    timeout.current = setTimeout(dismiss, ALERT_DURATION);
+    const timeout = setTimeout(dismiss, ALERT_DURATION);
 
     return () => {
-      if (timeout.current !== null) {
-        clearTimeout(timeout.current);
-      }
+      clearTimeout(timeout);
       translateX.stopAnimation();
       opacity.stopAnimation();
     };
-  }, [dismiss, opacity, screenWidth, translateX]);
-
-  if (!isVisible) {
-    return null;
-  }
+  }, [dismiss, opacity, translateX, width]);
 
   return (
     <AnimatedPressable
@@ -87,14 +81,49 @@ export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
       accessibilityLabel={title ? `${title}. ${message}` : message}
       accessibilityHint="Dismiss alert"
       onPress={dismiss}
-      style={[
-        styles.container,
-        styles[tone],
-        { opacity, transform: [{ translateX }] },
-      ]}
+      style={[styles.container, styles[tone], { opacity, transform: [{ translateX }] }]}
     >
       {title ? <Typography text={title} style={{ color: '#000000', fontWeight: '600' }} /> : null}
       <Typography text={message} style={{ color: '#000000' }} />
     </AnimatedPressable>
   );
+};
+
+export const AlertProvider = ({ children }: PropsWithChildren) => {
+  const insets = useSafeAreaInsets();
+  const [alerts, setAlerts] = useState<AlertEntry[]>([]);
+  const add = useCallback((alert: AlertEntry) => {
+    setAlerts((current) => [...current.filter((item) => item.id !== alert.id), alert]);
+  }, []);
+  const remove = useCallback((id: string) => {
+    setAlerts((current) => current.filter((item) => item.id !== id));
+  }, []);
+  const context = useMemo(() => ({ add, remove }), [add, remove]);
+
+  return (
+    <AlertContext.Provider value={context}>
+      {children}
+      {alerts.length > 0 && (
+        <Portal name="mycad-alerts">
+          <View pointerEvents="box-none" style={[styles.overlay, { top: insets.top + 12 }]}>
+            {alerts.map((alert) => <AlertItem key={alert.id} {...alert} onDismiss={remove} />)}
+          </View>
+        </Portal>
+      )}
+    </AlertContext.Provider>
+  );
+};
+
+export const Alert = ({ title, message, tone = 'info' }: AlertProps) => {
+  const id = useId();
+  const context = useContext(AlertContext);
+  if (!context) throw new Error('Alert must be used within AlertProvider.');
+  const { add, remove } = context;
+
+  useEffect(() => {
+    add({ id, title, message, tone });
+    return () => remove(id);
+  }, [add, id, message, remove, title, tone]);
+
+  return null;
 };

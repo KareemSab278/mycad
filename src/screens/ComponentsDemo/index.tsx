@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import * as C from './../../components';
 
 import type { ImageSourcePropType } from 'react-native';
 import { Pressable, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorSchemePreference } from '../../hooks/color-scheme-context';
 import { useColorScheme } from '../../hooks/use-color-scheme';
 import { ChartsDemo } from './ChartsDemo';
@@ -11,6 +12,7 @@ import { countryOptions, demoTabs, demoTags } from './helpers';
 import { styles } from './styles';
 
 export const ComponentsDemo = () => {
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<DemoTabId>('buttons');
   const [selectedTags, setSelectedTags] = useState<string[]>(['Mobile']);
   const [country, setCountry] = useState<string | undefined>(undefined);
@@ -29,7 +31,7 @@ export const ComponentsDemo = () => {
   const [alertBatch, setAlertBatch] = useState<number>(0);
 
   return (
-      <C.Container>
+      <C.Container contentContainerStyle={{ paddingTop: insets.top + C.TABS_HEIGHT + C.TABS_TOP_GAP + 12 }}>
         <C.Tabs
           items={demoTabs.map(({ id, label }) => ({ value: id, label }))}
           value={activeTab}
@@ -272,14 +274,12 @@ export const ComponentsDemo = () => {
 
           {activeTab === 'charts' ? <ChartsDemo /> : null}
         {activeTab === 'overlays' && alertBatch > 0 ? (
-          <View pointerEvents="box-none" style={styles.alertOverlay}>
-            <View key={alertBatch} pointerEvents="box-none" style={styles.alertStack}>
+          <Fragment key={alertBatch}>
               <C.Alert tone="info" title="Information" message="Your profile is up to date." />
               <C.Alert tone="success" message="Changes saved successfully." />
               <C.Alert tone="warning" message="Check the details before continuing." />
               <C.Alert tone="error" message="Something needs your attention." />
-            </View>
-          </View>
+          </Fragment>
         ) : null}
       </C.Container>
   );

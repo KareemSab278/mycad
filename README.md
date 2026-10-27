@@ -65,10 +65,10 @@ import * as C from '@/app/components';
 | `Card` | Content card, with optional image and press handler |
 | `InputField`, `TextField`, `TextArea`, `SearchField` | Labeled, plain, multiline, and search inputs |
 | `CheckBox`, `Toggler`, `Slider`, `Selector`, `TagGroup` | Selection and value controls |
-| `Tabs` | Switch between related views |
+| `Tabs` | Switch between related views using a fixed, safe-area-aware bar; allow space above page content for the bar |
 | `Calendar` | Date selection |
 | `Modal`, `Dialog`, `Menu` | Overlays, confirmations, and action menus |
-| `Alert` | Dismissible info, success, warning, or error message |
+| `Alert` | Dismissible info, success, warning, or error message; render it directly when needed, without an overlay wrapper |
 | `Loader`, `Skeleton` | Loading indicators and content placeholders |
 | `Separator` | Visual divider; `sm`, `md`, and `lg` variants |
 

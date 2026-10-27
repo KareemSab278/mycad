@@ -112,7 +112,9 @@ export const Access = () => {
         <C.Buttons.Secondary label="Cancel" onPress={() => setDatePicker(null)} />
       </C.Modal>
 
-      <C.Alert key={saveNotice} tone="info" message="Saving is not available yet. This rule has not been sent." />
+      {saveNotice > 0 && (
+        <C.Alert key={saveNotice} tone="info" message="Saving is not available yet. This rule has not been sent." />
+      )}
     </SafeAreaView>
 
   );

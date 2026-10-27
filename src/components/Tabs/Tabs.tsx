@@ -1,4 +1,7 @@
+import { Portal } from 'heroui-native';
+import { useId } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
 import { Typography } from '../Typography/Typography';
 import { styles } from './style';
@@ -6,6 +9,9 @@ export type TabOption<T extends string = string> = {
   label: string;
   value: T;
 };
+
+export const TABS_HEIGHT = 50;
+export const TABS_TOP_GAP = 8;
 
 type TabsProps<T extends string> = {
   items: readonly TabOption<T>[];
@@ -20,11 +26,15 @@ export const Tabs = <T extends string,>({
   onValueChange,
 }: TabsProps<T>) => {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const id = useId();
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.pill, { backgroundColor: theme.backgroundSelected }]}>
-        <ScrollView
+    <Portal name={`tabs-${id}`}>
+      <View pointerEvents="box-none" style={[styles.overlay, { top: insets.top + TABS_TOP_GAP }]}>
+        <View style={styles.container}>
+          <View style={[styles.pill, { backgroundColor: theme.backgroundSelected }]}>
+            <ScrollView
           horizontal
           style={styles.scrollView}
           showsHorizontalScrollIndicator={false}
@@ -56,8 +66,10 @@ export const Tabs = <T extends string,>({
               </Pressable>
             );
           })}
-        </ScrollView>
+            </ScrollView>
+          </View>
+        </View>
       </View>
-    </View>
+    </Portal>
   );
 };

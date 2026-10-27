@@ -1,14 +1,17 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  overlay: {
+    alignItems: 'center',
+    left: 12,
+    position: 'absolute',
+    right: 12,
+  },
   container: {
-    alignSelf: 'center',
     boxSizing: 'border-box',
     maxWidth: 720,
-    // paddingHorizontal: 10,
     paddingVertical: 5,
     width: '100%',
-    marginTop: 30,
   },
   pill: {
     backgroundColor: '#E6F4FE',
