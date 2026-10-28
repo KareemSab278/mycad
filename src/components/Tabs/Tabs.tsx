@@ -35,37 +35,37 @@ export const Tabs = <T extends string,>({
         <View style={styles.container}>
           <View style={[styles.pill, { backgroundColor: theme.backgroundSelected }]}>
             <ScrollView
-          horizontal
-          style={styles.scrollView}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.tabList}
-          accessibilityRole="tablist"
-        >
-          {items.map((item) => {
-            const selected = item.value === value;
-            return (
-              <Pressable
-                key={item.value}
-                accessibilityRole="tab"
-                accessibilityState={{ selected }}
-                aria-selected={selected}
-                onPress={() => onValueChange(item.value)}
-                style={[
-                  styles.tab,
-                  selected && [styles.selectedTab, { backgroundColor: theme.button }],
-                ]}
-              >
-                <Typography
-                  text={item.label.trim()}
-                  variant="body"
-                  style={{
-                    ...(selected ? styles.selectedLabel : undefined),
-                    color: selected ? theme.buttonText : theme.text,
-                  }}
-                />
-              </Pressable>
-            );
-          })}
+              horizontal
+              style={styles.scrollView}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tabList}
+              accessibilityRole="tablist"
+            >
+              {items.map((item) => {
+                const selected = item.value === value;
+                return (
+                  <Pressable
+                    key={item.value}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected }}
+                    aria-selected={selected}
+                    onPress={() => onValueChange(item.value)}
+                    style={[
+                      styles.tab,
+                      selected && [styles.selectedTab, { backgroundColor: theme.button }],
+                    ]}
+                  >
+                    <Typography
+                      text={item.label.trim()}
+                      variant="body"
+                      style={{
+                        ...(selected ? styles.selectedLabel : undefined),
+                        color: selected ? theme.buttonText : theme.text,
+                      }}
+                    />
+                  </Pressable>
+                );
+              })}
             </ScrollView>
           </View>
         </View>
