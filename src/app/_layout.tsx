@@ -8,9 +8,6 @@ import { AlertProvider } from '../components/Alert/Alert';
 import { ColorSchemeProvider } from '../hooks/color-scheme-context';
 import { useColorScheme } from '../hooks/use-color-scheme';
 
-// pages
-// import { Home } from './Pages/Home';
-
 const AppNavigation = () => {
   const colorScheme = useColorScheme();
 

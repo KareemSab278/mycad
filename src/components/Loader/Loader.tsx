@@ -10,5 +10,7 @@ type LoaderProps = Omit<ActivityIndicatorProps, 'style'> & {
 export const Loader = ({ style, ...props }: LoaderProps) => {
   const theme = useTheme();
 
-  return <ActivityIndicator {...props} color={props.color ?? theme.button} style={[styles.loader, style]} />;
+  return (
+    <ActivityIndicator {...props} color={props.color ?? theme.button} style={[styles.loader, style]} />
+  );
 };

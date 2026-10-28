@@ -1,7 +1,4 @@
-
 import { Href, useLocalSearchParams, useRouter } from 'expo-router';
-
-type Screens = '/profile' | '/' | '/settings';
 
 type NavigationParams = Record<
     string,
@@ -17,23 +14,25 @@ export const useNav = () => {
     const router = useRouter();
     const receivedParams = useLocalSearchParams();
 
-    const to = (screen: Screens, options?: NavigateOptions) => {
+    const to = (screen: Href, options?: NavigateOptions) => {
         const { params, onNavigate } = options ?? {};
 
         if (params && Object.keys(params).length > 0) {
             const queryParams = Object.fromEntries(
                 Object.entries(params).map(([key, value]) => [
                     key,
-                    typeof value === 'boolean' ? String(value) : value,
+                    value === null || typeof value === 'boolean'
+                        ? String(value)
+                        : value,
                 ])
             );
 
             router.push({
-                pathname: screen,
+                pathname: screen as never,
                 params: queryParams,
-            } as unknown as Href);
+            });
         } else {
-            router.push(screen as Href);
+            router.push(screen);
         }
 
         onNavigate?.();
@@ -47,7 +46,6 @@ export const useNav = () => {
 
     return { to, from, back };
 };
-
 
 /*
     use like:
