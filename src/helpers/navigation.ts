@@ -1,7 +1,7 @@
 
 import { Href, useLocalSearchParams, useRouter } from 'expo-router';
 
-type Screens = '/Profile' | '/Home' | '/Settings';
+type Screens = '/profile' | '/' | '/settings';
 
 type NavigationParams = Record<
     string,

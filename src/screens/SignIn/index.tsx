@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import * as C from './../../components';
+import { useNav } from './../../helpers/navigation';
 import * as T from './../../types';
 import { goToPage } from './helpers';
-
 import { styles } from './styles';
+
 
 const signInCall = (email: string, password: string): boolean => {
   if (!email.trim() || !password.trim()) throw new Error('Email and password are required.');
@@ -19,11 +20,16 @@ export const SignIn = () => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [alertBatch, setAlertBatch] = useState(0);
+  const nav = useNav();
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     try {
-      if (signInCall(credentials.email, credentials.password)) { setError(''); setMessage('Sign in successful (not really)'); }
-      
+      if (signInCall(credentials.email, credentials.password)) {
+        setError('');
+        setMessage('Sign in successful (not really)');
+        nav.to('/');
+      }
+
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     } finally {

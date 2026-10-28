@@ -48,7 +48,7 @@ export const Access = () => {
 
           {ruleTypes.length > 0 && <C.Selector
             label="Select A Rule Type"
-            placeholder="Rule Type"
+            placeholder="None Selected"
             options={ruleTypes.map((option) => ({ label: option, value: option }))}
             value={ruleType ?? 'Select a rule type'}
             onValueChange={(value) => {
