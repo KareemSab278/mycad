@@ -56,7 +56,7 @@ export const Tabs = <T extends string,>({
                 ]}
               >
                 <Typography
-                  text={item.label}
+                  text={item.label.trim()}
                   variant="body"
                   style={{
                     ...(selected ? styles.selectedLabel : undefined),

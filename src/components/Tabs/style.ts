@@ -10,15 +10,15 @@ export const styles = StyleSheet.create({
   container: {
     boxSizing: 'border-box',
     maxWidth: 720,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     width: '100%',
   },
   pill: {
-    backgroundColor: '#E6F4FE',
     borderRadius: 999,
     height: 40,
     overflow: 'hidden',
-    padding: 0,
+    padding: 2,
     width: '100%',
   },
   scrollView: {

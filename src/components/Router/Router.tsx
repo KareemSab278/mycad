@@ -3,10 +3,9 @@ import { View } from 'react-native';
 import { useKeyboardState } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
-import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Access } from '../../screens/Access';
+import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Home } from '../../screens/Home';
-import { SignIn } from '../../screens/SignIn';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 
@@ -16,7 +15,6 @@ const devDemo = dev ? { label: 'Demo', Screen: ComponentsDemo } : null;
 const routes = [
   { label: 'Home', Screen: Home },
   { label: 'Access', Screen: Access },
-  { label: 'Sign in', Screen: SignIn },
 ];
 
 type Route = (typeof routes)[number];
