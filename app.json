@@ -42,13 +42,13 @@
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static",
-            "deploymentTarget": "16.4",
             "useFrameworks": "dynamic",
+            "deploymentTarget": "16.4",
             "enableSceneSupport": true
           }
         }
-      ]
+      ],
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,

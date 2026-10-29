@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     maxWidth: 720,
     paddingHorizontal: 10,
     paddingVertical: 2,
-    width: '100%',
+    width: 'auto',
   },
   pill: {
     borderRadius: 999,
@@ -24,11 +24,14 @@ export const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  // center the tab list within the scroll view container
   tabList: {
     alignItems: 'stretch',
     flexDirection: 'row',
     gap: 4,
     width: 'max-content',
+    justifyContent: 'center',
+
   },
   tab: {
     alignItems: 'center',
