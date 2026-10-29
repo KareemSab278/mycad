@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
-import * as LS from '../../storage';
+import { findLoggedInCreds } from '../../helpers/security';
 import * as C from './../../components';
 import { useNav } from './../../helpers/navigation';
 import { InvoiceHistoryModal } from './InvoiceHistoryModal';
-
-const checkUserSignedIn = async () => {
-  const user = await LS.Account.get();
-  return user && user.login.email && user.login.email.trim() !== '';
-};
-
 
 export const Home = () => {
   const [invoicesVisible, setInvoicesVisible] = useState(false);
@@ -18,22 +12,11 @@ export const Home = () => {
 
   const checkSignedIn = async () => {
     try {
-      const user = await LS.Account.get();
-      let email = user?.login?.email?.trim() ?? '';
-
-      nav.from<{ email?: string }>((params) => {
-        if (params.email?.trim()) {
-          email = params.email.trim();
-        }
-      });
-
-      if (!email) {
-        nav.to('/signIn');
-        return;
-      }
-
-      setSignedInEmail(email);
-    } catch (error) {
+      let tempEmail = await findLoggedInCreds();
+      if (!tempEmail) nav.to('/signIn');
+      else setSignedInEmail(tempEmail);
+      
+    } catch {
       nav.to('/signIn');
     } finally {
       setLoading(false);
@@ -41,7 +24,7 @@ export const Home = () => {
   };
 
   useEffect(() => {
-    checkSignedIn();
+    void Promise.resolve().then(checkSignedIn);
   }, []);
 
   return (

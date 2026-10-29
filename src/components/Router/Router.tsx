@@ -4,6 +4,7 @@ import { useKeyboardState } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
+import { Accounts } from '../../screens/Accounts';
 import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Home } from '../../screens/Home';
 import { Button } from '../Buttons/Buttons';
@@ -14,6 +15,7 @@ const devDemo = dev ? { label: 'Demo', Screen: ComponentsDemo } : null;
 
 const routes = [
   { label: 'Home', Screen: Home },
+  { label: 'Account', Screen: Accounts },
   { label: 'Access', Screen: Access },
 ];
 
