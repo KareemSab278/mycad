@@ -5,13 +5,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
 import { Accounts } from '../../screens/Accounts';
-import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Home } from '../../screens/Home';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
+// import { ComponentsDemo } from '../../screens/ComponentsDemo';
 
 const dev = process.env.EXPO_PUBLIC_DEV_MODE === 'true';
-const devDemo = dev ? { label: 'Demo', Screen: ComponentsDemo } : null;
 
 const routes = [
   { label: 'Home', Screen: Home },
@@ -27,7 +26,8 @@ export const Router = () => {
   const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const ActiveScreen = activeRoute.Screen;
-  const allRoutes = devDemo ? [...routes, devDemo] : routes;
+  // const allRoutes = dev ? [...routes, { label: 'Demo', Screen: ComponentsDemo }] : routes;
+  // const allRoutes = routes;
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.content, { backgroundColor: theme.background }]}>
@@ -40,7 +40,7 @@ export const Router = () => {
           { paddingBottom: Math.max(insets.bottom, 24) },
         ]}
       >
-        {allRoutes.map((route) => (
+        {routes.map((route) => (
           <Button
             key={route.label}
             label={route.label}
