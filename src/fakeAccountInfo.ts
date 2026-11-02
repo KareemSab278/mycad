@@ -17,6 +17,7 @@
 import * as T from './types';
 const fakeAccountMultiple: T.SingleAccountInfo =
 {
+    setup_required: true,
     login: {
         email: "user1@example.com",
         password: "password123"
@@ -57,6 +58,7 @@ const fakeAccountMultiple: T.SingleAccountInfo =
 };
 
 const fakeAccountSingle: T.SingleAccountInfo = {
+    setup_required: true,
     login: fakeAccountMultiple.login as T.Login,
 
     business_accounts: [{
@@ -75,4 +77,3 @@ const fakeAccountSingle: T.SingleAccountInfo = {
 };
 
 export { fakeAccountMultiple, fakeAccountSingle };
-
