@@ -17,6 +17,7 @@ export const useNav = () => {
     const to = (screen: Href, options?: NavigateOptions) => {
         const { params, onNavigate } = options ?? {};
 
+        let destination = screen;
         if (params && Object.keys(params).length > 0) {
             const queryParams = Object.fromEntries(
                 Object.entries(params).map(([key, value]) => [
@@ -26,15 +27,13 @@ export const useNav = () => {
                         : value,
                 ])
             );
-
-            router.push({
-                pathname: screen as never,
+            destination = {
+                pathname: screen as never,  
                 params: queryParams,
-            });
-        } else {
-            router.push(screen);
+            };
         }
 
+        router.replace(destination);
         onNavigate?.();
     };
 
@@ -42,7 +41,7 @@ export const useNav = () => {
         callback(receivedParams as T);
     };
 
-    const back = () => router.back();
+    const back = () => router.replace('/');
 
     return { to, from, back };
 };

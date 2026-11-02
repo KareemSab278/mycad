@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import * as C from './../../components';
+import { useAuth } from './../../hooks/auth-context';
 import { useNav } from './../../helpers/navigation';
 import * as T from './../../types';
 import { goToPage, signInCall } from './helpers';
@@ -14,6 +15,7 @@ export const SignIn = () => {
   const [alertBatch, setAlertBatch] = useState(0);
   const [loading, setLoading] = useState(false);
   const nav = useNav();
+  const { setStatus } = useAuth();
 
   const handleSignIn = async () => {
     setLoading(true)
@@ -22,6 +24,7 @@ export const SignIn = () => {
       if (email) {
         setError('');
         setMessage('Sign in successful (not really)');
+        setStatus('signedIn');
         nav.to('/', { params: { email } });
       }
 
