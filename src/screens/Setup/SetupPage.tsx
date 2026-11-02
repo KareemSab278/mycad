@@ -15,7 +15,7 @@ const emptyContact = () => ({
 
 const emptyProfile = (): SetupProfile => ({
   openingDays: [],
-  businessHours: { shiftName: '', from: '09:00', to: '17:00' },
+  businessHours: [{ shiftName: '', from: '09:00', to: '17:00' }],
   siteRestrictions: {},
   allergies: [],
   contacts: {
@@ -92,7 +92,7 @@ export const SetupPage = ({ onComplete }: SetupPageProps) => {
 
   return (
     <C.Container contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-      <C.Box title="Set up your business" description="A few details help us prepare your account and sites.">
+      <C.Box title="It seems your profile isn't set up yet" >
         {complete ? (
           <>
             <C.Alert tone="success" title="Setup complete" message="Your setup details have been saved." />
@@ -100,9 +100,8 @@ export const SetupPage = ({ onComplete }: SetupPageProps) => {
           </>
         ) : (
           <>
-            <C.Typography text="Complete the setup steps to finish configuring your business profile." />
-            <C.Typography text={`${steps.length} steps · You can review and change your answers before submitting.`} variant="caption" />
-            <C.Buttons.Primary label="Start setup" onPress={() => setStep(0)} />
+            <C.Typography  text={`It's only ${steps.length} steps to set up your business profile.`} />
+            <C.Buttons.Primary label="Let's Begin" onPress={() => setStep(0)} />
           </>
         )}
       </C.Box>
@@ -118,7 +117,6 @@ export const SetupPage = ({ onComplete }: SetupPageProps) => {
             onProfileChange={setProfile}
             onBack={() => setStep((current) => Math.max(0, current - 1))}
             onNext={() => setStep((current) => current + 1)}
-            onSkip={() => setStep((current) => current + 1)}
             onEdit={(index) => setStep(index)}
             onSubmit={() => setConfirmationVisible(true)}
           />

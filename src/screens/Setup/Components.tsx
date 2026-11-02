@@ -6,6 +6,7 @@ const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const accessOptions = ['DBS check required', 'Site induction required', 'Photo ID required', 'Safety footwear required'];
 const allergyOptions = ['No nuts', 'May contain traces of nuts'];
 const categories = ['Emergency', 'Service', 'Accounting', 'Other'] as const;
+const defaultShift = () => ({ shiftName: '', from: '09:00', to: '17:00' });
 
 type SetupStepModalProps = {
   visible: boolean;
@@ -16,7 +17,6 @@ type SetupStepModalProps = {
   onProfileChange: (profile: SetupProfile) => void;
   onBack: () => void;
   onNext: () => void;
-  onSkip: () => void;
   onEdit: (step: number) => void;
   onSubmit: () => void;
 };
@@ -61,7 +61,6 @@ export const SetupStepModal = ({
   onProfileChange,
   onBack,
   onNext,
-  onSkip,
   onEdit,
   onSubmit,
 }: SetupStepModalProps) => {
@@ -81,9 +80,35 @@ export const SetupStepModal = ({
 
   const isReview = step === steps.length;
   const title = isReview ? 'Review your setup' : steps[step] ?? 'Setup';
+  const savedShifts = Array.isArray(profile.businessHours)
+    ? profile.businessHours
+    : [profile.businessHours];
+  const shiftPatterns = savedShifts.length ? savedShifts : [defaultShift()];
+
+  const updateShift = (index: number, field: 'shiftName' | 'from' | 'to', value: string) => {
+    const businessHours = [...shiftPatterns];
+    businessHours[index] = { ...businessHours[index], [field]: value };
+    onProfileChange({ ...profile, businessHours });
+  };
+
+  const addShift = () => {
+    onProfileChange({ ...profile, businessHours: [...shiftPatterns, defaultShift()] });
+  };
+
+  const removeShift = (index: number) => {
+    onProfileChange({
+      ...profile,
+      businessHours: shiftPatterns.filter((_, shiftIndex) => shiftIndex !== index),
+    });
+  };
 
   return (
-    <C.Modal visible={visible} canClose={false} onClose={() => undefined}>
+    <C.Modal
+      visible={visible}
+      canClose={false}
+      onClose={() => undefined}
+      contentStyle={{ height: '90%', maxHeight: '90%' }}
+    >
       <C.Typography text={title} variant="title" />
       <C.Typography
         text={isReview ? 'Check your answers. Select Edit to make changes.' : `Step ${step + 1} of ${steps.length}`}
@@ -91,7 +116,7 @@ export const SetupStepModal = ({
       />
 
       <ScrollView
-        style={{ flexShrink: 1, maxHeight: '65%' }}
+        style={{ flex: 1, minHeight: 0 }}
         contentContainerStyle={{ gap: 16, paddingBottom: 4 }}
         keyboardShouldPersistTaps="handled"
       >
@@ -108,36 +133,35 @@ export const SetupStepModal = ({
 
         {step === 1 && (
           <>
-            <C.Typography text="Add a shift pattern and your usual business hours." />
-            <C.TextField
-              label="Shift name"
-              placeholder="Day shift"
-              value={profile.businessHours.shiftName}
-              onChangeText={(shiftName) => onProfileChange({
-                ...profile,
-                businessHours: { ...profile.businessHours, shiftName },
-              })}
-            />
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              <C.TextField
-                label="Business opens"
-                placeholder="09:00"
-                value={profile.businessHours.from}
-                onChangeText={(from) => onProfileChange({
-                  ...profile,
-                  businessHours: { ...profile.businessHours, from },
-                })}
-              />
-              <C.TextField
-                label="Business closes"
-                placeholder="17:00"
-                value={profile.businessHours.to}
-                onChangeText={(to) => onProfileChange({
-                  ...profile,
-                  businessHours: { ...profile.businessHours, to },
-                })}
-              />
-            </View>
+            <C.Typography text="Add one or more shift patterns and their usual business hours." />
+            {shiftPatterns.map((shift, index) => (
+              <C.Box key={index} title={`Shift ${index + 1}`}>
+                <C.TextField
+                  label="Shift name"
+                  placeholder="Day shift, Night shift"
+                  value={shift.shiftName}
+                  onChangeText={(shiftName) => updateShift(index, 'shiftName', shiftName)}
+                />
+                <View style={{ flexDirection: 'row', gap: 12 }}>
+                  <C.TextField
+                    label="Business opens"
+                    placeholder="09:00"
+                    value={shift.from}
+                    onChangeText={(from) => updateShift(index, 'from', from)}
+                  />
+                  <C.TextField
+                    label="Business closes"
+                    placeholder="17:00"
+                    value={shift.to}
+                    onChangeText={(to) => updateShift(index, 'to', to)}
+                  />
+                </View>
+                {shiftPatterns.length > 1 && (
+                  <C.Buttons.Ghost label="Remove shift" onPress={() => removeShift(index)} />
+                )}
+              </C.Box>
+            ))}
+            <C.Buttons.Ghost label="Add another shift" onPress={addShift} />
           </>
         )}
 
@@ -235,13 +259,15 @@ export const SetupStepModal = ({
                   <ReviewRow label="Open days" value={profile.openingDays.join(', ') || 'Not selected'} />
                 )}
                 {index === 1 && (
-                  <>
-                    <ReviewRow label="Shift" value={profile.businessHours.shiftName || 'Not set'} />
-                    <ReviewRow
-                      label="Business hours"
-                      value={`${profile.businessHours.from} – ${profile.businessHours.to}`}
-                    />
-                  </>
+                  shiftPatterns.map((shift, shiftIndex) => (
+                    <View key={shiftIndex} style={{ gap: 4 }}>
+                      <ReviewRow label="Shift" value={shift.shiftName || `Shift ${shiftIndex + 1}`} />
+                      <ReviewRow
+                        label="Business hours"
+                        value={`${shift.from} – ${shift.to}`}
+                      />
+                    </View>
+                  ))
                 )}
                 {index === 2 && (
                   siteNames.length ? siteNames.map((site) => (
@@ -267,11 +293,11 @@ export const SetupStepModal = ({
       </ScrollView>
 
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        {step > 0 && <C.Buttons.Secondary label="Back" onPress={onBack} />}
+        {step > 0 && <C.Buttons.Ghost label="Back" onPress={onBack} />}
         {!isReview ? (
           <>
-            <C.Buttons.Ghost label="Skip for now" onPress={onSkip} />
-            <C.Buttons.Primary label="Next" onPress={onNext} />
+            {/* <C.Buttons.Ghost label="Skip for now" onPress={onSkip} /> */}
+            <C.Buttons.Primary label="Continue" onPress={onNext} />
           </>
         ) : (
           <C.Buttons.Primary label="Continue to confirmation" onPress={onSubmit} />
@@ -308,8 +334,8 @@ export const SetupConfirmationModal = ({
         <C.Typography text="Your details will be saved to this account. You can update them later." />
         {error ? <C.Alert tone="error" title="Unable to save setup" message={error} /> : null}
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <C.Buttons.Secondary label="Review answers" onPress={onClose} />
-          <C.Buttons.Primary label="Confirm and submit" onPress={onConfirm} />
+          <C.Buttons.Secondary label="Review" onPress={onClose} />
+          <C.Buttons.Primary label="Confirm" onPress={onConfirm} />
         </View>
       </>
     )}

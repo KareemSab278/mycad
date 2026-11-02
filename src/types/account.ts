@@ -19,13 +19,15 @@ type SetupContact = {
     days: string[];
 };
 
+type SetupShift = {
+    shiftName: string;
+    from: string;
+    to: string;
+};
+
 type SetupProfile = {
     openingDays: string[];
-    businessHours: {
-        shiftName: string;
-        from: string;
-        to: string;
-    };
+    businessHours: SetupShift[] | SetupShift;
     siteRestrictions: Record<string, string[]>;
     allergies: string[];
     contacts: Record<'Emergency' | 'Service' | 'Accounting' | 'Other', SetupContact>;
