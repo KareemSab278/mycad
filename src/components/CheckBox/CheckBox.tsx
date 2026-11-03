@@ -14,6 +14,7 @@ export const CheckBox = ({
   label,
   isDisabled = false,
 }: CheckBoxProps) => {
+  const labelStyle = !checked ? { color: '#8a8c8d', marginTop: 10 } : { marginTop: 10 };
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -26,9 +27,9 @@ export const CheckBox = ({
       style={styles.row}
     >
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked ? <Typography text="✓" variant='caption' /> : null}
+        {checked && <Typography text="" />}
       </View>
-      {label ? <Typography text={label} variant='caption' /> : null}
+      {label && <Typography text={label} style={labelStyle} />}
     </Pressable>
   );
 };

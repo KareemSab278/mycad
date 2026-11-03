@@ -9,24 +9,15 @@ export const styles = StyleSheet.create({
   box: {
     alignItems: 'center',
     borderColor: '#98A2B3',
-    borderRadius: 4,
+    borderRadius: 50,
     borderWidth: 1,
     height: 22,
+    marginTop: 10,
     justifyContent: 'center',
     width: 22,
   },
   boxChecked: {
-    backgroundColor: '#208AEF',
-    borderColor: '#208AEF',
-  },
-  mark: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  label: {
-    color: '#344054',
-    fontSize: 14,
-    fontWeight: '500',
-  },
+    backgroundColor: '#008cff',
+    borderColor: '#0084ff',
+  }
 });
