@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import * as C from '../../components';
 import * as Ls from '../../storage';
 import type { SetupProfile } from '../../types';
-import { SetupConfirmationModal, SetupStepModal } from './Components';
+import { SetupStepModal } from './Components';
 
 const emptyContact = () => ({
   name: '',
@@ -100,7 +100,7 @@ export const SetupPage = ({ onComplete }: SetupPageProps) => {
           </>
         ) : (
           <>
-            <C.Typography  text={`It's only ${steps.length} steps to set up your business profile.`} />
+            <C.Typography text={`It's only ${steps.length} steps to set up your business profile.`} />
             <C.Buttons.Primary label="Let's Begin" onPress={() => setStep(0)} />
           </>
         )}
@@ -118,13 +118,11 @@ export const SetupPage = ({ onComplete }: SetupPageProps) => {
             onBack={() => setStep((current) => Math.max(0, current - 1))}
             onNext={() => setStep((current) => current + 1)}
             onEdit={(index) => setStep(index)}
-            onSubmit={() => setConfirmationVisible(true)}
-          />
-          <SetupConfirmationModal
-            visible={confirmationVisible}
+            onSubmit={() => { setConfirmationVisible(true); console.log('Submit clicked'); }}
+            confirmationVisible={confirmationVisible}
             submitting={submitting}
             error={error}
-            onClose={() => {
+            onCloseConfirmation={() => {
               if (!submitting) setConfirmationVisible(false);
             }}
             onConfirm={saveSetup}
