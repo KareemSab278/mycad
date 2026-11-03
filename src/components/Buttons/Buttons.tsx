@@ -51,7 +51,14 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
       {...props}
       style={[styles.button, variants[variant]?.button, style, { maxHeight: 50 }]}
       variant={variants[variant]?.hero ?? 'primary'}
-      feedbackVariant="none"
+      feedbackVariant="scale"
+      animation={{
+        scale: {
+          value: 0.90,
+          timingConfig: { duration: 200 },
+          ignoreScaleCoefficient: true,
+        },
+      }}
     >
       <HeroButton.Label style={variants[variant]?.label}>{label ?? children}</HeroButton.Label>
     </HeroButton>
