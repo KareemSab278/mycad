@@ -16,7 +16,7 @@ import * as T from '@/types';
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export const Accounts = () => {
+export const Accounts = ({ onEditSetup }: { onEditSetup?: () => void }) => {
   const insets = useSafeAreaInsets();
   const [account, setAccount] = useState<T.SingleAccountInfo | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState('');
@@ -83,6 +83,9 @@ export const Accounts = () => {
         <>
           <C.Box title={selectedBusinessAccount.name}>
             <C.Typography text="Business account" variant="body" />
+            {onEditSetup && (
+              <C.Buttons.Secondary label="Edit business setup" onPress={onEditSetup} />
+            )}
           </C.Box>
 
 

@@ -17,7 +17,6 @@
 import * as T from './types';
 const fakeAccountMultiple: T.SingleAccountInfo =
 {
-    setup_required: true,
     login: {
         email: "user1@example.com",
         password: "password123"
@@ -25,6 +24,7 @@ const fakeAccountMultiple: T.SingleAccountInfo =
     business_accounts: [
         {
             name: "Business Account 1",
+            setup_required: true,
             sites: [
                 {
                     name: "Site 1",
@@ -44,9 +44,11 @@ const fakeAccountMultiple: T.SingleAccountInfo =
         } as T.BusinessAccount,
         {
             name: "Business Account 2",
+            setup_required: false,
             sites: [
                 {
                     name: "Site 3",
+                    setup_required: true,
                     machines: [
                         { name: "Machine 5" },
                         { name: "Machine 6" }
@@ -58,14 +60,15 @@ const fakeAccountMultiple: T.SingleAccountInfo =
 };
 
 const fakeAccountSingle: T.SingleAccountInfo = {
-    setup_required: true,
     login: fakeAccountMultiple.login as T.Login,
 
     business_accounts: [{
         name: fakeAccountMultiple.business_accounts[0].name,
+        setup_required: fakeAccountMultiple.business_accounts[0].setup_required,
 
         sites: [{
             name: fakeAccountMultiple.business_accounts[0].sites[0].name,
+            setup_required: fakeAccountMultiple.business_accounts[0].sites[0].setup_required,
 
             machines: [{
                 name: fakeAccountMultiple.business_accounts[0].sites[0].machines[0].name

@@ -13,7 +13,7 @@ type SetupStepModalProps = {
   step: number;
   steps: string[];
   profile: SetupProfile;
-  siteNames: string[];
+  siteLabel: string;
   onProfileChange: (profile: SetupProfile) => void;
   onBack: () => void;
   onNext: () => void;
@@ -62,7 +62,7 @@ export const SetupStepModal = ({
   step,
   steps,
   profile,
-  siteNames,
+  siteLabel,
   onProfileChange,
   onBack,
   onNext,
@@ -130,7 +130,7 @@ export const SetupStepModal = ({
         <>
           <C.Typography text={title} variant="title" />
           <C.Typography
-            text={isReview ? 'Check your answers. Select Edit to make changes.' : `Step ${step + 1} of ${steps.length}`}
+            text={`${siteLabel} · ${isReview ? 'Check your answers. Select Edit to make changes.' : `Step ${step + 1} of ${steps.length}`}`}
             variant="caption"
           />
 
@@ -186,27 +186,18 @@ export const SetupStepModal = ({
 
             {step === 2 && (
               <>
-                <C.Typography text="Select any access requirements for each site." />
-                {siteNames.length === 0 ? (
-                  <C.Typography text="No sites are linked to this account yet." variant="caption" />
-                ) : siteNames.map((siteName) => (
-                  <C.Box key={siteName} title={siteName}>
-                    <Checklist
-                      options={accessOptions}
-                      values={profile.siteRestrictions[siteName] ?? []}
-                      onChange={(restrictions) => onProfileChange({
-                        ...profile,
-                        siteRestrictions: { ...profile.siteRestrictions, [siteName]: restrictions },
-                      })}
-                    />
-                  </C.Box>
-                ))}
+                <C.Typography text="Select any access requirements for this site." />
+                <Checklist
+                  options={accessOptions}
+                  values={profile.siteRestrictions}
+                  onChange={(siteRestrictions) => onProfileChange({ ...profile, siteRestrictions })}
+                />
               </>
             )}
 
             {step === 3 && (
               <>
-                <C.Typography text="Select any allergy information that applies to your sites." />
+                <C.Typography text="Select any allergy information that applies to this site." />
                 <Checklist
                   options={allergyOptions}
                   values={profile.allergies}
@@ -289,13 +280,10 @@ export const SetupStepModal = ({
                       ))
                     )}
                     {index === 2 && (
-                      siteNames.length ? siteNames.map((site) => (
-                        <ReviewRow
-                          key={site}
-                          label={site}
-                          value={profile.siteRestrictions[site]?.join(', ') || 'No restrictions selected'}
-                        />
-                      )) : <ReviewRow label="Sites" value="No sites linked" />
+                      <ReviewRow
+                        label={siteLabel}
+                        value={profile.siteRestrictions.join(', ') || 'No restrictions selected'}
+                      />
                     )}
                     {index === 3 && (
                       <ReviewRow label="Allergies" value={profile.allergies.join(', ') || 'None selected'} />

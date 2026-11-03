@@ -1,8 +1,10 @@
+import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useKeyboardState } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
+import { needsSetup } from '../../helpers/setup';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
 import { Accounts } from '../../screens/Accounts';
@@ -29,16 +31,14 @@ export const Router = () => {
   const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const [setupRequired, setSetupRequired] = useState<boolean | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
-  const ActiveScreen = activeRoute.Screen;
+  const [editingSetup, setEditingSetup] = useState(false);
+  const ActiveScreen = activeRoute.Screen as ComponentType<{ onEditSetup?: () => void }>;
 
   useEffect(() => {
     let active = true;
     void Ls.Creds.get().then((account) => {
       if (active) {
-        setSetupRequired(
-          account?.setup_required === true ||
-          account?.setup_required === 1,
-        );
+        setSetupRequired(needsSetup(account));
       }
     });
 
@@ -48,10 +48,14 @@ export const Router = () => {
   }, []);
 
   if (setupRequired === null) return <C.Loader />;
-  if (setupRequired) {
+  if (setupRequired || editingSetup) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <SetupPage onComplete={() => setSetupRequired(false)} />
+        <SetupPage
+          mode={setupRequired ? 'required' : 'edit'}
+          onComplete={() => { setSetupRequired(false); setEditingSetup(false); }}
+          onCancel={setupRequired ? undefined : () => setEditingSetup(false)}
+        />
       </View>
     );
   }
@@ -61,7 +65,7 @@ export const Router = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.content, { backgroundColor: theme.background }]}>
-        <ActiveScreen />
+        <ActiveScreen onEditSetup={() => setEditingSetup(true)} />
       </View>
       {!keyboardVisible && <View
         style={[
