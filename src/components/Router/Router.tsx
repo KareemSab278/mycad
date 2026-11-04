@@ -32,6 +32,7 @@ export const Router = () => {
   const [setupRequired, setSetupRequired] = useState<boolean | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const [editingSetup, setEditingSetup] = useState(false);
+  const [setupSkipped, setSetupSkipped] = useState(false);
   const ActiveScreen = activeRoute.Screen as ComponentType<{ onEditSetup?: () => void }>;
 
   useEffect(() => {
@@ -48,13 +49,17 @@ export const Router = () => {
   }, []);
 
   if (setupRequired === null) return <C.Loader />;
-  if (setupRequired || editingSetup) {
+  if ((setupRequired && !setupSkipped) || editingSetup) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <SetupPage
-          mode={setupRequired ? 'required' : 'edit'}
-          onComplete={() => { setSetupRequired(false); setEditingSetup(false); }}
-          onCancel={setupRequired ? undefined : () => setEditingSetup(false)}
+          mode={setupRequired && !setupSkipped ? 'required' : 'edit'}
+          onComplete={() => {
+            if (!setupSkipped) setSetupRequired(false);
+            setEditingSetup(false);
+          }}
+          onCancel={editingSetup ? () => setEditingSetup(false) : undefined}
+          onSkip={setupRequired && !setupSkipped ? () => setSetupSkipped(true) : undefined}
         />
       </View>
     );

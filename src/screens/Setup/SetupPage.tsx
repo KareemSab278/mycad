@@ -34,9 +34,44 @@ type SetupPageProps = {
   mode?: 'required' | 'edit';
   onComplete?: () => void;
   onCancel?: () => void;
+  onSkip?: () => void;
 };
 
-export const SetupPage = ({ mode = 'required', onComplete, onCancel }: SetupPageProps) => {
+interface SkipSetupDialogProps {
+  confirmSkipDialogVisible: boolean;
+  setConfirmSkipDialogVisible: (visible: boolean) => void;
+  submitting: boolean;
+  error: string;
+  onSkip: () => void;
+}
+
+const SkipSetupDialog = ({ confirmSkipDialogVisible, setConfirmSkipDialogVisible, submitting, error, onSkip }: SkipSetupDialogProps) => (
+  <C.Dialog
+    visible={confirmSkipDialogVisible}
+    onClose={() => setConfirmSkipDialogVisible(false)}
+    canClose={!submitting}
+    title="Skip setup?"
+    description="Are you sure you want to skip the setup and go to Home? You can always complete it later from your profile."
+  >
+    {error && (
+      <C.Typography
+        text="Unable to skip setup. Please try again."
+        style={{ color: '#B42318' }}
+      />
+    )}
+    <C.Buttons.Secondary
+      label="Cancel"
+      onPress={() => setConfirmSkipDialogVisible(false)}
+      isDisabled={submitting}
+    />
+    <C.Buttons.Danger
+      label={submitting ? 'Skipping...' : 'Skip setup'}
+      onPress={onSkip}
+      isDisabled={submitting}
+    />
+  </C.Dialog>
+)
+export const SetupPage = ({ mode = 'required', onComplete, onCancel, onSkip }: SetupPageProps) => {
   const [account, setAccount] = useState<SingleAccountInfo | null>(null);
   const [selectedKey, setSelectedKey] = useState('');
   const [profile, setProfile] = useState<SetupProfile>(emptyProfile);
@@ -45,7 +80,7 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel }: SetupPage
   const [nextVisible, setNextVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
+  const [confirmSkipDialogVisible, setConfirmSkipDialogVisible] = useState(false);
   const targets = getSetupTargets(account, mode === 'required');
   const selected = getSetupTargets(account, false).find((item) => item.key === selectedKey);
   const accountNames = [...new Set(targets.map((item) => item.accountName))];
@@ -100,14 +135,27 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel }: SetupPage
     }
   };
 
+
   return (
     <C.Container contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+
+      {confirmSkipDialogVisible && 
+        <SkipSetupDialog
+          confirmSkipDialogVisible={confirmSkipDialogVisible}
+          setConfirmSkipDialogVisible={setConfirmSkipDialogVisible}
+          submitting={submitting}
+          error={error}
+          onSkip={() => onSkip?.()}
+        />
+      }
+
       <C.Box
         title={mode === 'required' ? "It seems your profile isn't set up yet" : 'Edit your setup'}
         description={targets.length > 1 ? 'Choose which account and site you want to set up.' : undefined}
       >
         <C.Typography text={`It's only ${steps.length} steps to set up each site.`} />
         {onCancel && <C.Buttons.Secondary label={mode === 'required' ? 'Back' : 'Cancel'} onPress={onCancel} />}
+        {onSkip && <C.Buttons.Primary label="Skip setup and go to Home" onPress={() => setConfirmSkipDialogVisible(true)} />}
       </C.Box>
 
       {accountNames.map((accountName) => (
