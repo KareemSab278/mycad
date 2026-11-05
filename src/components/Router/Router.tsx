@@ -3,6 +3,13 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { useKeyboardState } from 'react-native-keyboard-controller';
+import Animated, {
+  Easing,
+  SlideInLeft,
+  SlideInRight,
+  SlideOutLeft,
+  SlideOutRight,
+} from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
 import { needsSetup } from '../../helpers/setup';
@@ -37,10 +44,25 @@ export const Router = () => {
   const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const [setupRequired, setSetupRequired] = useState<boolean | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
+  const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
+  const [hasNavigated, setHasNavigated] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<Route | null>(null);
   const [editingSetup, setEditingSetup] = useState(false);
   const [setupSkipped, setSetupSkipped] = useState(false);
   const ActiveScreen = activeRoute.Screen as ComponentType<ScreenProps>;
+  const selectRoute = (route: Route) => {
+    if (pendingRoute) return;
+
+    const currentIndex = routes.indexOf(activeRoute);
+    const nextIndex = routes.indexOf(route);
+    if (nextIndex === currentIndex) return;
+
+    setTransitionDirection(nextIndex > currentIndex ? 1 : -1);
+    setHasNavigated(true);
+    setPendingRoute(route);
+  };
   const swipeGesture = usePanGesture({
+    enabled: pendingRoute === null,
     activeOffsetX: [-15, 15],
     failOffsetY: [-15, 15],
     runOnJS: true,
@@ -56,13 +78,13 @@ export const Router = () => {
       const currentIndex = routes.indexOf(activeRoute);
       const nextIndex = currentIndex + (event.translationX < 0 ? 1 : -1);
       if (nextIndex >= 0 && nextIndex < routes.length) {
-        setActiveRoute(routes[nextIndex]);
+        selectRoute(routes[nextIndex]);
       }
     },
   });
   const openSupport = () => {
     const supportRoute = routes.find((route) => route.label === 'Support');
-    if (supportRoute) setActiveRoute(supportRoute);
+    if (supportRoute) selectRoute(supportRoute);
   };
 
   useEffect(() => {
@@ -77,6 +99,17 @@ export const Router = () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!pendingRoute) return;
+
+    const frame = requestAnimationFrame(() => {
+      setActiveRoute(pendingRoute);
+      setPendingRoute(null);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [pendingRoute]);
 
   if (setupRequired === null) return <C.Loader />;
   if ((setupRequired && !setupSkipped) || editingSetup) {
@@ -98,12 +131,29 @@ export const Router = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <GestureDetector gesture={swipeGesture}>
-        <View style={[styles.content, { backgroundColor: theme.background }]}>
+        <Animated.View
+          key={activeRoute.label}
+          entering={
+            hasNavigated
+              ? transitionDirection > 0
+                ? SlideInRight.duration(500).easing(Easing.out(Easing.cubic))
+                : SlideInLeft.duration(500).easing(Easing.out(Easing.cubic))
+              : undefined
+          }
+          exiting={
+            pendingRoute
+              ? transitionDirection > 0
+                ? SlideOutLeft.duration(200).easing(Easing.out(Easing.cubic))
+                : SlideOutRight.duration(200).easing(Easing.out(Easing.cubic))
+              : undefined
+          }
+          style={[styles.content, { backgroundColor: theme.background }]}
+        >
           <ActiveScreen
             onEditSetup={() => setEditingSetup(true)}
             onOpenSupport={openSupport}
           />
-        </View>
+        </Animated.View>
       </GestureDetector>
       {!keyboardVisible && <View
         style={[
@@ -118,7 +168,7 @@ export const Router = () => {
             label={route.label}
             variant={route === activeRoute ? 'primary' : 'secondary'}
             style={styles.navigationButton}
-            onPress={() => setActiveRoute(route)}
+            onPress={() => selectRoute(route)}
           />
         ))}
       </View>}
