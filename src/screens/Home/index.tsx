@@ -2,11 +2,12 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as C from '../../components';
 import { useNav } from '../../helpers/navigation';
 import { useAuth } from '../../hooks/auth-context';
 import * as LS from '../../storage';
 import type { SingleAccountInfo } from '../../types';
+import * as C from './../../components';
+import { MachineList } from './components';
 
 type HomeProps = {
   onEditSetup?: () => void;
@@ -116,49 +117,7 @@ export const Home = ({ onEditSetup }: HomeProps) => {
               )}
             </C.Box>
 
-              <C.Typography text={`Machines On ${selectedBusinessAccount.name}`} variant="title" />
-            {selectedBusinessAccount.sites.length ? (
-              selectedBusinessAccount.sites.map((site) => (
-                <View key={site.name}>
-                  {site.machines.length ? (
-                    site.machines.map((machine) => (
-                      <C.Box key={machine.id ?? machine.name} title={machine.name}>
-                        {machine.id ? (
-                          <C.Typography text={`Machine ID: ${machine.id}`} variant="caption" />
-                        ) : null}
-                        {machine.model ? (
-                          <C.Typography text={`Model: ${machine.model}`} variant="body" />
-                        ) : null}
-                        {machine.status ? (
-                          <C.Typography text={`Status: ${machine.status}`} variant="body" />
-                        ) : null}
-                        {machine.arrangement ? (
-                          <C.Typography text={`Arrangement: ${machine.arrangement}`} variant="body" />
-                        ) : null}
-                        {machine.nextDelivery ? (
-                          <C.Typography text={`Next delivery: ${machine.nextDelivery}`} variant="caption" />
-                        ) : null}
-                        {machine.lastServiced ? (
-                          <C.Typography text={`Last serviced: ${machine.lastServiced}`} variant="caption" />
-                        ) : null}
-                        <C.Buttons.Secondary
-                          label="View machine"
-                          onPress={() => nav.to('/Machines', {
-                            params: { machine_id: machine.id ?? machine.name },
-                          })}
-                        />
-                      </C.Box>
-                    ))
-                  ) : (
-                    <C.Typography text="No machines are available at this site." variant="caption" />
-                  )}
-                </View>
-              ))
-            ) : (
-              <C.Box title="Sites">
-                <C.Typography text="No sites are available for this account." variant="caption" />
-              </C.Box>
-            )}
+            <MachineList selectedBusinessAccount={selectedBusinessAccount} />
           </>
         ) : account ? (
           <C.Box title="No business accounts">
