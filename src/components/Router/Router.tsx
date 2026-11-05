@@ -1,7 +1,7 @@
-import { House, MessageCircleText, PcCase, ShieldUser } from 'lucide-react-native';
+import { House, Menu as MenuIcon, MessageCircleText, PcCase, ShieldUser } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, useWindowDimensions, View } from 'react-native';
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { useKeyboardState } from 'react-native-keyboard-controller';
 import Animated, {
@@ -39,15 +39,56 @@ type ScreenProps = {
   onOpenSupport?: () => void;
 };
 
-/*
+const LandscapeNavigation = ({
+  activeRoute,
+  onSelectRoute,
+}: {
+  activeRoute: Route;
+  onSelectRoute: (route: Route) => void;
+}) => {
+  const theme = useTheme();
+  const [navigationOpen, setNavigationOpen] = useState(false);
 
-  if in web then show a burger instead for navigation and only if viewed in landscape. otherwise if in portrait or in mobile then show the current setup
-*/
+  return (
+    <>
+      <View style={styles.navigationHeader}>
+        <Button
+          accessibilityLabel="Open navigation"
+          icon={<MenuIcon size={24} color={theme.text} />}
+          variant="secondary"
+          onPress={() => setNavigationOpen(true)}
+          style={styles.navigationMenuButton}
+        />
+      </View>
+      <C.Modal visible={navigationOpen} onClose={() => setNavigationOpen(false)}>
+        {routes.map((route) => (
+          <Button
+            key={route.label}
+            icon={
+              <route.Icon
+                size={30}
+                color={route === activeRoute ? theme.background : theme.textSecondary}
+              />
+            }
+            label={route.label}
+            variant={route === activeRoute ? 'primary' : 'secondary'}
+            onPress={() => {
+              setNavigationOpen(false);
+              onSelectRoute(route);
+            }}
+          />
+        ))}
+      </C.Modal>
+    </>
+  );
+};
 
 export const Router = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  const { width, height } = useWindowDimensions();
   const keyboardVisible = useKeyboardState((state) => state.isVisible);
+  const landscapeWeb = Platform.OS === 'web' && width > height;
   const [setupRequired, setSetupRequired] = useState<boolean | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
@@ -136,6 +177,9 @@ export const Router = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {landscapeWeb && !keyboardVisible && (
+        <LandscapeNavigation activeRoute={activeRoute} onSelectRoute={selectRoute} />
+      )}
       <GestureDetector gesture={swipeGesture}>
         <Animated.View
           key={activeRoute.label}
@@ -161,7 +205,7 @@ export const Router = () => {
           />
         </Animated.View>
       </GestureDetector>
-      {!keyboardVisible && <View
+      {!landscapeWeb && !keyboardVisible && <View
         style={[
           styles.navigation,
           { backgroundColor: theme.backgroundElement, borderTopColor: theme.border },

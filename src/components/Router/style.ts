@@ -13,6 +13,17 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingTop: 8,
   },
+  navigationHeader: {
+    alignItems: 'flex-start',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+  },
+  navigationMenuButton: {
+    flexGrow: 0,
+    flexShrink: 0,
+    minWidth: 60,
+    width: 60,
+  },
   navigationButton: {
     flexBasis: 0,
     flexGrow: 1,

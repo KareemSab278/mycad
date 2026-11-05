@@ -19,7 +19,7 @@ type AccountMachine = {
 const getMachineKey = ({ machine, accountName, siteName }: AccountMachine) =>
   machine.id ?? `${accountName}:${siteName}:${machine.name}`;
 
-export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
+export const Machines = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const nav = useNav();
@@ -143,9 +143,6 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
               <C.Buttons.Primary label="Back to Home" onPress={nav.back} />
             ) : null}
             <C.Typography text="Check machine status, deliveries, and recent service requests for all machines in your accounts." />
-            {onOpenSupport ? (
-              <C.Buttons.Secondary label="Support & billing" onPress={onOpenSupport} />
-            ) : null}
           </View>
 
           {accountError ? (
