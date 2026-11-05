@@ -166,7 +166,7 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel, onSkip }: S
           {targets.filter((item) => item.accountName === accountName).map((item) => (
             <C.Buttons.Primary
               key={item.key}
-              label={`${item.profile ? 'Edit' : 'Set up'} ${item.siteName}`}
+              label={`${item.profile ? 'Edit' : 'Set up'} ${item.siteName} site`}
               onPress={() => startSetup(item)}
             />
           ))}

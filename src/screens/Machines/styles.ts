@@ -1,0 +1,53 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  page: {
+    gap: 16,
+    paddingBottom: 24,
+  },
+  header: {
+    gap: 8,
+  },
+  cardContent: {
+    gap: 12,
+  },
+  machineHeading: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  headingText: {
+    flex: 1,
+    gap: 4,
+  },
+  details: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
+  detail: {
+    flexGrow: 1,
+    minWidth: '40%',
+  },
+  actionStack: {
+    gap: 8,
+  },
+  sectionHeading: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  requestRow: {
+    borderTopWidth: 1,
+    gap: 8,
+    paddingTop: 12,
+  },
+  modalContent: {
+    gap: 12,
+  },
+  summaryInput: {
+    minHeight: 100,
+  },
+});

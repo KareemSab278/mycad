@@ -1,23 +1,20 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
 import { fakeServiceRequests } from '../../fakeAccountInfo';
 import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
 import * as Ls from '../../storage';
-import type { Machine, ServiceRequest } from '../../types';
-
-type RequestType = ServiceRequest['type'];
-type AccountMachine = {
-  machine: Machine;
-  accountName: string;
-  siteName: string;
-};
-
-const getMachineKey = ({ machine, accountName, siteName }: AccountMachine) =>
-  machine.id ?? `${accountName}:${siteName}:${machine.name}`;
+import {
+  getMachineKey,
+  MachineDetailsCard,
+  MachineRequestModal,
+  ServiceRequestsCard,
+} from './Components';
+import type { AccountMachine, RequestType } from './Components';
+import { styles } from './styles';
 
 export const Machines = () => {
   const insets = useSafeAreaInsets();
@@ -151,185 +148,33 @@ export const Machines = () => {
             <C.Typography text="No machines are available for this account." variant="caption" />
           ) : (
             <>
-          <C.Card>
-            <View style={styles.cardContent}>
-              <View style={styles.machineHeading}>
-                <View style={styles.headingText}>
-                  <C.Typography text={activeMachine.machine.name} variant="title" />
-                  {activeMachine.machine.id ? (
-                    <C.Typography text={`Machine ID: ${activeMachine.machine.id}`} variant="caption" />
-                  ) : null}
-                  {activeMachine.machine.model ? (
-                    <C.Typography text={activeMachine.machine.model} variant="caption" />
-                  ) : null}
-                  <C.Typography text={`${activeMachine.accountName} · ${activeMachine.siteName}`} variant="caption" />
-                </View>
-                {activeMachine.machine.status ? (
-                  <C.Typography text={activeMachine.machine.status} variant="caption" />
-                ) : null}
-              </View>
-
-              <View style={styles.details}>
-                {[
-                  ['Account arrangement', activeMachine.machine.arrangement],
-                  ['Next delivery', activeMachine.machine.nextDelivery],
-                  ['Last serviced', activeMachine.machine.lastServiced],
-                ].filter((item): item is [string, string] => Boolean(item[1])).map(([label, value]) => (
-                  <View key={label} style={styles.detail}>
-                    <C.Typography text={label} variant="caption" />
-                    <C.Typography text={value} variant="body" />
-                  </View>
-                ))}
-              </View>
-
-              <View style={styles.actionStack}>
-                <C.Buttons.Primary
-                  label="Request maintenance"
-                  onPress={() => openRequest('Maintenance', getMachineKey(activeMachine))}
-                />
-                <C.Buttons.Secondary
-                  label="Ask for support"
-                  onPress={() => openRequest('Support', getMachineKey(activeMachine))}
-                />
-                <C.Buttons.Secondary
-                  label="Request refund"
-                  onPress={() => openRequest('Refund', getMachineKey(activeMachine))}
-                />
-              </View>
-            </View>
-          </C.Card>
-
-          <C.Card>
-            <View style={styles.cardContent}>
-              <View style={styles.sectionHeading}>
-                <View style={styles.headingText}>
-                  <C.Typography text="Service & purchase requests" variant="title" />
-                  <C.Typography text={`Recent activity for ${machineId}`} variant="caption" />
-                </View>
-                <C.Typography text={`${machineRequests.length} requests`} variant="caption" />
-              </View>
-
-              {machineRequests.length ? machineRequests.map((request) => (
-                <View key={request.id} style={[styles.requestRow, { borderColor: theme.border }]}>
-                  <View style={styles.headingText}>
-                    <C.Typography text={request.summary} variant="body" />
-                    <C.Typography text={`${request.id} · ${request.type} · ${request.date}`} variant="caption" />
-                  </View>
-                  <C.Typography text={request.status} variant="caption" />
-                </View>
-              )) : (
-                <C.Typography text="No requests for this machine yet." variant="caption" />
-              )}
-            </View>
-          </C.Card>
+              <MachineDetailsCard entry={activeMachine} onRequest={openRequest} />
+              <ServiceRequestsCard
+                machineId={machineId}
+                requests={machineRequests}
+                borderColor={theme.border}
+              />
             </>
           )}
         </View>
       </C.Container>
 
-      <C.Modal visible={requestModalOpen && Boolean(requestMachine)} onClose={() => setRequestModalOpen(false)}>
-        <View style={styles.modalContent}>
-          <C.Typography text={requestType === 'Refund' ? 'Request a purchase refund' : `Request ${requestType.toLowerCase()}`} variant="title" />
-          {requestMachine ? (
-            <C.Typography
-              text={`${requestMachine.machine.id ?? requestMachine.machine.name} · ${requestMachine.machine.name}`}
-              variant="caption"
-            />
-          ) : null}
-          {requestType === 'Refund' ? (
-            <>
-              <C.TextField
-                label="Purchase date and time"
-                value={purchaseDate}
-                onChangeText={setPurchaseDate}
-                placeholder="For example, 5 Nov 2026 at 10:30"
-              />
-              <C.TextField
-                label="What happened?"
-                value={reason}
-                onChangeText={setReason}
-                placeholder="For example, payment taken but no product dispensed"
-              />
-              <C.TextField
-                label="Transaction reference (optional)"
-                value={transactionId}
-                onChangeText={setTransactionId}
-                placeholder="Receipt or payment reference"
-              />
-            </>
-          ) : null}
-          <C.TextArea
-            label={requestType === 'Refund' ? 'Additional details' : 'Describe the issue'}
-            value={summary}
-            onChangeText={setSummary}
-            placeholder="Add details that will help us review your request"
-            style={styles.summaryInput}
-            textAlignVertical="top"
-          />
-          <C.Typography
-            text="Sample workflow only. This request is not transmitted or stored remotely."
-            variant="caption"
-          />
-          <C.Buttons.Primary
-            label={`Record ${requestType.toLowerCase()} request`}
-            onPress={submitRequest}
-            isDisabled={!summary.trim() || !refundDetailsValid}
-          />
-          <C.Buttons.Secondary label="Cancel" onPress={() => setRequestModalOpen(false)} />
-        </View>
-      </C.Modal>
+      <MachineRequestModal
+        visible={requestModalOpen && Boolean(requestMachine)}
+        onClose={() => setRequestModalOpen(false)}
+        requestMachine={requestMachine}
+        requestType={requestType}
+        purchaseDate={purchaseDate}
+        onPurchaseDateChange={setPurchaseDate}
+        reason={reason}
+        onReasonChange={setReason}
+        transactionId={transactionId}
+        onTransactionIdChange={setTransactionId}
+        summary={summary}
+        onSummaryChange={setSummary}
+        refundDetailsValid={refundDetailsValid}
+        onSubmit={submitRequest}
+      />
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  page: {
-    gap: 16,
-    paddingBottom: 24,
-  },
-  header: {
-    gap: 8,
-  },
-  cardContent: {
-    gap: 12,
-  },
-  machineHeading: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  headingText: {
-    flex: 1,
-    gap: 4,
-  },
-  details: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-  detail: {
-    flexGrow: 1,
-    minWidth: '40%',
-  },
-  actionStack: {
-    gap: 8,
-  },
-  sectionHeading: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  requestRow: {
-    borderTopWidth: 1,
-    gap: 8,
-    paddingTop: 12,
-  },
-  modalContent: {
-    gap: 12,
-  },
-  summaryInput: {
-    minHeight: 100,
-  },
-});
