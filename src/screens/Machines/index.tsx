@@ -1,18 +1,32 @@
-import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
-import { fakeMachines, fakeServiceRequests } from '../../fakeAccountInfo';
+import { fakeServiceRequests } from '../../fakeAccountInfo';
+import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
-import type { ServiceRequest } from '../../types';
+import * as Ls from '../../storage';
+import type { Machine, ServiceRequest } from '../../types';
 
 type RequestType = ServiceRequest['type'];
+type AccountMachine = {
+  machine: Machine;
+  accountName: string;
+  siteName: string;
+};
+
+const getMachineKey = ({ machine, accountName, siteName }: AccountMachine) =>
+  machine.id ?? `${accountName}:${siteName}:${machine.name}`;
 
 export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const [activeMachineId, setActiveMachineId] = useState(fakeMachines[0].id);
-  const [requestMachineId, setRequestMachineId] = useState(fakeMachines[0].id);
+  const nav = useNav();
+  const { machine_id: routeMachineId } = useLocalSearchParams<{ machine_id?: string | string[] }>();
+  const [machines, setMachines] = useState<AccountMachine[]>([]);
+  const [activeMachineId, setActiveMachineId] = useState('');
+  const [requestMachineId, setRequestMachineId] = useState('');
   const [requestType, setRequestType] = useState<RequestType>('Maintenance');
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [requests, setRequests] = useState(fakeServiceRequests);
@@ -20,10 +34,58 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
   const [reason, setReason] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
   const [transactionId, setTransactionId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [accountError, setAccountError] = useState('');
 
-  const activeMachine = fakeMachines.find((machine) => machine.id === activeMachineId) ?? fakeMachines[0];
-  const requestMachine = fakeMachines.find((machine) => machine.id === requestMachineId) ?? fakeMachines[0];
-  const machineRequests = requests.filter((request) => request.machineId === activeMachine.id);
+  useEffect(() => {
+    let active = true;
+
+    const loadMachines = async () => {
+      try {
+        const account = await Ls.Creds.get();
+        if (!account) {
+          if (active) setAccountError('No signed-in account was found.');
+          return;
+        }
+
+        const accountMachines = account.business_accounts.flatMap((businessAccount) =>
+          businessAccount.sites.flatMap((site) =>
+            site.machines.map((machine) => ({
+              machine,
+              accountName: businessAccount.name,
+              siteName: site.name,
+            })),
+          ),
+        );
+
+        if (active) {
+          setMachines(accountMachines);
+          const requestedId = Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId;
+          const requestedMachine = accountMachines.find((entry) =>
+            entry.machine.id === requestedId || entry.machine.name === requestedId,
+          ) ?? accountMachines[0];
+          const requestedMachineKey = requestedMachine ? getMachineKey(requestedMachine) : '';
+          setActiveMachineId(requestedMachineKey);
+          setRequestMachineId(requestedMachineKey);
+        }
+      } catch (error) {
+        console.error('Unable to load machine account data:', error);
+        if (active) setAccountError('Unable to load your machines. Please try again later.');
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void loadMachines();
+    return () => {
+      active = false;
+    };
+  }, [routeMachineId]);
+
+  const activeMachine = machines.find((entry) => getMachineKey(entry) === activeMachineId) ?? machines[0];
+  const requestMachine = machines.find((entry) => getMachineKey(entry) === requestMachineId) ?? activeMachine;
+  const machineId = activeMachine?.machine.id ?? activeMachine?.machine.name;
+  const machineRequests = requests.filter((request) => request.machineId === machineId);
   const refundDetailsValid = requestType !== 'Refund' || (reason.trim() !== '' && purchaseDate.trim() !== '');
 
   const openRequest = (type: RequestType, machineId: string) => {
@@ -44,11 +106,11 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
       transactionId.trim() ? `Transaction reference: ${transactionId.trim()}` : '',
     ].filter(Boolean).join('\n');
 
-    if (!details || !refundDetailsValid) return;
+    if (!details || !refundDetailsValid || !requestMachine) return;
 
     setRequests((current) => [{
       id: `SR-${Date.now()}`,
-      machineId: requestMachineId,
+      machineId: requestMachine.machine.id ?? requestMachine.machine.name,
       type: requestType,
       summary: details,
       status: 'In review',
@@ -57,48 +119,65 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
     setRequestModalOpen(false);
   };
 
+  if (loading) return <C.Loader />;
+
   return (
     <>
-      <C.Tabs
-        items={fakeMachines.map((machine) => ({ label: machine.name, value: machine.id }))}
-        value={activeMachine.id}
-        onValueChange={setActiveMachineId}
-      />
+      {machines.length > 1 ? (
+        <C.Tabs
+          items={machines.map((entry) => ({
+            label: entry.machine.name,
+            value: getMachineKey(entry),
+          }))}
+          value={activeMachineId}
+          onValueChange={setActiveMachineId}
+        />
+      ) : null}
       <C.Container contentContainerStyle={{
-        paddingTop: insets.top + C.TABS_HEIGHT + C.TABS_TOP_GAP + 12,
+        paddingTop: insets.top + (machines.length > 1 ? C.TABS_HEIGHT + C.TABS_TOP_GAP + 12 : 12),
       }}>
         <View style={styles.page}>
           <View style={styles.header}>
             <C.Typography text="Your machines" variant="heading" />
+            {routeMachineId ? (
+              <C.Buttons.Primary label="Back to Home" onPress={nav.back} />
+            ) : null}
             <C.Typography text="Check machine status, deliveries, and recent service requests for all machines in your accounts." />
             {onOpenSupport ? (
               <C.Buttons.Secondary label="Support & billing" onPress={onOpenSupport} />
             ) : null}
           </View>
 
+          {accountError ? (
+            <C.Alert tone="error" title="Machines unavailable" message={accountError} />
+          ) : !activeMachine ? (
+            <C.Typography text="No machines are available for this account." variant="caption" />
+          ) : (
+            <>
           <C.Card>
             <View style={styles.cardContent}>
               <View style={styles.machineHeading}>
                 <View style={styles.headingText}>
-                  <C.Typography text={activeMachine.name} variant="title" />
-                  <C.Typography text={`${activeMachine.id} · ${activeMachine.model}`} variant="caption" />
-                  <C.Typography text={activeMachine.account} variant="caption" />
+                  <C.Typography text={activeMachine.machine.name} variant="title" />
+                  {activeMachine.machine.id ? (
+                    <C.Typography text={`Machine ID: ${activeMachine.machine.id}`} variant="caption" />
+                  ) : null}
+                  {activeMachine.machine.model ? (
+                    <C.Typography text={activeMachine.machine.model} variant="caption" />
+                  ) : null}
+                  <C.Typography text={`${activeMachine.accountName} · ${activeMachine.siteName}`} variant="caption" />
                 </View>
-                <C.Typography
-                  text={
-                    (activeMachine.status === 'Last serviced' || activeMachine.status === 'Online') ?
-                      `Last serviced: ${activeMachine.lastServiced}` : activeMachine.status
-                  }
-                  variant="caption"
-                />
+                {activeMachine.machine.status ? (
+                  <C.Typography text={activeMachine.machine.status} variant="caption" />
+                ) : null}
               </View>
 
               <View style={styles.details}>
                 {[
-                  ['Account arrangement', activeMachine.arrangement],
-                  ['Next delivery', activeMachine.nextDelivery],
-                  ['Last serviced', activeMachine.lastServiced],
-                ].map(([label, value]) => (
+                  ['Account arrangement', activeMachine.machine.arrangement],
+                  ['Next delivery', activeMachine.machine.nextDelivery],
+                  ['Last serviced', activeMachine.machine.lastServiced],
+                ].filter((item): item is [string, string] => Boolean(item[1])).map(([label, value]) => (
                   <View key={label} style={styles.detail}>
                     <C.Typography text={label} variant="caption" />
                     <C.Typography text={value} variant="body" />
@@ -109,15 +188,15 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
               <View style={styles.actionStack}>
                 <C.Buttons.Primary
                   label="Request maintenance"
-                  onPress={() => openRequest('Maintenance', activeMachine.id)}
+                  onPress={() => openRequest('Maintenance', getMachineKey(activeMachine))}
                 />
                 <C.Buttons.Secondary
                   label="Ask for support"
-                  onPress={() => openRequest('Support', activeMachine.id)}
+                  onPress={() => openRequest('Support', getMachineKey(activeMachine))}
                 />
                 <C.Buttons.Secondary
                   label="Request refund"
-                  onPress={() => openRequest('Refund', activeMachine.id)}
+                  onPress={() => openRequest('Refund', getMachineKey(activeMachine))}
                 />
               </View>
             </View>
@@ -128,7 +207,7 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
               <View style={styles.sectionHeading}>
                 <View style={styles.headingText}>
                   <C.Typography text="Service & purchase requests" variant="title" />
-                  <C.Typography text={`Recent activity for ${activeMachine.id}`} variant="caption" />
+                  <C.Typography text={`Recent activity for ${machineId}`} variant="caption" />
                 </View>
                 <C.Typography text={`${machineRequests.length} requests`} variant="caption" />
               </View>
@@ -146,13 +225,20 @@ export const Machines = ({ onOpenSupport }: { onOpenSupport?: () => void }) => {
               )}
             </View>
           </C.Card>
+            </>
+          )}
         </View>
       </C.Container>
 
-      <C.Modal visible={requestModalOpen} onClose={() => setRequestModalOpen(false)}>
+      <C.Modal visible={requestModalOpen && Boolean(requestMachine)} onClose={() => setRequestModalOpen(false)}>
         <View style={styles.modalContent}>
           <C.Typography text={requestType === 'Refund' ? 'Request a purchase refund' : `Request ${requestType.toLowerCase()}`} variant="title" />
-          <C.Typography text={`${requestMachine.id} · ${requestMachine.name}`} variant="caption" />
+          {requestMachine ? (
+            <C.Typography
+              text={`${requestMachine.machine.id ?? requestMachine.machine.name} · ${requestMachine.machine.name}`}
+              variant="caption"
+            />
+          ) : null}
           {requestType === 'Refund' ? (
             <>
               <C.TextField

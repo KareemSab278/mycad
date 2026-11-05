@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
 import { fakeMachines } from '../../fakeAccountInfo';
-import type { CareScheduleItem } from '../../types';
 import { useTheme } from '../../hooks/use-theme';
 import * as Ls from '../../storage';
+import type { CareScheduleItem } from '../../types';
 import { InvoiceHistoryModal } from '../Home/InvoiceHistoryModal';
 
 type ContactDetails = {
@@ -89,25 +90,21 @@ export const Support = () => {
     <>
       <InvoiceHistoryModal visible={invoicesVisible} onClose={() => setInvoicesVisible(false)} />
       <C.Modal visible={helpModalVisible} onClose={() => setHelpModalVisible(false)}>
-        <View style={styles.modalContent}>
+        <KeyboardAwareScrollView
+          bottomOffset={24}
+          keyboardShouldPersistTaps="handled"
+          mode="layout"
+          style={styles.modalScroll}
+          contentContainerStyle={styles.modalContent}
+        >
           <C.Typography text="Ask for help" variant="title" />
           <C.Typography
-            text="Your signed-in email and account are attached automatically."
-            variant="body"
+            text={contact ? `Your signed-in email and account (${contact?.accountName ?? (loadingAccount ? 'Loading…' : 'Unavailable')}) are attached automatically.`: 'Error: No account information available.'}
+            variant="caption"
           />
           {accountError ? (
             <C.Alert tone="error" title="Account unavailable" message={accountError} />
           ) : null}
-          <C.TextField
-            label="Email attached to your request"
-            value={contact?.email ?? ''}
-            editable={false}
-            placeholder={loadingAccount ? 'Loading account details…' : ''}
-          />
-          <C.Typography
-            text={`Account: ${contact?.accountName ?? (loadingAccount ? 'Loading…' : 'Unavailable')}`}
-            variant="caption"
-          />
           <C.TextField
             label="Machine ID (optional)"
             value={machineId}
@@ -120,13 +117,7 @@ export const Support = () => {
             value={description}
             onChangeText={setDescription}
             placeholder="How can we help?"
-            style={{ minHeight: 100 }}
             textAlignVertical="top"
-          />
-          <C.Typography
-            text="Demo form: requests are shown here for this visit and are not sent to a support team."
-            variant="caption"
-            style={{ color: theme.textSecondary }}
           />
           <C.Buttons.Primary
             label="Record support request"
@@ -137,7 +128,7 @@ export const Support = () => {
             label="Cancel"
             onPress={() => setHelpModalVisible(false)}
           />
-        </View>
+        </KeyboardAwareScrollView>
       </C.Modal>
       <C.Container contentContainerStyle={{ paddingTop: insets.top + 12 }}>
         <View style={styles.stack}>
@@ -188,7 +179,7 @@ export const Support = () => {
           <View style={styles.cardContent}>
             <C.Typography text="Ask for help" variant="title" />
             <C.Typography text="Have a question or issue? Send us the details." variant="body" />
-            <C.Buttons.Primary
+            <C.Buttons.Danger
               label="Ask for help"
               onPress={() => setHelpModalVisible(true)}
             />
@@ -232,6 +223,11 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     gap: 12,
+    paddingBottom: 8,
+  },
+  modalScroll: {
+    flexShrink: 1,
+    maxHeight: '100%',
   },
   request: {
     borderTopWidth: 1,

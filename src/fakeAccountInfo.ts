@@ -22,6 +22,49 @@ const fakeCareSchedule: T.CareScheduleItem[] = [
     { milestone: '6-month review', date: 'Mar 2027', detail: 'Routine account and machine health review.' },
 ];
 
+const fakeMachines: T.MachineRecord[] = [
+    {
+        id: 'VM-1042',
+        name: 'Downtown Market Machine',
+        account: 'Northside Foods',
+        model: 'Vend Mini 2',
+        arrangement: 'Wholesale',
+        status: 'Online',
+        nextDelivery: 'Nov 12, 2026',
+        lastServiced: 'Sep 04, 2026',
+    },
+    {
+        id: 'VM-1088',
+        name: 'Riverside Cafe Machine',
+        account: 'Riverside Hospitality',
+        model: 'Vend Mini 2',
+        arrangement: 'Rental',
+        status: 'Service pending',
+        nextDelivery: 'Nov 19, 2026',
+        lastServiced: 'Aug 22, 2026',
+    },
+    {
+        id: 'VM-1120',
+        name: 'Eastside Offices Machine',
+        account: 'Eastside Group',
+        model: 'Vend Mini',
+        arrangement: 'Wholesale',
+        status: 'Issue reported',
+        nextDelivery: 'Nov 24, 2026',
+        lastServiced: 'Oct 12, 2026',
+    },
+    {
+        id: 'VM-1089',
+        name: 'Riverside Cafe Machine 2',
+        account: 'Riverside Hospitality',
+        model: 'Vend Mini',
+        arrangement: 'Rental',
+        status: 'Online',
+        nextDelivery: 'Nov 26, 2026',
+        lastServiced: 'Oct 02, 2026',
+    },
+];
+
 const fakeAccountMultiple: T.SingleAccountInfo =
 {
     login: {
@@ -30,37 +73,28 @@ const fakeAccountMultiple: T.SingleAccountInfo =
     } as T.Login,
     business_accounts: [
         {
-            name: "Business Account 1",
+            name: "Northside Foods",
             setup_required: true,
             careSchedule: fakeCareSchedule,
             sites: [
                 {
-                    name: "Site 1",
-                    machines: [
-                        { name: "Machine 1" },
-                        { name: "Machine 2" }
-                    ]
+                    name: "Downtown Market",
+                    machines: [fakeMachines[0]],
                 },
                 {
-                    name: "Site 2",
-                    machines: [
-                        { name: "Machine 3" },
-                        { name: "Machine 4" }
-                    ]
+                    name: "Riverside Cafe",
+                    machines: [fakeMachines[1], fakeMachines[3]],
                 }
             ] as T.Site[]
         } as T.BusinessAccount,
         {
-            name: "Business Account 2",
+            name: "Eastside Group",
             setup_required: false,
             sites: [
                 {
-                    name: "Site 3",
+                    name: "Eastside Offices",
                     setup_required: true,
-                    machines: [
-                        { name: "Machine 5" },
-                        { name: "Machine 6" }
-                    ]
+                    machines: [fakeMachines[2]],
                 }
             ] as T.Site[]
         } as T.BusinessAccount
@@ -79,47 +113,12 @@ const fakeAccountSingle: T.SingleAccountInfo = {
             name: fakeAccountMultiple.business_accounts[0].sites[0].name,
             setup_required: fakeAccountMultiple.business_accounts[0].sites[0].setup_required,
 
-            machines: [{
-                name: fakeAccountMultiple.business_accounts[0].sites[0].machines[0].name
-            }] as T.Machine[]
+            machines: [fakeAccountMultiple.business_accounts[0].sites[0].machines[0]]
 
         }] as T.Site[]
 
     }] as T.BusinessAccount[]
 };
-
-const fakeMachines: T.MachineRecord[] = [
-    {
-        id: 'VM-1042',
-        name: 'Downtown Market',
-        account: 'Northside Foods · Wholesale',
-        model: 'Vend Mini 2',
-        arrangement: 'Wholesale',
-        status: 'Online',
-        nextDelivery: 'Nov 12, 2026',
-        lastServiced: 'Sep 04, 2026',
-    },
-    {
-        id: 'VM-1088',
-        name: 'Riverside Cafe',
-        account: 'Riverside Hospitality · Rental',
-        model: 'Vend Mini 2',
-        arrangement: 'Rental',
-        status: 'Service pending',
-        nextDelivery: 'Nov 19, 2026',
-        lastServiced: 'Aug 22, 2026',
-    },
-    {
-        id: 'VM-1120',
-        name: 'Eastside Offices',
-        account: 'Eastside Group · Wholesale',
-        model: 'Vend Mini',
-        arrangement: 'Wholesale',
-        status: 'Issue reported',
-        nextDelivery: 'Nov 24, 2026',
-        lastServiced: 'Oct 12, 2026',
-    },
-];
 
 const fakeServiceRequests: T.ServiceRequest[] = [
     { id: 'SR-301', machineId: 'VM-1088', type: 'Maintenance', summary: 'Door sensor check', status: 'Scheduled', date: 'Oct 29, 2026' },

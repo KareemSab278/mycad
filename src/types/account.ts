@@ -3,19 +3,23 @@ type Login = {
     password: string;
 };
 
-type Machine = { name: string };
+type Machine = {
+    id?: string;
+    name: string;
+    account?: string;
+    model?: string;
+    arrangement?: string;
+    status?: MachineStatus;
+    nextDelivery?: string;
+    lastServiced?: string;
+};
 
 type MachineStatus = 'Online' | 'Service pending' | 'Issue reported' | 'Last serviced';
 
-type MachineRecord = Machine & {
-    id: string;
-    account: string;
-    model: string;
-    arrangement: string;
-    status: MachineStatus;
-    nextDelivery: string;
-    lastServiced: string;
-};
+type MachineRecord = Machine & Required<Pick<
+    Machine,
+    'id' | 'account' | 'model' | 'arrangement' | 'status' | 'nextDelivery' | 'lastServiced'
+>>;
 
 type ServiceRequest = {
     id: string;

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import * as C from './../../components';
-import { useAuth } from './../../hooks/auth-context';
 import { useNav } from './../../helpers/navigation';
+import { useAuth } from './../../hooks/auth-context';
 import * as T from './../../types';
 import { goToPage, signInCall } from './helpers';
 import { styles } from './styles';
@@ -25,7 +25,7 @@ export const SignIn = () => {
         setError('');
         setMessage('Sign in successful (not really)');
         setStatus('signedIn');
-        nav.to('/', { params: { email } });
+        nav.replace('/', { params: { email } });
       }
 
     } catch (err) {

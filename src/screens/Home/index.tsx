@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
+import { useNav } from '../../helpers/navigation';
 import { useAuth } from '../../hooks/auth-context';
 import * as LS from '../../storage';
 import type { SingleAccountInfo } from '../../types';
@@ -15,12 +16,12 @@ export const Home = ({ onEditSetup }: HomeProps) => {
   const insets = useSafeAreaInsets();
   const [account, setAccount] = useState<SingleAccountInfo | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState('');
-  const [selectedSiteName, setSelectedSiteName] = useState('');
   const [loading, setLoading] = useState(true);
   const [accountError, setAccountError] = useState('');
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState(false);
   const router = useRouter();
+  const nav = useNav();
   const { setStatus } = useAuth();
 
   useEffect(() => {
@@ -38,7 +39,6 @@ export const Home = ({ onEditSetup }: HomeProps) => {
           const firstAccount = credentials.business_accounts[0];
           setAccount(credentials);
           setSelectedAccountName(firstAccount?.name ?? '');
-          setSelectedSiteName(firstAccount?.sites[0]?.name ?? '');
         }
       } catch (error) {
         console.error('Unable to load home account information:', error);
@@ -57,13 +57,8 @@ export const Home = ({ onEditSetup }: HomeProps) => {
   const selectedBusinessAccount = account?.business_accounts.find(
     (item) => item.name === selectedAccountName,
   );
-  const sites = selectedBusinessAccount?.sites ?? [];
-  const selectedSite = sites.find((site) => site.name === selectedSiteName) ?? sites[0];
-
   const selectBusinessAccount = (name: string) => {
-    const nextAccount = account?.business_accounts.find((item) => item.name === name);
     setSelectedAccountName(name);
-    setSelectedSiteName(nextAccount?.sites[0]?.name ?? '');
   };
 
   const handleSignOut = async () => {
@@ -81,7 +76,7 @@ export const Home = ({ onEditSetup }: HomeProps) => {
     }
   };
 
-  const topPadding = insets.top + (sites.length > 1 ? C.TABS_HEIGHT + C.TABS_TOP_GAP + 12 : 12);
+  const topPadding = insets.top + 12;
 
   if (loading) return <C.Loader />;
 
@@ -90,22 +85,13 @@ export const Home = ({ onEditSetup }: HomeProps) => {
       <C.Container contentContainerStyle={{ paddingTop: topPadding, paddingBottom: 76 }}>
         <C.Typography text="Home" variant="heading" />
 
-        {sites.length > 1 ? (
-          <C.Tabs
-            items={sites.map((site) => ({ label: site.name, value: site.name }))}
-            value={selectedSite?.name ?? ''}
-            onValueChange={setSelectedSiteName}
-          />
-        ) : null}
-
         {accountError ? (
           <C.Alert tone="error" title="Account unavailable" message={accountError} />
         ) : selectedBusinessAccount ? (
           <>
-            <C.Box title="Your account">
+            <C.Box title={account && account.business_accounts.length > 1 ? "Your accounts" : "Your account"}>
               {account && account.business_accounts.length > 1 ? (
                 <C.Selector
-                  label="Business account"
                   placeholder="Select an account"
                   options={account.business_accounts.map((item) => ({ label: item.name, value: item.name }))}
                   value={selectedAccountName}
@@ -130,18 +116,44 @@ export const Home = ({ onEditSetup }: HomeProps) => {
               )}
             </C.Box>
 
-            {selectedSite ? (
-              <C.Box title={selectedSite.name}>
-                {selectedSite.machines.length ? (
-                  selectedSite.machines.map((machine) => (
-                    <C.Box key={machine.name} title={machine.name}>
-                      <C.Typography text="Machine information" variant="body" />
-                    </C.Box>
-                  ))
-                ) : (
-                  <C.Typography text="No machines are available at this site." variant="caption" />
-                )}
-              </C.Box>
+              <C.Typography text={`Machines On ${selectedBusinessAccount.name}`} variant="title" />
+            {selectedBusinessAccount.sites.length ? (
+              selectedBusinessAccount.sites.map((site) => (
+                <View key={site.name}>
+                  {site.machines.length ? (
+                    site.machines.map((machine) => (
+                      <C.Box key={machine.id ?? machine.name} title={machine.name}>
+                        {machine.id ? (
+                          <C.Typography text={`Machine ID: ${machine.id}`} variant="caption" />
+                        ) : null}
+                        {machine.model ? (
+                          <C.Typography text={`Model: ${machine.model}`} variant="body" />
+                        ) : null}
+                        {machine.status ? (
+                          <C.Typography text={`Status: ${machine.status}`} variant="body" />
+                        ) : null}
+                        {machine.arrangement ? (
+                          <C.Typography text={`Arrangement: ${machine.arrangement}`} variant="body" />
+                        ) : null}
+                        {machine.nextDelivery ? (
+                          <C.Typography text={`Next delivery: ${machine.nextDelivery}`} variant="caption" />
+                        ) : null}
+                        {machine.lastServiced ? (
+                          <C.Typography text={`Last serviced: ${machine.lastServiced}`} variant="caption" />
+                        ) : null}
+                        <C.Buttons.Secondary
+                          label="View machine"
+                          onPress={() => nav.to('/Machines', {
+                            params: { machine_id: machine.id ?? machine.name },
+                          })}
+                        />
+                      </C.Box>
+                    ))
+                  ) : (
+                    <C.Typography text="No machines are available at this site." variant="caption" />
+                  )}
+                </View>
+              ))
             ) : (
               <C.Box title="Sites">
                 <C.Typography text="No sites are available for this account." variant="caption" />

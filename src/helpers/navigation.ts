@@ -28,6 +28,29 @@ export const useNav = () => {
                 ])
             );
             destination = {
+                pathname: screen as never,
+                params: queryParams,
+            };
+        }
+
+        router.push(destination);
+        onNavigate?.();
+    };
+
+    const replace = (screen: Href, options?: NavigateOptions) => {
+        const { params, onNavigate } = options ?? {};
+
+        let destination = screen;
+        if (params && Object.keys(params).length > 0) {
+            const queryParams = Object.fromEntries(
+                Object.entries(params).map(([key, value]) => [
+                    key,
+                    value === null || typeof value === 'boolean'
+                        ? String(value)
+                        : value,
+                ])
+            );
+            destination = {
                 pathname: screen as never,  
                 params: queryParams,
             };
@@ -41,9 +64,16 @@ export const useNav = () => {
         callback(receivedParams as T);
     };
 
-    const back = () => router.replace('/');
+    const back = () => {
+        if (router.canGoBack()) {
+            router.back();
+            return;
+        }
 
-    return { to, from, back };
+        router.replace('/');
+    };
+
+    return { to, from, back, replace };
 };
 
 /*

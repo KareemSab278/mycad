@@ -7,6 +7,7 @@ import * as C from '../../components';
 import { needsSetup } from '../../helpers/setup';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
+// import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Home } from '../../screens/Home';
 import { Machines } from '../../screens/Machines';
 import { SetupPage } from '../../screens/Setup/SetupPage';
@@ -14,13 +15,13 @@ import { Support } from '../../screens/Support';
 import * as Ls from '../../storage';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
-// import { ComponentsDemo } from '../../screens/ComponentsDemo';
 
 const routes = [
-  { label: 'Home', Screen: Home },
-  { label: 'Machines', Screen: Machines },
-  { label: 'Support', Screen: Support },
-  { label: 'Access', Screen: Access },
+  { label: 'Home', Screen: Home, icon: 'home' },
+  { label: 'Machines', Screen: Machines, icon: 'machine' },
+  { label: 'Access', Screen: Access, icon: 'access' },
+  { label: 'Support', Screen: Support, icon: 'support' },
+  // { label: 'Components Demo', Screen: ComponentsDemo },
 ];
 
 type Route = (typeof routes)[number];
