@@ -37,7 +37,7 @@ export const InvoiceHistoryModal = ({ visible, onClose }: InvoiceHistoryModalPro
           Unable to open the invoice link. Please try again.
         </Text>
       )}
-      <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
+      <ScrollView >
         {fakeInvoices.map((invoice) => (
           <View key={invoice.number} style={[styles.invoice, { borderColor: theme.border }]}>
             <View style={styles.heading}>
@@ -66,7 +66,7 @@ export const InvoiceHistoryModal = ({ visible, onClose }: InvoiceHistoryModalPro
           </View>
         ))}
       </ScrollView>
-      <C.Buttons.Secondary label="Close" onPress={close} />
+      <C.Buttons.Ghost label="Close" onPress={close} />
     </C.Modal>
   );
 };
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     gap: 12,
+    marginBottom: 12,
     padding: 14,
   },
   heading: {

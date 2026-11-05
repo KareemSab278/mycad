@@ -53,12 +53,12 @@ const SkipSetupDialog = ({ confirmSkipDialogVisible, setConfirmSkipDialogVisible
     title="Skip setup?"
     description="Are you sure you want to skip the setup and go to Home? You can always complete it later from your profile."
   >
-    {error && (
+    {error ? (
       <C.Typography
         text="Unable to skip setup. Please try again."
         style={{ color: '#B42318' }}
       />
-    )}
+    ) : null}
     <C.Buttons.Secondary
       label="Cancel"
       onPress={() => setConfirmSkipDialogVisible(false)}
@@ -145,15 +145,12 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel, onSkip }: S
   return (
     <C.Container contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
 
-      {confirmSkipDialogVisible && 
-        <SkipSetupDialog
+      {confirmSkipDialogVisible && <SkipSetupDialog
           confirmSkipDialogVisible={confirmSkipDialogVisible}
           setConfirmSkipDialogVisible={setConfirmSkipDialogVisible}
           submitting={submitting}
           error={error}
-          onSkip={() => onSkip?.()}
-        />
-      }
+          onSkip={() => onSkip?.()}/>}
 
       <C.Box
         title={mode === 'required' ? "It seems your profile isn't set up yet" : 'Edit your setup'}

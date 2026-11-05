@@ -99,7 +99,7 @@ export const Support = () => {
         >
           <C.Typography text="Ask for help" variant="title" />
           <C.Typography
-            text={contact ? `Your signed-in email and account (${contact?.accountName ?? (loadingAccount ? 'Loading…' : 'Unavailable')}) are attached automatically.`: 'Error: No account information available.'}
+            text={contact ? `Your signed-in email and account (${contact?.accountName ?? (loadingAccount ? 'Loading…' : 'Unavailable')}) are attached automatically.` : 'Error: No account information available.'}
             variant="caption"
           />
           {accountError ? (
@@ -175,34 +175,34 @@ export const Support = () => {
           </C.Card>
 
 
-        <C.Card>
-          <View style={styles.cardContent}>
-            <C.Typography text="Ask for help" variant="title" />
-            <C.Typography text="Have a question or issue? Send us the details." variant="body" />
-            <C.Buttons.Danger
-              label="Ask for help"
-              onPress={() => setHelpModalVisible(true)}
-            />
-          </View>
-        </C.Card>
-
-        {requests.length > 0 ? (
           <C.Card>
             <View style={styles.cardContent}>
-              <C.Typography text="Your support requests" variant="title" />
-              {requests.map((request) => (
-                <View key={request.id} style={[styles.request, { borderColor: theme.border }]}>
-                  <C.Typography text={`${request.id} · ${request.date}`} variant="title" />
-                  <C.Typography text={request.description} variant="body" />
-                  <C.Typography
-                    text={`Email: ${request.email} · Account: ${request.accountName}${request.machineId ? ` · Machine: ${request.machineId}` : ''}`}
-                    variant="caption"
-                  />
-                </View>
-              ))}
+              <C.Typography text="Ask for help" variant="title" />
+              <C.Typography text="Have a question or issue? Send us the details." variant="body" />
+              <C.Buttons.Danger
+                label="Ask for help"
+                onPress={() => setHelpModalVisible(true)}
+              />
             </View>
           </C.Card>
-        ) : null}
+
+          {requests.length > 0 ? (
+            <C.Card>
+              <View style={styles.cardContent}>
+                <C.Typography text="Your support requests" variant="title" />
+                {requests.map((request) => (
+                  <View key={request.id} style={[styles.request, { borderColor: theme.border }]}>
+                    <C.Typography text={`${request.id} · ${request.date}`} variant="title" />
+                    <C.Typography text={request.description} variant="body" />
+                    <C.Typography
+                      text={`Email: ${request.email} · Account: ${request.accountName}${request.machineId ? ` · Machine: ${request.machineId}` : ''}`}
+                      variant="caption"
+                    />
+                  </View>
+                ))}
+              </View>
+            </C.Card>
+          ) : null}
 
         </View>
       </C.Container>

@@ -39,6 +39,11 @@ type ScreenProps = {
   onOpenSupport?: () => void;
 };
 
+/*
+
+  if in web then show a burger instead for navigation and only if viewed in landscape. otherwise if in portrait or in mobile then show the current setup
+*/
+
 export const Router = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
@@ -137,15 +142,15 @@ export const Router = () => {
           entering={
             hasNavigated
               ? transitionDirection > 0
-                ? SlideInRight.duration(500).easing(Easing.out(Easing.cubic))
-                : SlideInLeft.duration(500).easing(Easing.out(Easing.cubic))
+                ? SlideInRight.duration(300).easing(Easing.out(Easing.cubic))
+                : SlideInLeft.duration(300).easing(Easing.out(Easing.cubic))
               : undefined
           }
           exiting={
             pendingRoute
               ? transitionDirection > 0
-                ? SlideOutLeft.duration(200).easing(Easing.out(Easing.cubic))
-                : SlideOutRight.duration(200).easing(Easing.out(Easing.cubic))
+                ? SlideOutLeft.duration(300).easing(Easing.out(Easing.cubic))
+                : SlideOutRight.duration(300).easing(Easing.out(Easing.cubic))
               : undefined
           }
           style={[styles.content, { backgroundColor: theme.background }]}
