@@ -5,6 +5,33 @@ type Login = {
 
 type Machine = { name: string };
 
+type MachineStatus = 'Online' | 'Service pending' | 'Issue reported' | 'Last serviced';
+
+type MachineRecord = Machine & {
+    id: string;
+    account: string;
+    model: string;
+    arrangement: string;
+    status: MachineStatus;
+    nextDelivery: string;
+    lastServiced: string;
+};
+
+type ServiceRequest = {
+    id: string;
+    machineId: string;
+    type: 'Maintenance' | 'Support' | 'Refund';
+    summary: string;
+    status: 'In review' | 'Scheduled' | 'Resolved';
+    date: string;
+};
+
+type CareScheduleItem = {
+    milestone: string;
+    date: string;
+    detail: string;
+};
+
 type Weekday = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 type ContactCategory = 'Emergency' | 'Service' | 'Accounting' | 'Other';
@@ -46,6 +73,7 @@ type BusinessAccount = {
     name: string;
     setup_required: boolean | 0 | 1;
     sites: Site[];
+    careSchedule?: CareScheduleItem[];
 };
 
 type SingleAccountInfo = {
@@ -53,4 +81,19 @@ type SingleAccountInfo = {
     business_accounts: BusinessAccount[];
 };
 
-export type { BusinessAccount, ContactCategory, Login, Machine, SetupContact, SetupProfile, SetupShift, SingleAccountInfo, Site, Weekday };
+export type {
+    BusinessAccount,
+    CareScheduleItem,
+    ContactCategory,
+    Login,
+    Machine,
+    MachineRecord,
+    MachineStatus,
+    ServiceRequest,
+    SetupContact,
+    SetupProfile,
+    SetupShift,
+    SingleAccountInfo,
+    Site,
+    Weekday,
+};

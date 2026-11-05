@@ -20,6 +20,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     textAlignVertical: 'top',
+    marginBottom: 12,
   },
   helper: {
     color: '#667085',

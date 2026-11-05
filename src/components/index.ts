@@ -23,4 +23,5 @@ export * from './TextArea/TextArea';
 export * from './TextField/TextField';
 export * from './Toggler/Toggler';
 export * from './Typography/Typography';
+export * from './UserModal/UserModal';
 

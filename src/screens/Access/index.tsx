@@ -41,12 +41,11 @@ export const Access = () => {
   return (
     <SafeAreaView style={styles.page} edges={['top']}>
       <C.Container style={styles.page} keyboardShouldPersistTaps="handled">
+        <C.Typography text="Site Access Rules" variant="heading" />
+        <C.Typography text="Keep your site information up to date so our operators know when they can visit." />
 
-        <C.Box>
-          <C.Typography text="Site Access Rules" variant="heading" />
-          <C.Typography text="Keep your site information up to date so our operators know when they can visit." />
-
-          {ruleTypes.length > 0 && <C.Selector
+        {ruleTypes.length > 0 &&
+          <C.Selector
             label="Select A Rule Type"
             placeholder="None Selected"
             options={ruleTypes.map((option) => ({ label: option, value: option }))}
@@ -55,9 +54,10 @@ export const Access = () => {
               if (isRuleType(value)) { setRuleType(value); setSaveNotice(0); }
             }}
           />}
-        </C.Box>
+
 
         <C.Box title="Rule Details">
+
 
           {ruleType === null && (
             <C.Typography text="Please select a rule type to continue." />

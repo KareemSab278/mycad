@@ -25,4 +25,15 @@ export const styles = StyleSheet.create({
   disabledLabel: {
     color: '#7d7d7d'
   },
+  circle: {
+    borderRadius: 25,
+    height: 50,
+    width: 50,
+  },
+  circleLabel: {
+    color: '#FFFFFF',
+    fontWeight: '900',
+    fontSize: 20,
+    textAlign: 'center'
+  },
 });

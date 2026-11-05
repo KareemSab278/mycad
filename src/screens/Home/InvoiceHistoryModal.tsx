@@ -31,7 +31,7 @@ export const InvoiceHistoryModal = ({ visible, onClose }: InvoiceHistoryModalPro
   return (
     <C.Modal visible={visible} onClose={close}>
       <C.Typography text="Invoice history" variant="title" />
-      <C.Typography text="Sample invoices are shown below. Invoice links currently open Google." variant="caption" />
+      <C.Typography text="Sample invoices are shown below. Select an invoice to open its link." variant="caption" />
       {linkError && (
         <Text accessibilityRole="alert" style={{ color: theme.buttonDanger }}>
           Unable to open the invoice link. Please try again.

@@ -7,23 +7,27 @@ import * as C from '../../components';
 import { needsSetup } from '../../helpers/setup';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
-import { Accounts } from '../../screens/Accounts';
 import { Home } from '../../screens/Home';
+import { Machines } from '../../screens/Machines';
 import { SetupPage } from '../../screens/Setup/SetupPage';
+import { Support } from '../../screens/Support';
 import * as Ls from '../../storage';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 // import { ComponentsDemo } from '../../screens/ComponentsDemo';
 
-const dev = process.env.EXPO_PUBLIC_DEV_MODE === 'true';
-
 const routes = [
   { label: 'Home', Screen: Home },
-  { label: 'Account', Screen: Accounts },
+  { label: 'Machines', Screen: Machines },
+  { label: 'Support', Screen: Support },
   { label: 'Access', Screen: Access },
 ];
 
 type Route = (typeof routes)[number];
+type ScreenProps = {
+  onEditSetup?: () => void;
+  onOpenSupport?: () => void;
+};
 
 export const Router = () => {
   const insets = useSafeAreaInsets();
@@ -33,7 +37,11 @@ export const Router = () => {
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const [editingSetup, setEditingSetup] = useState(false);
   const [setupSkipped, setSetupSkipped] = useState(false);
-  const ActiveScreen = activeRoute.Screen as ComponentType<{ onEditSetup?: () => void }>;
+  const ActiveScreen = activeRoute.Screen as ComponentType<ScreenProps>;
+  const openSupport = () => {
+    const supportRoute = routes.find((route) => route.label === 'Support');
+    if (supportRoute) setActiveRoute(supportRoute);
+  };
 
   useEffect(() => {
     let active = true;
@@ -65,12 +73,13 @@ export const Router = () => {
     );
   }
 
-  // const allRoutes = dev ? [...routes, { label: 'Demo', Screen: ComponentsDemo }] : routes;
-  // const allRoutes = routes;
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.content, { backgroundColor: theme.background }]}>
-        <ActiveScreen onEditSetup={() => setEditingSetup(true)} />
+        <ActiveScreen
+          onEditSetup={() => setEditingSetup(true)}
+          onOpenSupport={openSupport}
+        />
       </View>
       {!keyboardVisible && <View
         style={[

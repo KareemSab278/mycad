@@ -5,7 +5,7 @@ import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { useTheme } from '../../hooks/use-theme';
 import { styles } from './style';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'disabled';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'disabled' | 'circle';
 
 type HeroButtonVariant = NonNullable<ButtonRootProps['variant']>;
 
@@ -43,7 +43,12 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
       button: [styles.disabled, { backgroundColor: theme.backgroundSelected }],
       hero: 'primary',
       label: [styles.disabledLabel, { color: theme.textSecondary }],
-    }
+    },
+    'circle': {
+      button: [styles.circle],
+      hero: 'primary',
+      label: styles.circleLabel,
+    },
   }
 
   return (
@@ -80,6 +85,7 @@ export const SecondaryButton = buildButton('secondary');
 export const DangerButton = buildButton('danger');
 export const GhostButton = buildButton('ghost');
 export const DisabledButton = buildButton('disabled');
+export const CircleButton = buildButton('circle');
 
 export const Buttons = {
   Primary: PrimaryButton,
@@ -87,4 +93,5 @@ export const Buttons = {
   Danger: DangerButton,
   Ghost: GhostButton,
   Disabled: DisabledButton,
+  Circle: CircleButton,
 };
