@@ -18,12 +18,13 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 export type ButtonProps = DistributiveOmit<ButtonRootProps, 'variant' | 'feedbackVariant' | 'animation'> & {
   label?: string;
   children?: ReactNode;
+  icon?: ReactNode;
   variant?: ButtonVariant;
   style?: StyleProp<ViewStyle>;
 };
 
 // Example: <Button variant="danger" onPress={removeItem}>Delete</Button>.
-export const Button = ({ children, label, variant = 'primary', style, ...props }: ButtonProps) => {
+export const Button = ({ children, label, icon, variant = 'primary', style, ...props }: ButtonProps) => {
   const theme = useTheme();
 
   const variants: VariantStyles = {
@@ -65,7 +66,8 @@ export const Button = ({ children, label, variant = 'primary', style, ...props }
         },
       }}
     >
-      <HeroButton.Label style={variants[variant]?.label}>{label ?? children}</HeroButton.Label>
+      {icon}
+      {label && <HeroButton.Label style={variants[variant]?.label}>{label ?? children}</HeroButton.Label>}
     </HeroButton>
   );
 };

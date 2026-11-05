@@ -1,3 +1,4 @@
+import { House, MessageCircleText, PcCase, ShieldUser } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
@@ -25,11 +26,11 @@ import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 
 const routes = [
-  { label: 'Home', Screen: Home, icon: 'home' },
-  { label: 'Machines', Screen: Machines, icon: 'machine' },
-  { label: 'Access', Screen: Access, icon: 'access' },
-  { label: 'Support', Screen: Support, icon: 'support' },
-  // { label: 'Components Demo', Screen: ComponentsDemo },
+  { label: 'Home', Screen: Home, Icon: House },
+  { label: 'Machines', Screen: Machines, Icon: PcCase },
+  { label: 'Access', Screen: Access, Icon: ShieldUser },
+  { label: 'Support', Screen: Support, Icon: MessageCircleText },
+  // { label: 'Components Demo', Screen: ComponentsDemo, Icon: CircleQuestionMark },
 ];
 
 type Route = (typeof routes)[number];
@@ -165,9 +166,13 @@ export const Router = () => {
         {routes.map((route) => (
           <Button
             key={route.label}
-            label={route.label}
+            icon={
+                <route.Icon
+                  size={24}
+                  color={route === activeRoute ? theme.background : theme.textSecondary}
+                />
+            }
             variant={route === activeRoute ? 'primary' : 'secondary'}
-            style={styles.navigationButton}
             onPress={() => selectRoute(route)}
           />
         ))}
