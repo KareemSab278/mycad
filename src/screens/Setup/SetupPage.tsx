@@ -102,6 +102,12 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel, onSkip }: S
     setStep(0);
   };
 
+  const closeSetup = () => {
+    setConfirmationVisible(false);
+    setSelectedKey('');
+    setStep(-1);
+  };
+
   const saveSetup = async () => {
     if (!selected) return;
     setSubmitting(true);
@@ -201,6 +207,7 @@ export const SetupPage = ({ mode = 'required', onComplete, onCancel, onSkip }: S
         onNext={() => setStep((current) => current + 1)}
         onEdit={(index) => setStep(index)}
         onSubmit={() => setConfirmationVisible(true)}
+        onClose={closeSetup}
         confirmationVisible={confirmationVisible}
         submitting={submitting}
         error={error}

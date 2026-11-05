@@ -12,6 +12,7 @@ type SetupStepModalProps = {
   visible: boolean;
   step: number;
   steps: string[];
+  onClose: () => void;
   profile: SetupProfile;
   siteLabel: string;
   onProfileChange: (profile: SetupProfile) => void;
@@ -72,6 +73,7 @@ export const SetupStepModal = ({
   submitting,
   error,
   onCloseConfirmation,
+  onClose,
   onConfirm,
 }: SetupStepModalProps) => {
   const updateContact = (
@@ -115,8 +117,8 @@ export const SetupStepModal = ({
   return (
     <C.Modal
       visible={visible}
-      canClose={confirmationVisible && !submitting}
-      onClose={onCloseConfirmation}
+      canClose={!submitting}
+      onClose={onClose}
       contentStyle={confirmationVisible ? undefined : { height: '90%', maxHeight: '90%' }}
     >
       {confirmationVisible ? (
@@ -310,6 +312,7 @@ export const SetupStepModal = ({
               <C.Buttons.Primary label="Continue to confirmation" onPress={onSubmit} />
             )}
           </View>
+          <C.Buttons.Ghost label="Cancel" onPress={onClose} />
         </>
         )}
     </C.Modal>
