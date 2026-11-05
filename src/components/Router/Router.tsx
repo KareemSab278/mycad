@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import { useKeyboardState } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
@@ -39,6 +40,26 @@ export const Router = () => {
   const [editingSetup, setEditingSetup] = useState(false);
   const [setupSkipped, setSetupSkipped] = useState(false);
   const ActiveScreen = activeRoute.Screen as ComponentType<ScreenProps>;
+  const swipeGesture = usePanGesture({
+    activeOffsetX: [-15, 15],
+    failOffsetY: [-15, 15],
+    runOnJS: true,
+    onDeactivate: (event) => {
+      if (
+        event.canceled ||
+        Math.abs(event.translationX) < 60 ||
+        Math.abs(event.translationX) <= Math.abs(event.translationY)
+      ) {
+        return;
+      }
+
+      const currentIndex = routes.indexOf(activeRoute);
+      const nextIndex = currentIndex + (event.translationX < 0 ? 1 : -1);
+      if (nextIndex >= 0 && nextIndex < routes.length) {
+        setActiveRoute(routes[nextIndex]);
+      }
+    },
+  });
   const openSupport = () => {
     const supportRoute = routes.find((route) => route.label === 'Support');
     if (supportRoute) setActiveRoute(supportRoute);
@@ -76,12 +97,14 @@ export const Router = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={[styles.content, { backgroundColor: theme.background }]}>
-        <ActiveScreen
-          onEditSetup={() => setEditingSetup(true)}
-          onOpenSupport={openSupport}
-        />
-      </View>
+      <GestureDetector gesture={swipeGesture}>
+        <View style={[styles.content, { backgroundColor: theme.background }]}>
+          <ActiveScreen
+            onEditSetup={() => setEditingSetup(true)}
+            onOpenSupport={openSupport}
+          />
+        </View>
+      </GestureDetector>
       {!keyboardVisible && <View
         style={[
           styles.navigation,
