@@ -135,16 +135,13 @@ export const Router = () => {
   };
 
   useEffect(() => {
-    let active = true;
     void Ls.Creds.get().then((account) => {
-      if (active) {
+      const setupReq = account?.business_accounts?.some((b_acc) => b_acc.setup_required);
+      if (setupReq) {
         setSetupRequired(needsSetup(account));
       }
     });
 
-    return () => {
-      active = false;
-    };
   }, []);
 
   useEffect(() => {
