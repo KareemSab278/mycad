@@ -1,3 +1,7 @@
+/*
+  needs to be updated to handle new API endpoint structure - works with old still
+*/
+
 const buildURL = (path = '') => {
   if (String(path).startsWith('http://') || String(path).startsWith('https://')) {
     return path;
