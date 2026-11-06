@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNav } from '../../helpers/navigation';
 import { useAuth } from '../../hooks/auth-context';
 import * as LS from '../../storage';
 import type { SingleAccountInfo } from '../../types';
@@ -11,9 +10,10 @@ import { MachineList } from './components';
 
 type HomeProps = {
   onEditSetup?: () => void;
+  onOpenSupport?: () => void;
 };
 
-export const Home = ({ onEditSetup }: HomeProps) => {
+export const Home = ({ onEditSetup, onOpenSupport }: HomeProps) => {
   const insets = useSafeAreaInsets();
   const [account, setAccount] = useState<SingleAccountInfo | null>(null);
   const [selectedAccountName, setSelectedAccountName] = useState('');
@@ -22,7 +22,6 @@ export const Home = ({ onEditSetup }: HomeProps) => {
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState(false);
   const router = useRouter();
-  const nav = useNav();
   const { setStatus } = useAuth();
 
   useEffect(() => {
@@ -104,14 +103,13 @@ export const Home = ({ onEditSetup }: HomeProps) => {
               ) : null}
             </C.Box>
 
-            <C.Box title="Customer care schedule" description="Planned check-ins for this account">
+            <C.Box title="Care" description="Next check-in for this account">
               {selectedBusinessAccount.careSchedule?.length ? (
-                selectedBusinessAccount.careSchedule.map((item) => (
-                  <View key={`${item.milestone}-${item.date}`} style={{ gap: 4 }}>
-                    <C.Typography text={`${item.milestone} · ${item.date}`} variant="body" />
-                    <C.Typography text={item.detail} variant="caption" />
-                  </View>
-                ))
+                <View key={`${selectedBusinessAccount.careSchedule[0].milestone}-${selectedBusinessAccount.careSchedule[0].date}`} style={{ gap: 4 }}>
+                  <C.Typography text={`${selectedBusinessAccount.careSchedule[0].milestone} · ${selectedBusinessAccount.careSchedule[0].date}`} variant="body" />
+                  <C.Typography text={selectedBusinessAccount.careSchedule[0].detail} variant="caption" />
+                  <C.Buttons.Ghost label="View Details" onPress={onOpenSupport} />
+                </View>
               ) : (
                 <C.Typography text="No customer care check-ins are scheduled for this account." variant="caption" />
               )}

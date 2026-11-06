@@ -34,17 +34,30 @@ assets/
 
 The root layout installs the gesture-handler, HeroUI Native, and Expo Router theme providers. Metro is configured for Uniwind and its generated type declarations are in `src/uniwind-types.d.ts`.
 
-## Current screens and navigation
+## Routes and getting around
 
-The app currently enters through Expo Router's `src/app/index.tsx`, which renders `Router`. `src/app/components/Router/Router.tsx` switches between screens using local React state; it is not currently using one Expo Router file-based route per screen.
+### Quick guide
 
-- **Home**, **Access**, and **Sign in** are the screens currently listed in the custom navigation.
-- **Access** provides a site access rule form for closed dates, staff changes, opening hours, and information. Rules are stored on the current device only; they are not sent to Coinadrink while there is no API.
-- The four Access rule editors live in `src/screens/Access/RuleEditors`; the Access screen owns their shared form state and save validation.
-- **ComponentsDemo** is added to that navigation only when `EXPO_PUBLIC_DEV_MODE=true`.
-- **Account** exists as a screen but is not currently connected to navigation.
+After signing in and completing setup, **Support** is in the app's main navigation:
 
-To add a screen to the current navigation, create it under `src/app/Screens/<ScreenName>/`, then add its import and route entry in `src/app/components/Router/Router.tsx`. If the app later moves to file-based routes, update this guidance and navigation together.
+- **iOS, Android, and portrait web:** tap the Support (speech-bubble) button in the bottom navigation.
+- **Landscape web:** open the menu in the top-left corner and choose **Support**.
+- **From Home:** tap **View Details** in the Care section.
+
+### Route map
+
+| Destination | How to open it | Implementation |
+| --- | --- | --- |
+| Home | Main navigation; also the `/` entry route | `src/app/index.tsx` renders `Router` |
+| Machines | Main navigation; or open a machine from Home | `src/screens/Machines/index.tsx`; machine links can pass a `machine_id` |
+| Access | Main navigation | `src/screens/Access/index.tsx` |
+| Support | Main navigation or Home's Care **View Details** button | `src/screens/Support/index.tsx` |
+| Sign in | Shown when signed out; route is `/signIn` | `src/app/signIn.tsx` |
+| Setup | Shown when setup is required, or from the account's edit-setup action | `src/screens/Setup/SetupPage.tsx` |
+
+The main navigation is the `routes` list in `src/components/Router/Router.tsx`; it switches screens inside the `/` route, so **Support is an in-app destination, not a `/Support` URL**. Expo Router also has file routes for `/Access`, `/Machines`, and `/ComponentsDemo`, but the usual way to move between the main app screens is the in-app navigation above.
+
+To add or remove a main navigation destination, update the `routes` list in `src/components/Router/Router.tsx`. To add a URL/deep-link route, add the corresponding file under `src/app/` and register it in `src/app/_layout.tsx`.
 
 ## Shared UI components
 
