@@ -23,6 +23,7 @@ export const styles = StyleSheet.create({
   note: { fontSize: 12, lineHeight: 18 },
   fields: { gap: 14, marginTop: 10 },
   buttons: { alignSelf: 'flex-start', flexDirection: 'row', gap: 10, marginTop: 4 },
+  siteButton: { gap: 6 },
   saveButton: { backgroundColor: '#16bdb3', flexGrow: 0, paddingHorizontal: 24 },
   cancelButton: { flexGrow: 0, paddingHorizontal: 24 },
   message: { borderRadius: 8, padding: 12 },

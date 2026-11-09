@@ -1,4 +1,4 @@
-import { fakeAccountMultiple } from '@/fakeAccountInfo';
+import { fakeAccountMultiple } from '@/fakeData';
 import * as LS from '@/storage';
 import { Linking } from 'react-native';
 

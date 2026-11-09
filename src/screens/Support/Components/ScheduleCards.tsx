@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import * as C from '../../../components';
-import { fakeMachines } from '../../../fakeAccountInfo';
+import { fakeMachines } from '../../../fakeData';
 import { useTheme } from '../../../hooks/use-theme';
 import type { CareScheduleItem } from '../../../types';
 import { styles } from '../styles';

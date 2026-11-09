@@ -26,6 +26,7 @@ const AppNavigation = () => {
             <Stack.Screen name="index" />
             <Stack.Screen name="Access" />
             <Stack.Screen name="Machines" />
+            <Stack.Screen name="Orders" />
             <Stack.Screen name="ComponentsDemo" />
             <Stack.Screen name="support" />
           </Stack.Protected>

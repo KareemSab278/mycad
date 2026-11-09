@@ -71,6 +71,21 @@ type Site = {
     setup_required?: boolean | 0 | 1;
     setup_profile?: SetupProfile;
     machines: Machine[];
+    next_order?: SiteOrderItem[];
+};
+
+type Product = {
+    id: string;
+    name: string;
+    category: 'Ingredients' | 'Machine parts';
+    unit: string;
+    description: string;
+};
+
+type SiteOrderItem = {
+    productId: string;
+    machineIds: string[];
+    quantity: number;
 };
 
 type BusinessAccount = {
@@ -93,11 +108,13 @@ export type {
     Machine,
     MachineRecord,
     MachineStatus,
+    Product,
     ServiceRequest,
     SetupContact,
     SetupProfile,
     SetupShift,
     SingleAccountInfo,
     Site,
+    SiteOrderItem,
     Weekday,
 };

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
-import { fakeServiceRequests } from '../../fakeAccountInfo';
+import { fakeServiceRequests } from '../../fakeData';
 import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
 import * as Ls from '../../storage';
@@ -148,7 +148,10 @@ export const Machines = () => {
             <C.Typography text="No machines are available for this account." variant="caption" />
           ) : (
             <>
-              <MachineDetailsCard entry={activeMachine} onRequest={openRequest} />
+              <MachineDetailsCard
+                entry={activeMachine}
+                onRequest={openRequest}
+              />
               <ServiceRequestsCard
                 machineId={machineId}
                 requests={machineRequests}
