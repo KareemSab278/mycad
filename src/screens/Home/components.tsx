@@ -1,5 +1,6 @@
 import type { AccountInfo, LinkedMachine } from '../../types';
 import { useNav } from '../../helpers/navigation';
+import { MachineGrid } from '../Machines/Components';
 import * as C from './../../components';
 
 interface MachineListProps {
@@ -55,21 +56,16 @@ export const MachineList = ({ selectedAccount, machines, loading, error }: Machi
       {!loading && !error && machines.length === 0 ? (
         <C.Typography text="No installed machines are linked to this account." variant="caption" />
       ) : null}
-      {machines.map(({ machine }) => (
-        <C.Box key={machine.machine_id} title={`Machine ${machine.machine_id}`}>
-          <C.Typography text={`Model: ${machine.model_code}`} variant="body" />
-          <C.Typography text={`Location: ${machine.location}`} variant="caption" />
-          <C.Buttons.Secondary
-            label="View machine"
-            onPress={() => nav.to('/Machines', {
-              params: {
-                account_id: selectedAccount.account_id,
-                machine_id: machine.machine_id,
-              },
-            })}
-          />
-        </C.Box>
-      ))}
+      <MachineGrid
+        key={selectedAccount.account_id}
+        machines={machines}
+        onMachinePress={(entry) => nav.to('/Machines', {
+          params: {
+            account_id: entry.account.account_id,
+            machine_id: entry.machine.machine_id,
+          },
+        })}
+      />
     </>
   );
 };

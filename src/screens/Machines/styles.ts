@@ -8,6 +8,9 @@ export const styles = StyleSheet.create({
   header: {
     gap: 8,
   },
+  machineGridContainer: {
+    gap: 12,
+  },
   machineGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
