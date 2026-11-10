@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Account, User } from '../../api';
 import * as C from '../../components';
-import * as Ls from '../../storage';
-import type { CareScheduleItem } from '../../types';
 import { InvoiceHistoryModal } from '../Home/InvoiceHistoryModal';
 import {
   CareScheduleCard,
@@ -20,7 +19,6 @@ export const Support = () => {
   const [contact, setContact] = useState<ContactDetails | null>(null);
   const [accountError, setAccountError] = useState('');
   const [loadingAccount, setLoadingAccount] = useState(true);
-  const [careSchedule, setCareSchedule] = useState<CareScheduleItem[]>([]);
   const [machineId, setMachineId] = useState('');
   const [description, setDescription] = useState('');
   const [requests, setRequests] = useState<SupportRequest[]>([]);
@@ -32,23 +30,20 @@ export const Support = () => {
 
     const loadContact = async () => {
       try {
-        const account = await Ls.Creds.get();
-        if (!account) {
-          if (active) setAccountError('No signed-in account was found. Sign in again to submit a support request.');
-          return;
-        }
+        const [user, accounts] = await Promise.all([
+          User.GetInfo(),
+          Account.GetAll(),
+        ]);
 
         if (active) {
-          const businessAccount = account.business_accounts[0];
           setContact({
-            email: account.login.email,
-            accountName: businessAccount?.name ?? 'No business account linked',
+            email: user.email,
+            accountName: accounts[0]?.company_name ?? 'No business account linked',
           });
-          setCareSchedule(businessAccount?.careSchedule ?? []);
         }
       } catch (error) {
-        console.error('Unable to load support contact details:', error);
-        if (active) setAccountError('Unable to load your account details. Please try again later.');
+        console.error('Unable to load support contact information:', error);
+        if (active) setAccountError('Unable to load your signed-in account details. Please try again later.');
       } finally {
         if (active) setLoadingAccount(false);
       }
@@ -104,7 +99,7 @@ export const Support = () => {
             onAskForHelp={() => setHelpModalVisible(true)}
           />
           <DeliveryScheduleCard />
-          <CareScheduleCard items={careSchedule} />
+          <CareScheduleCard />
           <SupportRequestHistoryCard requests={requests} />
         </View>
       </C.Container>

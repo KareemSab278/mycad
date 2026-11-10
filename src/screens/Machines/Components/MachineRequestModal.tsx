@@ -41,7 +41,7 @@ export const MachineRequestModal = ({
       <C.Typography text={requestType === 'Refund' ? 'Request a purchase refund' : `Request ${requestType.toLowerCase()}`} variant="title" />
       {requestMachine ? (
         <C.Typography
-          text={`${requestMachine.machine.id ?? requestMachine.machine.name} · ${requestMachine.machine.name}`}
+          text={`${requestMachine.machine.machine_id} · ${requestMachine.machine.model_code}`}
           variant="caption"
         />
       ) : null}

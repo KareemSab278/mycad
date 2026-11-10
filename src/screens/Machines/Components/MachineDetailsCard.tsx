@@ -13,31 +13,11 @@ export const MachineDetailsCard = ({ entry, onRequest }: Props) => (
     <View style={styles.cardContent}>
       <View style={styles.machineHeading}>
         <View style={styles.headingText}>
-          <C.Typography text={entry.machine.name} variant="title" />
-          {entry.machine.id ? (
-            <C.Typography text={`Machine ID: ${entry.machine.id}`} variant="caption" />
-          ) : null}
-          {entry.machine.model ? (
-            <C.Typography text={entry.machine.model} variant="caption" />
-          ) : null}
-          <C.Typography text={`${entry.accountName} · ${entry.siteName}`} variant="caption" />
+          <C.Typography text={`Machine ${entry.machine.machine_id}`} variant="title" />
+          <C.Typography text={`Machine ID: ${entry.machine.machine_id}`} variant="caption" />
+          <C.Typography text={`Model: ${entry.machine.model_code}`} variant="caption" />
+          <C.Typography text={`${entry.account.company_name} · ${entry.machine.location}`} variant="caption" />
         </View>
-        {entry.machine.status ? (
-          <C.Typography text={entry.machine.status} variant="caption" />
-        ) : null}
-      </View>
-
-      <View style={styles.details}>
-        {[
-          ['Account arrangement', entry.machine.arrangement],
-          ['Next delivery', entry.machine.nextDelivery],
-          ['Last serviced', entry.machine.lastServiced],
-        ].filter((item): item is [string, string] => Boolean(item[1])).map(([label, value]) => (
-          <View key={label} style={styles.detail}>
-            <C.Typography text={label} variant="caption" />
-            <C.Typography text={value} variant="body" />
-          </View>
-        ))}
       </View>
 
       <View style={styles.actionStack}>

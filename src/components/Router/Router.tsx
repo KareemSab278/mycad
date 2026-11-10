@@ -13,15 +13,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
-import { needsSetup } from '../../helpers/setup';
 import { useTheme } from '../../hooks/use-theme';
 import { Access } from '../../screens/Access';
 // import { ComponentsDemo } from '../../screens/ComponentsDemo';
 import { Home } from '../../screens/Home';
 import { Machines } from '../../screens/Machines';
-import { SetupPage } from '../../screens/Setup/SetupPage';
 import { Support } from '../../screens/Support';
-import * as Ls from '../../storage';
 import { Button } from '../Buttons/Buttons';
 import { styles } from './style';
 
@@ -35,7 +32,6 @@ const routes = [
 
 type Route = (typeof routes)[number];
 type ScreenProps = {
-  onEditSetup?: () => void;
   onOpenSupport?: () => void;
 };
 
@@ -89,13 +85,10 @@ export const Router = () => {
   const { width, height } = useWindowDimensions();
   const keyboardVisible = useKeyboardState((state) => state.isVisible);
   const landscapeWeb = Platform.OS === 'web' && width > height;
-  const [setupRequired, setSetupRequired] = useState<boolean | null>(null);
   const [activeRoute, setActiveRoute] = useState<Route>(routes[0]);
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
   const [hasNavigated, setHasNavigated] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<Route | null>(null);
-  const [editingSetup, setEditingSetup] = useState(false);
-  const [setupSkipped, setSetupSkipped] = useState(false);
   const ActiveScreen = activeRoute.Screen as ComponentType<ScreenProps>;
   const selectRoute = (route: Route) => {
     if (pendingRoute) return;
@@ -135,16 +128,6 @@ export const Router = () => {
   };
 
   useEffect(() => {
-    void Ls.Creds.get().then((account) => {
-      const setupReq = account?.business_accounts?.some((b_acc) => b_acc.setup_required);
-      if (setupReq) {
-        setSetupRequired(needsSetup(account));
-      }
-    });
-
-  }, []);
-
-  useEffect(() => {
     if (!pendingRoute) return;
 
     const frame = requestAnimationFrame(() => {
@@ -154,23 +137,6 @@ export const Router = () => {
 
     return () => cancelAnimationFrame(frame);
   }, [pendingRoute]);
-
-  if (setupRequired === null) return <C.Loader />;
-  if ((setupRequired && !setupSkipped) || editingSetup) {
-    return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <SetupPage
-          mode={setupRequired && !setupSkipped ? 'required' : 'edit'}
-          onComplete={() => {
-            if (!setupSkipped) setSetupRequired(false);
-            setEditingSetup(false);
-          }}
-          onCancel={editingSetup ? () => setEditingSetup(false) : undefined}
-          onSkip={setupRequired && !setupSkipped ? () => setSetupSkipped(true) : undefined}
-        />
-      </View>
-    );
-  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -197,7 +163,6 @@ export const Router = () => {
           style={[styles.content, { backgroundColor: theme.background }]}
         >
           <ActiveScreen
-            onEditSetup={() => setEditingSetup(true)}
             onOpenSupport={openSupport}
           />
         </Animated.View>

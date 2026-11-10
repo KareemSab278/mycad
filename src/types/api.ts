@@ -1,6 +1,12 @@
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-export type ApiProblem = { detail?: string; request_id?: string };
+export type ApiProblem = {
+  type?: string;
+  title?: string;
+  status?: number;
+  detail?: string;
+  request_id?: string;
+};
 
 export type RequestOptions = {
   authenticated?: boolean;
@@ -41,28 +47,44 @@ export type MachineInfo = {
 };
 
 export type InvoiceRecord = {
-  invoice_id: Scalar;
+  invoice_id: string;
   account_id: string;
   company_name: string;
-  period_start: Scalar;
-  period_end: Scalar;
-  ex_vat_total: Scalar | null;
-  vat_total: Scalar | null;
-  total: Scalar | null;
+  period_start: string;
+  period_end: string;
+  ex_vat_total: string | null;
+  vat_total: string | null;
+  total: string | null;
   order_no: string;
-  vat_rate: Scalar | null;
+  vat_rate: string | null;
+  split_credit: string | null;
 };
 
 export type InvoiceDetail = Pick<
   InvoiceRecord,
-  'invoice_id' | 'account_id' | 'company_name' | 'period_start' | 'period_end'
+  | 'invoice_id'
+  | 'account_id'
+  | 'company_name'
+  | 'period_start'
+  | 'period_end'
+  | 'ex_vat_total'
+  | 'vat_total'
+  | 'total'
+  | 'order_no'
+  | 'vat_rate'
+  | 'split_credit'
 > & {
+  address1: string;
+  address2: string;
+  address3: string;
+  address4: string;
+  postcode: string;
   lines: {
-    item_type: Scalar;
-    quantity: Scalar;
+    item_type: string;
+    quantity: string;
     description: string | null;
-    value: Scalar | null;
-    machine_id: Scalar;
+    value: string | null;
+    machine_id: string;
   }[];
 };
 
@@ -107,6 +129,8 @@ export type Rule = {
   rule_type: Scalar;
   notes: string | null;
   staff_levels: Scalar | null;
+  created: string;
+  modified: string | null;
   on_from_date: string | null;
   until_date: string | null;
   ufn: Scalar | boolean | null;

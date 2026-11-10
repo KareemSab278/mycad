@@ -1,10 +1,12 @@
-import type { BusinessAccount } from '@/types';
-import { View } from 'react-native';
+import type { AccountInfo, LinkedMachine } from '../../types';
 import { useNav } from '../../helpers/navigation';
 import * as C from './../../components';
 
 interface MachineListProps {
-  selectedBusinessAccount: BusinessAccount;
+  selectedAccount: AccountInfo;
+  machines: LinkedMachine[];
+  loading: boolean;
+  error: string;
 }
 
 interface SignOutDialogProps {
@@ -43,53 +45,31 @@ export const SignOutDialog = ({ showSignOutAlert, closeSignOutDialog, signingOut
 );
 
 
-export const MachineList = ({ selectedBusinessAccount }: MachineListProps) => {
+export const MachineList = ({ selectedAccount, machines, loading, error }: MachineListProps) => {
   const nav = useNav();
   return (
     <>
-      <C.Typography text={`Machines On ${selectedBusinessAccount.name}`} variant="title" />
-      {selectedBusinessAccount.sites.length ? (
-        selectedBusinessAccount.sites.map((site) => (
-          <View key={site.name}>
-            {site.machines.length ? (
-              site.machines.map((machine) => (
-                <C.Box key={machine.id ?? machine.name} title={machine.name}>
-                  {machine.id ? (
-                    <C.Typography text={`Machine ID: ${machine.id}`} variant="caption" />
-                  ) : null}
-                  {machine.model ? (
-                    <C.Typography text={`Model: ${machine.model}`} variant="body" />
-                  ) : null}
-                  {machine.status ? (
-                    <C.Typography text={`Status: ${machine.status}`} variant="body" />
-                  ) : null}
-                  {machine.arrangement ? (
-                    <C.Typography text={`Arrangement: ${machine.arrangement}`} variant="body" />
-                  ) : null}
-                  {machine.nextDelivery ? (
-                    <C.Typography text={`Next delivery: ${machine.nextDelivery}`} variant="caption" />
-                  ) : null}
-                  {machine.lastServiced ? (
-                    <C.Typography text={`Last serviced: ${machine.lastServiced}`} variant="caption" />
-                  ) : null}
-                  <C.Buttons.Secondary
-                    label="View machine"
-                    onPress={() => nav.to('/Machines', {
-                      params: { machine_id: machine.id ?? machine.name },
-                    })}
-                  />
-                </C.Box>
-              ))
-            ) : (
-              <C.Typography text="No machines are available at this site." variant="caption" />
-            )}
-          </View>
-        ))
-      ) : (
-        <C.Box title="Sites">
-          <C.Typography text="No sites are available for this account." variant="caption" />
+      <C.Typography text={`Machines for ${selectedAccount.company_name}`} variant="title" />
+      {loading ? <C.Loader /> : null}
+      {error ? <C.Alert tone="error" title="Machines unavailable" message={error} /> : null}
+      {!loading && !error && machines.length === 0 ? (
+        <C.Typography text="No installed machines are linked to this account." variant="caption" />
+      ) : null}
+      {machines.map(({ machine }) => (
+        <C.Box key={machine.machine_id} title={`Machine ${machine.machine_id}`}>
+          <C.Typography text={`Model: ${machine.model_code}`} variant="body" />
+          <C.Typography text={`Location: ${machine.location}`} variant="caption" />
+          <C.Buttons.Secondary
+            label="View machine"
+            onPress={() => nav.to('/Machines', {
+              params: {
+                account_id: selectedAccount.account_id,
+                machine_id: machine.machine_id,
+              },
+            })}
+          />
         </C.Box>
-      )}
+      ))}
     </>
   );
 };

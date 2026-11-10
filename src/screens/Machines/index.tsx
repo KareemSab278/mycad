@@ -2,31 +2,34 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Account, Machine } from '../../api';
 import * as C from '../../components';
-import { fakeServiceRequests } from '../../fakeData';
 import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
-import * as Ls from '../../storage';
+import type { ServiceRequest } from '../../types';
+import type { AccountMachine, RequestType } from './Components';
 import {
   getMachineKey,
   MachineDetailsCard,
   MachineRequestModal,
   ServiceRequestsCard,
 } from './Components';
-import type { AccountMachine, RequestType } from './Components';
 import { styles } from './styles';
 
 export const Machines = () => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const nav = useNav();
-  const { machine_id: routeMachineId } = useLocalSearchParams<{ machine_id?: string | string[] }>();
+  const {
+    account_id: routeAccountId,
+    machine_id: routeMachineId,
+  } = useLocalSearchParams<{ account_id?: string | string[]; machine_id?: string | string[] }>();
   const [machines, setMachines] = useState<AccountMachine[]>([]);
   const [activeMachineId, setActiveMachineId] = useState('');
   const [requestMachineId, setRequestMachineId] = useState('');
   const [requestType, setRequestType] = useState<RequestType>('Maintenance');
   const [requestModalOpen, setRequestModalOpen] = useState(false);
-  const [requests, setRequests] = useState(fakeServiceRequests);
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [summary, setSummary] = useState('');
   const [reason, setReason] = useState('');
   const [purchaseDate, setPurchaseDate] = useState('');
@@ -39,34 +42,25 @@ export const Machines = () => {
 
     const loadMachines = async () => {
       try {
-        const account = await Ls.Creds.get();
-        if (!account) {
-          if (active) setAccountError('No signed-in account was found.');
-          return;
-        }
-
-        const accountMachines = account.business_accounts.flatMap((businessAccount) =>
-          businessAccount.sites.flatMap((site) =>
-            site.machines.map((machine) => ({
-              machine,
-              accountName: businessAccount.name,
-              siteName: site.name,
-            })),
-          ),
-        );
+        const accounts = await Account.GetAll();
+        const requestedAccountId = Array.isArray(routeAccountId) ? routeAccountId[0] : routeAccountId;
+        const matchingAccounts = requestedAccountId
+          ? accounts.filter((account) => account.account_id === requestedAccountId)
+          : accounts;
+        const accountMachines = await Machine.GetAllForAccounts(matchingAccounts);
 
         if (active) {
           setMachines(accountMachines);
           const requestedId = Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId;
           const requestedMachine = accountMachines.find((entry) =>
-            entry.machine.id === requestedId || entry.machine.name === requestedId,
+            entry.machine.machine_id === requestedId,
           ) ?? accountMachines[0];
           const requestedMachineKey = requestedMachine ? getMachineKey(requestedMachine) : '';
           setActiveMachineId(requestedMachineKey);
           setRequestMachineId(requestedMachineKey);
         }
       } catch (error) {
-        console.error('Unable to load machine account data:', error);
+        console.error('Unable to load installed machine data:', error);
         if (active) setAccountError('Unable to load your machines. Please try again later.');
       } finally {
         if (active) setLoading(false);
@@ -77,12 +71,12 @@ export const Machines = () => {
     return () => {
       active = false;
     };
-  }, [routeMachineId]);
+  }, [routeAccountId, routeMachineId]);
 
   const activeMachine = machines.find((entry) => getMachineKey(entry) === activeMachineId) ?? machines[0];
   const requestMachine = machines.find((entry) => getMachineKey(entry) === requestMachineId) ?? activeMachine;
-  const machineId = activeMachine?.machine.id ?? activeMachine?.machine.name;
-  const machineRequests = requests.filter((request) => request.machineId === machineId);
+  const machineKey = activeMachine ? getMachineKey(activeMachine) : undefined;
+  const machineRequests = requests.filter((request) => request.machineId === machineKey);
   const refundDetailsValid = requestType !== 'Refund' || (reason.trim() !== '' && purchaseDate.trim() !== '');
 
   const openRequest = (type: RequestType, machineId: string) => {
@@ -107,7 +101,7 @@ export const Machines = () => {
 
     setRequests((current) => [{
       id: `SR-${Date.now()}`,
-      machineId: requestMachine.machine.id ?? requestMachine.machine.name,
+      machineId: getMachineKey(requestMachine),
       type: requestType,
       summary: details,
       status: 'In review',
@@ -123,7 +117,7 @@ export const Machines = () => {
       {machines.length > 1 ? (
         <C.Tabs
           items={machines.map((entry) => ({
-            label: entry.machine.name,
+            label: `${entry.machine.machine_id} · ${entry.account.company_name}`,
             value: getMachineKey(entry),
           }))}
           value={activeMachineId}
@@ -139,13 +133,13 @@ export const Machines = () => {
             {routeMachineId ? (
               <C.Buttons.Primary label="Back to Home" onPress={nav.back} />
             ) : null}
-            <C.Typography text="Check machine status, deliveries, and recent service requests for all machines in your accounts." />
+            <C.Typography text="Installed machines linked to your accounts." />
           </View>
 
           {accountError ? (
             <C.Alert tone="error" title="Machines unavailable" message={accountError} />
           ) : !activeMachine ? (
-            <C.Typography text="No machines are available for this account." variant="caption" />
+            <C.Typography text="No installed machines are available for this account." variant="caption" />
           ) : (
             <>
               <MachineDetailsCard
@@ -153,7 +147,7 @@ export const Machines = () => {
                 onRequest={openRequest}
               />
               <ServiceRequestsCard
-                machineId={machineId}
+                machineId={activeMachine.machine.machine_id}
                 requests={machineRequests}
                 borderColor={theme.border}
               />

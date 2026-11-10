@@ -4,7 +4,7 @@ import * as A from '../../api';
 import * as C from './../../components';
 import { useNav } from './../../helpers/navigation';
 import { useAuth } from './../../hooks/auth-context';
-import * as T from './../../types';
+import type { LoginCredentials } from '../../types';
 import { goToPage } from './helpers';
 import { styles } from './styles';
 
@@ -14,7 +14,7 @@ type SignInProps = {
 };
 
 export const SignIn = ({ reauthentication = false, onSignedIn }: SignInProps) => {
-  const [credentials, setCredentials] = useState<T.Login>({ email: '', password: '' });
+  const [credentials, setCredentials] = useState<LoginCredentials>({ email: '', password: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [alertBatch, setAlertBatch] = useState(0);

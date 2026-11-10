@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Account } from '../../api';
 import * as C from '../../components';
-import { useNav } from '../../helpers/navigation';
-import * as Ls from '../../storage';
-import type { SingleAccountInfo } from '../../types';
+import type { AccountInfo } from '../../types';
 import type { BreakPeriod, Day, RuleType } from './helpers';
 import {
   isRuleType, ruleTypes
@@ -17,8 +16,8 @@ const emptyBreaks = (): BreakPeriod[] => Array.from({ length: 3 }, () => ({ star
 export const Access = () => {
   const { width } = useWindowDimensions();
   const wide = width >= 800;
-  const nav = useNav();
-  const [account, setAccount] = useState<SingleAccountInfo | null>(null);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [accountError, setAccountError] = useState('');
   const [ruleType, setRuleType] = useState<RuleType | null>(null);
   const [fromDate, setFromDate] = useState(() => new Date());
@@ -37,21 +36,19 @@ export const Access = () => {
   useEffect(() => {
     let active = true;
 
-    const loadAccount = async () => {
+    const loadAccounts = async () => {
       try {
-        const savedAccount = await Ls.Creds.get();
-        if (!savedAccount) {
-          if (active) setAccountError('No signed-in account was found. Sign in again to manage site orders.');
-          return;
-        }
-        if (active) setAccount(savedAccount);
+        const linkedAccounts = await Account.GetAll();
+        if (active) setAccounts(linkedAccounts);
       } catch (error) {
-        console.error('Unable to load site access data:', error);
-        if (active) setAccountError('Unable to load your sites. Please try again later.');
+        console.error('Unable to load linked accounts:', error);
+        if (active) setAccountError('Unable to load your linked accounts. Please try again later.');
+      } finally {
+        if (active) setLoadingAccounts(false);
       }
     };
 
-    void loadAccount();
+    void loadAccounts();
     return () => {
       active = false;
     };
@@ -72,30 +69,21 @@ export const Access = () => {
       <C.Container style={styles.page} keyboardShouldPersistTaps="handled">
         <C.Typography text="Site Settings" variant="heading" />
 
-        <C.Box title="Manage site orders" description="Choose a site to review or edit the products in its next order.">
+        <C.Box title="Linked accounts" description="Your signed-in account can access these customer accounts.">
           {accountError ? (
-            <C.Alert tone="error" title="Sites unavailable" message={accountError} />
-          ) : account?.business_accounts.flatMap((businessAccount) =>
-            businessAccount.sites.map((site) => (
-              <View key={`${businessAccount.name}-${site.name}`} style={styles.siteButton}>
-                <C.Typography text={businessAccount.name} variant="caption" />
-                <C.Buttons.Secondary
-                  label={site.name}
-                  onPress={() => nav.to('/Orders', {
-                    params: {
-                      account_name: businessAccount.name,
-                      site_name: site.name,
-                    },
-                  })}
-                />
+            <C.Alert tone="error" title="Accounts unavailable" message={accountError} />
+          ) : loadingAccounts ? (
+            <C.Loader />
+          ) : accounts.length ? (
+            accounts.map((account) => (
+              <View key={account.account_id} style={styles.siteButton}>
+                <C.Typography text={account.company_name} variant="body" />
+                <C.Typography text={`Account ID: ${account.account_id}`} variant="caption" />
               </View>
-            )),
-          ) ?? (
-            <C.Typography text="Loading your sites…" variant="caption" />
+            ))
+          ) : (
+            <C.Typography text="No linked accounts were found." variant="caption" />
           )}
-          {account && account.business_accounts.every((businessAccount) => businessAccount.sites.length === 0) ? (
-            <C.Typography text="No sites are available for this account." variant="caption" />
-          ) : null}
         </C.Box>
 
         <C.Box title="Site Access Rules" description="Configure the rules for accessing your site.">

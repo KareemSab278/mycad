@@ -1,3 +1,5 @@
+import type { AccountInfo, MachineInfo } from './api';
+
 export type Machine = {
   id?: string;
   name: string;
@@ -23,4 +25,9 @@ export type ServiceRequest = {
   summary: string;
   status: 'In review' | 'Scheduled' | 'Resolved';
   date: string;
+};
+
+export type LinkedMachine = {
+  account: AccountInfo;
+  machine: MachineInfo;
 };

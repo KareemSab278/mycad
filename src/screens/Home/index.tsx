@@ -2,21 +2,22 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Account, Auth, Machine, User } from '../../api';
 import { useAuth } from '../../hooks/auth-context';
-import * as LS from '../../storage';
-import type { SingleAccountInfo } from '../../types';
+import type { AccountInfo, LinkedMachine, Profile } from '../../types';
 import * as C from './../../components';
 import { MachineList } from './components';
 
-type HomeProps = {
-  onEditSetup?: () => void;
-  onOpenSupport?: () => void;
-};
-
-export const Home = ({ onEditSetup, onOpenSupport }: HomeProps) => {
+export const Home = () => {
   const insets = useSafeAreaInsets();
-  const [account, setAccount] = useState<SingleAccountInfo | null>(null);
-  const [selectedAccountName, setSelectedAccountName] = useState('');
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState('');
+  const [machineResult, setMachineResult] = useState<{
+    accountId: string;
+    machines: LinkedMachine[];
+    error: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [accountError, setAccountError] = useState('');
   const [signingOut, setSigningOut] = useState(false);
@@ -27,18 +28,16 @@ export const Home = ({ onEditSetup, onOpenSupport }: HomeProps) => {
   useEffect(() => {
     let active = true;
 
-    const loadAccount = async () => {
+    const loadHome = async () => {
       try {
-        const credentials = await LS.Creds.get();
-        if (!credentials) {
-          router.replace('/signIn');
-          return;
-        }
-
+        const [user, linkedAccounts] = await Promise.all([
+          User.GetInfo(),
+          Account.GetAll(),
+        ]);
         if (active) {
-          const firstAccount = credentials.business_accounts[0];
-          setAccount(credentials);
-          setSelectedAccountName(firstAccount?.name ?? '');
+          setProfile(user);
+          setAccounts(linkedAccounts);
+          setSelectedAccountId(linkedAccounts[0]?.account_id ?? '');
         }
       } catch (error) {
         console.error('Unable to load home account information:', error);
@@ -48,30 +47,56 @@ export const Home = ({ onEditSetup, onOpenSupport }: HomeProps) => {
       }
     };
 
-    void loadAccount();
+    void loadHome();
     return () => {
       active = false;
     };
-  }, [router]);
+  }, []);
 
-  const selectedBusinessAccount = account?.business_accounts.find(
-    (item) => item.name === selectedAccountName,
-  );
-  const selectBusinessAccount = (name: string) => {
-    setSelectedAccountName(name);
-  };
+  const selectedAccount = accounts.find((account) => account.account_id === selectedAccountId);
+  const selectedMachineResult = machineResult?.accountId === selectedAccountId ? machineResult : null;
+
+  useEffect(() => {
+    if (!selectedAccount) return;
+
+    let active = true;
+    void Machine.GetAllForAccounts([selectedAccount])
+      .then((linkedMachines) => {
+        if (active) {
+          setMachineResult({
+            accountId: selectedAccount.account_id,
+            machines: linkedMachines,
+            error: '',
+          });
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Unable to load installed machines:', error);
+        if (active) {
+          setMachineResult({
+            accountId: selectedAccount.account_id,
+            machines: [],
+            error: 'Unable to load machines for this account. Please try again later.',
+          });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedAccount]);
 
   const handleSignOut = async () => {
     setSigningOut(true);
     setSignOutError(false);
     try {
-      await LS.Creds.clear();
+      await Auth.LogOut();
       setStatus('signedOut');
-      setSigningOut(false);
       router.replace('/signIn');
     } catch (error) {
       console.error('Unable to sign out:', error);
       setSignOutError(true);
+    } finally {
       setSigningOut(false);
     }
   };
@@ -87,46 +112,50 @@ export const Home = ({ onEditSetup, onOpenSupport }: HomeProps) => {
 
         {accountError ? (
           <C.Alert tone="error" title="Account unavailable" message={accountError} />
-        ) : selectedBusinessAccount ? (
+        ) : accounts.length === 0 ? (
+          <C.Box title="No linked accounts">
+            <C.Typography text="There are no business accounts linked to this user." variant="body" />
+          </C.Box>
+        ) : selectedAccount ? (
           <>
-            <C.Box title={account && account.business_accounts.length > 1 ? "Your accounts" : "Your account"}>
-              {account && account.business_accounts.length > 1 ? (
+            <C.Box title={accounts.length > 1 ? 'Your accounts' : 'Your account'}>
+              {accounts.length > 1 ? (
                 <C.Selector
                   placeholder="Select an account"
-                  options={account.business_accounts.map((item) => ({ label: item.name, value: item.name }))}
-                  value={selectedAccountName}
-                  onValueChange={selectBusinessAccount}
+                  options={accounts.map((account) => ({
+                    label: account.company_name,
+                    value: account.account_id,
+                  }))}
+                  value={selectedAccountId}
+                  onValueChange={setSelectedAccountId}
                 />
               ) : null}
-              {onEditSetup ? (
-                <C.Buttons.Secondary label="Edit business setup" onPress={onEditSetup} />
-              ) : null}
+              <C.Typography text={selectedAccount.company_name} variant="title" />
+              <C.Typography text={`Account ID: ${selectedAccount.account_id}`} variant="caption" />
+              <C.Typography
+                text={[
+                  selectedAccount.address1,
+                  selectedAccount.address2,
+                  selectedAccount.town,
+                  selectedAccount.county,
+                  selectedAccount.postcode,
+                ].filter(Boolean).join(', ')}
+                variant="body"
+              />
             </C.Box>
-
-            <C.Box title="Care" description="Next check-in for this account">
-              {selectedBusinessAccount.careSchedule?.length ? (
-                <View key={`${selectedBusinessAccount.careSchedule[0].milestone}-${selectedBusinessAccount.careSchedule[0].date}`} style={{ gap: 4 }}>
-                  <C.Typography text={`${selectedBusinessAccount.careSchedule[0].milestone} · ${selectedBusinessAccount.careSchedule[0].date}`} variant="body" />
-                  <C.Typography text={selectedBusinessAccount.careSchedule[0].detail} variant="caption" />
-                  <C.Buttons.Ghost label="View Details" onPress={onOpenSupport} />
-                </View>
-              ) : (
-                <C.Typography text="No customer care check-ins are scheduled for this account." variant="caption" />
-              )}
-            </C.Box>
-
-            <MachineList selectedBusinessAccount={selectedBusinessAccount} />
+            <MachineList
+              selectedAccount={selectedAccount}
+              machines={selectedMachineResult?.machines ?? []}
+              loading={Boolean(selectedAccount && !selectedMachineResult)}
+              error={selectedMachineResult?.error ?? ''}
+            />
           </>
-        ) : account ? (
-          <C.Box title="No business accounts">
-            <C.Typography text="There are no business accounts available." variant="body" />
-          </C.Box>
         ) : null}
       </C.Container>
       <View pointerEvents="box-none" style={styles.userButton}>
         <C.UserModal
-          email={account?.login.email ?? ''}
-          accountName={selectedBusinessAccount?.name}
+          email={profile?.email ?? ''}
+          accountName={selectedAccount?.company_name}
           signingOut={signingOut}
           signOutError={signOutError}
           onSignOut={() => { void handleSignOut(); }}

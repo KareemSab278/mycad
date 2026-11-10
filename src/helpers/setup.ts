@@ -1,4 +1,8 @@
-import type { BusinessAccount, SetupProfile, SingleAccountInfo, Site } from '../types';
+import type { BusinessAccount, SetupProfile, Site } from '../types';
+
+type SetupAccountInfo = {
+  business_accounts: BusinessAccount[];
+};
 
 export type SetupTarget = {
   key: string;
@@ -15,7 +19,7 @@ const isSet = (value: boolean | 0 | 1 | undefined) => value === true || value ==
 export const siteNeedsSetup = (account: BusinessAccount, site: Site) =>
   site.setup_required === undefined ? isSet(account.setup_required) : isSet(site.setup_required);
 
-export const getSetupTargets = (info: SingleAccountInfo | null, onlyRequired = true): SetupTarget[] =>
+export const getSetupTargets = (info: SetupAccountInfo | null, onlyRequired = true): SetupTarget[] =>
   (info?.business_accounts ?? []).flatMap((account) =>
     account.sites
       .map((site) => ({
@@ -29,14 +33,14 @@ export const getSetupTargets = (info: SingleAccountInfo | null, onlyRequired = t
       .filter((target) => !onlyRequired || target.required),
   );
 
-export const needsSetup = (info: SingleAccountInfo | null) => getSetupTargets(info).length > 0;
+export const needsSetup = (info: SetupAccountInfo | null) => getSetupTargets(info).length > 0;
 
 export const applySiteSetup = (
-  info: SingleAccountInfo,
+  info: SetupAccountInfo,
   accountName: string,
   siteName: string,
   profile: SetupProfile,
-): SingleAccountInfo => ({
+): SetupAccountInfo => ({
   ...info,
   business_accounts: info.business_accounts.map((account) => {
     if (account.name !== accountName) return account;

@@ -1,12 +1,7 @@
-import type { Machine, ServiceRequest } from '../../../types';
+import type { LinkedMachine, ServiceRequest } from '../../../types';
 
 export type RequestType = ServiceRequest['type'];
+export type AccountMachine = LinkedMachine;
 
-export type AccountMachine = {
-  machine: Machine;
-  accountName: string;
-  siteName: string;
-};
-
-export const getMachineKey = ({ machine, accountName, siteName }: AccountMachine) =>
-  machine.id ?? `${accountName}:${siteName}:${machine.name}`;
+export const getMachineKey = ({ account, machine }: AccountMachine) =>
+  `${account.account_id}:${machine.machine_id}`;
