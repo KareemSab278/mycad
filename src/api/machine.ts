@@ -26,7 +26,6 @@ const GetAllForAccounts = async (accounts: AccountInfo[], signal?: AbortSignal):
       if (after) seenCursors.add(after);
     } while (after);
   }
-
   return linkedMachines;
 };
 

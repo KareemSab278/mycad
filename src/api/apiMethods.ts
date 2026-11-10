@@ -8,6 +8,8 @@ import type {
   WriteOptions,
 } from '../types';
 
+const dev = process.env.NODE_ENV === 'development';
+
 const apiConfig = {
   base: process.env.EXPO_PUBLIC_BASE_URL,
   path: process.env.EXPO_PUBLIC_ENDPOINT_PATH,
@@ -32,6 +34,12 @@ export const createApiError = (status: number, message: string, requestId?: stri
   error.name = 'ApiError';
   error.status = status;
   if (requestId) error.requestId = requestId;
+  if (dev) {
+    console.error(`API Error: ${message}`);
+    console.error(`Request ID: ${requestId ?? 'N/A'}`);
+    console.error(`Stack Trace: ${error?.stack ?? 'N/A'}`);
+    console.error(`Status: ${status}`);
+  }
   return error;
 };
 

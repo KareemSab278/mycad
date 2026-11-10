@@ -67,7 +67,7 @@ export const MachineGrid = ({
             const machineName = `Machine ${machine.machine_id}`;
             const location = machine.location.trim() || 'Location unavailable';
             const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
-            const imageModel = machine.model_code.trim() || '0';
+            const imageModel = machine.root_model || 0;
             const imageUrl = imageBaseUrl
               ? `${imageBaseUrl}/${encodeURIComponent(imageModel)}.png`
               : undefined;

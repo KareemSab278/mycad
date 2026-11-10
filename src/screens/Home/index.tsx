@@ -130,8 +130,7 @@ export const Home = () => {
                   onValueChange={setSelectedAccountId}
                 />
               ) : null}
-              <C.Typography text={selectedAccount.company_name} variant="title" />
-              <C.Typography text={`Account ID: ${selectedAccount.account_id}`} variant="caption" />
+              <C.Typography text={`${selectedAccount.account_id} - ${selectedAccount.company_name}`} variant="title" />
               <C.Typography
                 text={[
                   selectedAccount.address1.trim(),
@@ -140,7 +139,7 @@ export const Home = () => {
                   selectedAccount.county.trim(),
                   selectedAccount.postcode.trim(),
                 ].filter(Boolean).join(', ')}
-                variant="body"
+                variant="caption"
               />
             </C.Box>
             <MachineList
@@ -155,7 +154,7 @@ export const Home = () => {
       <View pointerEvents="box-none" style={styles.userButton}>
         <C.UserModal
           email={profile?.email ?? ''}
-          accountName={selectedAccount?.company_name}
+          accountNames={accounts.map(account => account.company_name)}
           signingOut={signingOut}
           signOutError={signOutError}
           onSignOut={() => { void handleSignOut(); }}

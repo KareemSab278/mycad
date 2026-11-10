@@ -7,7 +7,7 @@ import { Typography } from '../Typography/Typography';
 
 type UserModalProps = {
   email: string;
-  accountName?: string;
+  accountNames?: string[];
   signingOut: boolean;
   signOutError: boolean;
   onSignOut: () => void;
@@ -15,7 +15,7 @@ type UserModalProps = {
 
 export const UserModal = ({
   email,
-  accountName,
+  accountNames,
   signingOut,
   signOutError,
   onSignOut,
@@ -73,8 +73,11 @@ export const UserModal = ({
             </View>
             <Typography text="Signed-in account" variant="title" />
             <Typography text={email} variant="body" />
-            {accountName ? (
-              <Typography text={`Business account: ${accountName.trim()}`} variant="caption" />
+            {accountNames?.length ? (
+              <>
+                <Typography text={`Business Account${accountNames.length > 1 ? 's' : ''}:`} variant="caption" />
+                <Typography text={`${accountNames.map(name => name.trim()).join(', ')}`} variant="caption" />
+              </>
             ) : null}
             <Buttons.Danger
               label="Sign Out"
