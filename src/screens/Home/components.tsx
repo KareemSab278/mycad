@@ -1,4 +1,4 @@
-import { BusinessAccount } from '@/types/account';
+import type { BusinessAccount } from '@/types';
 import { View } from 'react-native';
 import { useNav } from '../../helpers/navigation';
 import * as C from './../../components';

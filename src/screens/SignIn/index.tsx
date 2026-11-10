@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import * as A from '../../api';
 import * as C from './../../components';
 import { useNav } from './../../helpers/navigation';
 import { useAuth } from './../../hooks/auth-context';
 import * as T from './../../types';
-import { goToPage, signInCall } from './helpers';
+import { goToPage } from './helpers';
 import { styles } from './styles';
 
+type SignInProps = {
+  reauthentication?: boolean;
+  onSignedIn?: (email: string) => void;
+};
 
-export const SignIn = () => {
+export const SignIn = ({ reauthentication = false, onSignedIn }: SignInProps) => {
   const [credentials, setCredentials] = useState<T.Login>({ email: '', password: '' });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -18,16 +23,17 @@ export const SignIn = () => {
   const { setStatus } = useAuth();
 
   const handleSignIn = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const email = await signInCall(credentials.email, credentials.password);
-      if (email) {
-        setError('');
-        setMessage('Sign in successful (not really)');
+      const user = await A.Auth.LogIn(credentials.email, credentials.password);
+      setError('');
+      setMessage('Signed in successfully.');
+      if (onSignedIn) {
+        onSignedIn(user.email);
+      } else {
         setStatus('signedIn');
-        nav.replace('/', { params: { email } });
+        nav.replace('/', { params: { email: user.email } });
       }
-
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     } finally {
@@ -46,12 +52,18 @@ export const SignIn = () => {
         </C.Box>
         :
         <C.Box>
+          {reauthentication ? (
+            <C.Typography
+              text="Your session expired. Sign in again to continue; your current page and unsaved work will stay open."
+              variant="caption"
+            />
+          ) : null}
           <C.Typography text="Sign in" variant="heading" />
           <C.InputField
             label="Email"
             placeholder="Enter your email"
             value={credentials.email}
-            onChangeText={(text) => setCredentials({ ...credentials, email: text })}
+            onChangeText={(text) => setCredentials((current) => Object.assign({}, current, { email: text }))}
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
@@ -61,30 +73,28 @@ export const SignIn = () => {
             label="Password"
             placeholder="Enter your password"
             value={credentials.password}
-            onChangeText={(text) => setCredentials({ ...credentials, password: text })}
+            onChangeText={(text) => setCredentials((current) => Object.assign({}, current, { password: text }))}
             secureTextEntry
             autoComplete="current-password"
             textContentType="password"
           />
 
-          <C.LinkButton
-            style={styles.forgotPassword}
-            text="Forgot password?"
-            onPress={() => { goToPage('forgot') }}
-          />
+          {!reauthentication ? (
+            <C.LinkButton
+              style={styles.forgotPassword}
+              text="Forgot password?"
+              onPress={() => { goToPage('forgot'); }}
+            />
+          ) : null}
 
           <C.Buttons.Primary label="Sign in" onPress={handleSignIn} />
 
-          <View style={styles.joinUs}>
-            <C.Typography
-              text="New here?"
-              variant="caption"
-            />
-            <C.LinkButton
-              text="Join us"
-              onPress={() => { goToPage('join') }}
-            />
-          </View>
+          {!reauthentication ? (
+            <View style={styles.joinUs}>
+              <C.Typography text="New here?" variant="caption" />
+              <C.LinkButton text="Join us" onPress={() => { goToPage('join'); }} />
+            </View>
+          ) : null}
         </C.Box>
       }
       {
