@@ -1,5 +1,15 @@
 /*
+  THE CODE MUST BE FUCKING READABLE AS FUCK OR IM GONNA HAVE A FULL BLOWN RAGE MOMENT AND THROW MY MAC OUT THE WINDOW
+
   needs to be updated to handle new API endpoint structure - works with old still
+  the new structure uses RESTful endpoints with query parameters for actions
+  also has bearer tokens for auth
+
+  every api call will require the auth bearer token - it can be stored in AsyncStorage using:
+  // to get the token for ALL API calls:
+  const token = await Creds.getToken(); 
+  // after login, save the token using Creds.saveToken('token')
+  await Creds.saveToken('new token from api after login');
 */
 
 const buildURL = (path = '') => {
