@@ -73,6 +73,9 @@ export const MachineGrid = ({
               : undefined;
             const isSelected = selectedMachineKey === getMachineKey(entry);
 
+            const [imageSource, setImageSource] = useState(imageUrl);
+
+
             return (
               <Pressable
                 key={getMachineKey(entry)}
@@ -88,9 +91,10 @@ export const MachineGrid = ({
                   },
                 ]}
               >
-                {imageUrl ? (
+                {imageSource ? (
                   <Image
-                    source={{ uri: imageUrl }}
+                    source={{ uri: imageSource }}
+                    onError={() => setImageSource(`${imageBaseUrl}/0.png`)}
                     resizeMode="contain"
                     style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]}
                   />
