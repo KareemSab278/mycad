@@ -74,7 +74,7 @@ export const UserModal = ({
             <Typography text="Signed-in account" variant="title" />
             <Typography text={email} variant="body" />
             {accountName ? (
-              <Typography text={`Business account: ${accountName}`} variant="caption" />
+              <Typography text={`Business account: ${accountName.trim()}`} variant="caption" />
             ) : null}
             <Buttons.Danger
               label="Sign Out"
