@@ -16,7 +16,7 @@ export const MachineDetailsCard = ({ entry, onRequest }: Props) => (
           <C.Typography text={`Machine ${entry.machine.machine_id}`} variant="title" />
           <C.Typography text={`Machine ID: ${entry.machine.machine_id}`} variant="caption" />
           <C.Typography text={`Model: ${entry.machine.model_code}`} variant="caption" />
-          <C.Typography text={`${entry.account.company_name} · ${entry.machine.location}`} variant="caption" />
+          <C.Typography text={`${entry.account.company_name.trim()} · ${entry.machine.location.trim()}`} variant="caption" />
         </View>
       </View>
 
