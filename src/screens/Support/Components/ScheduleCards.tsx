@@ -8,7 +8,7 @@ export const DeliveryScheduleCard = () => {
     <C.Card>
       <View style={styles.cardContent}>
         <C.Typography text="Delivery schedule" variant="title" />
-        <C.Typography text="Delivery schedules are not available from the mobile API yet." variant="caption" />
+        <C.Typography text="Coming soon." variant="caption" />
       </View>
     </C.Card>
   );
@@ -22,7 +22,7 @@ export const CareScheduleCard = () => {
       <View style={styles.cardContent}>
         <C.Typography text="Customer care schedule" variant="title" />
         <View style={[styles.scheduleItem, { borderColor: theme.border }]}>
-          <C.Typography text="Customer care schedules are not available from the mobile API yet." variant="caption" />
+          <C.Typography text="Coming soon." variant="caption" />
         </View>
       </View>
     </C.Card>

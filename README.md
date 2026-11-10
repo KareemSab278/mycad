@@ -1,6 +1,6 @@
 # MyCAD
 
-MyCAD is a cross-platform mobile and web app built with Expo, React Native, TypeScript, and Expo Router. It includes a shared UI component library under `src/app/components` and a component showcase screen for developing and checking those components.
+MyCAD is a cross-platform mobile and web app built with Expo, React Native, TypeScript, and Expo Router. It includes a shared UI component library under `src/components` and a component showcase screen for developing and checking those components.
 
 ## Getting started
 
@@ -15,6 +15,8 @@ Run on a specific platform with `npm run ios`, `npm run android`, or `npm run we
 
 The app configuration is in `app.json`. TypeScript is configured in strict mode; the `@/` alias points to `src/`, and `@/assets/` points to `assets/`.
 
+The API client requires `EXPO_PUBLIC_BASE_URL` and `EXPO_PUBLIC_ENDPOINT_PATH` to be configured for the target environment. See [`src/api/api_docs.md`](src/api/api_docs.md) for request, authentication, and error-handling details.
+
 ## Project structure
 
 ```text
@@ -22,11 +24,14 @@ src/
   app/
     _layout.tsx              App-wide providers and navigation stack
     index.tsx                Expo Router entry; renders the custom Router
-    Screens/                 Screen implementations and screen-local styles
-    components/              Shared, reusable UI components
-    constants/theme.ts       Colors, spacing, fonts, and layout constants
-    helpers/                 Shared platform and app helpers
-    hooks/                   Color-scheme and theme hooks
+  screens/                   Screen implementations and screen-local styles
+  components/                Shared, reusable UI components
+  constants/                 Colors, spacing, fonts, and layout constants
+  helpers/                   Shared platform and app helpers
+  hooks/                     Color-scheme and theme hooks
+  api/                       Typed API clients and shared HTTP transport
+  storage/                   Credential storage
+  types/                     API and app types
   global.css                 Tailwind, Uniwind, and HeroUI Native styles
 assets/
   images/                    App icons, illustrations, and tab icons
@@ -38,22 +43,19 @@ The root layout installs the gesture-handler, HeroUI Native, and Expo Router the
 
 ### Quick guide
 
-After signing in and completing setup, **Support** is in the app's main navigation:
+**Support** is in the app's main navigation:
 
 - **iOS, Android, and portrait web:** tap the Support (speech-bubble) button in the bottom navigation.
 - **Landscape web:** open the menu in the top-left corner and choose **Support**.
-- **From Home:** tap **View Details** in the Care section.
-
 ### Route map
 
 | Destination | How to open it | Implementation |
 | --- | --- | --- |
 | Home | Main navigation; also the `/` entry route | `src/app/index.tsx` renders `Router` |
-| Machines | Main navigation; or open a machine from Home | `src/screens/Machines/index.tsx`; machine links can pass a `machine_id` |
+| Machines | Main navigation; or open a machine from Home | `src/screens/Machines/index.tsx`; machine links can pass an `account_id` and `machine_id` |
 | Access | Main navigation | `src/screens/Access/index.tsx` |
-| Support | Main navigation or Home's Care **View Details** button | `src/screens/Support/index.tsx` |
+| Support | Main navigation | `src/screens/Support/index.tsx` |
 | Sign in | Shown when signed out; route is `/signIn` | `src/app/signIn.tsx` |
-| Setup | Shown when setup is required, or from the account's edit-setup action | `src/screens/Setup/SetupPage.tsx` |
 
 The main navigation is the `routes` list in `src/components/Router/Router.tsx`; it switches screens inside the `/` route, so **Support is an in-app destination, not a `/Support` URL**. Expo Router also has file routes for `/Access`, `/Machines`, and `/ComponentsDemo`, but the usual way to move between the main app screens is the in-app navigation above.
 
@@ -85,7 +87,7 @@ import * as C from '@/app/components';
 | `Loader`, `Skeleton` | Loading indicators and content placeholders |
 | `Separator` | Visual divider; `sm`, `md`, and `lg` variants |
 
-See `src/app/Screens/ComponentsDemo` for examples of the controls and their current APIs. Use the shared components before creating screen-specific equivalents.
+See `src/screens/ComponentsDemo` for examples of the controls and their current APIs. Use the shared components before creating screen-specific equivalents.
 
 ### Charts
 
@@ -112,7 +114,7 @@ Use `Charts.Line`, `Charts.Graph`, `Charts.HorizontalBar`, or `Charts.Pie` for t
 
 ### Screen organization
 
-1. Put each screen in `src/app/Screens/<ScreenName>/index.tsx`. Keep screen-only styles in a sibling `styles.ts`; put reusable components and shared behavior in `src/app/components` or the shared helpers/hooks folders.
+1. Put each screen in `src/screens/<ScreenName>/index.tsx`. Keep screen-only styles in a sibling `styles.ts`; put reusable components and shared behavior in `src/components` or the shared helpers/hooks folders.
 2. Export the screen as a named component and use the existing `Router` route list to expose it in the current app navigation.
 3. Build screen content from the shared components. Use `Container` for scrollable content and `Box` to group related content under a heading. Keep layout styles local to the screen and prefer `StyleSheet.create`.
 4. Keep screen files focused on composition and screen state. Extract a reusable component when it is useful across screens or makes the screen substantially easier to understand.
@@ -149,13 +151,15 @@ Screens without keyboard input still need safe-area handling when their content 
 
 ### Visual consistency
 
-- Reuse `Typography` variants instead of creating one-off text sizes. Use `Colors`, `Spacing`, `Fonts`, and layout constants from `src/app/constants/theme.ts` where applicable.
+- Reuse `Typography` variants instead of creating one-off text sizes. Use `Colors`, `Spacing`, `Fonts`, and layout constants from `src/constants/theme.ts` where applicable.
 - Keep spacing, alignment, and component styling consistent across screens. Use `StyleSheet.create` for screen styles; use the existing Uniwind/HeroUI Native setup where those utilities fit.
-- Add new shared UI components under `src/app/components/<ComponentName>/`, keeping implementation and styles together, and export them from `src/app/components/index.ts`.
+- Add new shared UI components under `src/components/<ComponentName>/`, keeping implementation and styles together, and export them from `src/components/index.ts`.
 - Add or update a ComponentsDemo example when introducing or changing a reusable component, so its behavior can be checked in the app.
 
 ## App state and integrations
 
 The repository includes helpers for network reachability and storage. The push-token helper file currently contains commented-out implementation, so push notifications should not be treated as an active app feature.
 
-The existing Home and Account screens are placeholders, and Sign in currently presents a form without an authentication submission flow.
+Sign in posts to `/auth/login` and stores the returned bearer token. The app validates saved sessions with `/me`; Home loads the user's profile and linked accounts from `/me` and `/accounts`, then retrieves installed machines using the account-scoped, cursor-paginated endpoint. API response types are defined under `src/types`.
+
+The mobile API examples do not include product-catalog or order endpoints, account-setup fields, or delivery/customer-care schedules. Those parts of the UI must not present local mock data as live account data; unavailable capabilities are identified in the relevant screens.
