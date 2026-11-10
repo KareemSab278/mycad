@@ -134,11 +134,11 @@ export const Home = () => {
               <C.Typography text={`Account ID: ${selectedAccount.account_id}`} variant="caption" />
               <C.Typography
                 text={[
-                  selectedAccount.address1,
-                  selectedAccount.address2,
-                  selectedAccount.town,
-                  selectedAccount.county,
-                  selectedAccount.postcode,
+                  selectedAccount.address1.trim(),
+                  selectedAccount.address2.trim(),
+                  selectedAccount.town.trim(),
+                  selectedAccount.county.trim(),
+                  selectedAccount.postcode.trim(),
                 ].filter(Boolean).join(', ')}
                 variant="body"
               />
