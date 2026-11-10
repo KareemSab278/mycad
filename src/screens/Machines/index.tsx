@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Image, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Account, Machine } from '../../api';
 import * as C from '../../components';
@@ -8,12 +8,7 @@ import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
 import type { ServiceRequest } from '../../types';
 import type { AccountMachine, RequestType } from './Components';
-import {
-  getMachineKey,
-  MachineDetailsCard,
-  MachineRequestModal,
-  ServiceRequestsCard,
-} from './Components';
+import { getMachineKey, MachineDetailsCard, MachineRequestModal, ServiceRequestsCard } from './Components';
 import { styles } from './styles';
 
 export const Machines = () => {
@@ -36,6 +31,8 @@ export const Machines = () => {
   const [transactionId, setTransactionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [accountError, setAccountError] = useState('');
+  const [machineSearch, setMachineSearch] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -78,6 +75,21 @@ export const Machines = () => {
   const machineKey = activeMachine ? getMachineKey(activeMachine) : undefined;
   const machineRequests = requests.filter((request) => request.machineId === machineKey);
   const refundDetailsValid = requestType !== 'Refund' || (reason.trim() !== '' && purchaseDate.trim() !== '');
+  const modelFilters = [...new Set(machines.map(({ machine }) => machine.model_code.trim() || 'Unknown model'))]
+    .sort((first, second) => first.localeCompare(second));
+  const normalizedSearch = machineSearch.trim().toLowerCase();
+  const visibleMachines = machines.filter(({ account, machine }) => {
+    const model = machine.model_code.trim() || 'Unknown model';
+    const matchesModel = !selectedModel || selectedModel === model;
+    const searchableText = [
+      machine.machine_id,
+      machine.model_code,
+      machine.location,
+      account.company_name,
+    ].join(' ').toLowerCase();
+
+    return matchesModel && searchableText.includes(normalizedSearch);
+  });
 
   const openRequest = (type: RequestType, machineId: string) => {
     setRequestType(type);
@@ -114,18 +126,8 @@ export const Machines = () => {
 
   return (
     <>
-      {machines.length > 1 ? (
-        <C.Tabs
-          items={machines.map((entry) => ({
-            label: `${entry.machine.machine_id} · ${entry.account.company_name}`,
-            value: getMachineKey(entry),
-          }))}
-          value={activeMachineId}
-          onValueChange={setActiveMachineId}
-        />
-      ) : null}
       <C.Container contentContainerStyle={{
-        paddingTop: insets.top + (machines.length > 1 ? C.TABS_HEIGHT + C.TABS_TOP_GAP + 12 : 12),
+        paddingTop: insets.top + 12,
       }}>
         <View style={styles.page}>
           <View style={styles.header}>
@@ -138,19 +140,94 @@ export const Machines = () => {
 
           {accountError ? (
             <C.Alert tone="error" title="Machines unavailable" message={accountError} />
-          ) : !activeMachine ? (
+          ) : machines.length === 0 ? (
             <C.Typography text="No installed machines are available for this account." variant="caption" />
           ) : (
             <>
-              <MachineDetailsCard
-                entry={activeMachine}
-                onRequest={openRequest}
+
+              {activeMachine ? (
+                <>
+                  <ServiceRequestsCard
+                    machineId={activeMachine.machine.machine_id}
+                    requests={machineRequests}
+                    borderColor={theme.border}
+                  />
+                  <MachineDetailsCard
+                    entry={activeMachine}
+                    onRequest={openRequest}
+                  />
+
+                </>
+              ) : null}
+
+              <C.SearchField
+                placeholder="Search machines"
+                value={machineSearch}
+                onChangeText={setMachineSearch}
               />
-              <ServiceRequestsCard
-                machineId={activeMachine.machine.machine_id}
-                requests={machineRequests}
-                borderColor={theme.border}
-              />
+              {modelFilters.length > 0 ? (
+                <C.Selector
+                  label="Filter by model"
+                  placeholder="All models"
+                  options={[
+                    { label: 'All models', value: '' },
+                    ...modelFilters.map((model) => ({ label: `Model: ${model}`, value: model })),
+                  ]}
+                  value={selectedModel}
+                  onValueChange={setSelectedModel}
+                />
+              ) : null}
+
+              {visibleMachines.length > 0 ? (
+                <View style={styles.machineGrid}>
+                  {visibleMachines.map((entry) => {
+                    const machine = entry.machine;
+                    const machineName = `Machine ${machine.machine_id}`;
+                    const location = machine.location.trim() || 'Location unavailable';
+                    const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
+                    const imageModel = machine.model_code.trim() || '0';
+                    const imageUrl = imageBaseUrl
+                      ? `${imageBaseUrl}/${encodeURIComponent(imageModel)}.png`
+                      : undefined;
+                    const isActive = getMachineKey(entry) === machineKey;
+
+                    return (
+                      <Pressable
+                        key={getMachineKey(entry)}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${machineName}, ${location}`}
+                        accessibilityState={{ selected: isActive }}
+                        onPress={() => setActiveMachineId(getMachineKey(entry))}
+                        style={[
+                          styles.machineTile,
+                          {
+                            backgroundColor: theme.backgroundElement,
+                            borderColor: isActive ? theme.button : theme.border,
+                          },
+                        ]}
+                      >
+                        {imageUrl ? (
+                          <Image
+                            source={{ uri: imageUrl }}
+                            resizeMode="contain"
+                            style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]}
+                          />
+                        ) : (
+                          <View style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]} />
+                        )}
+                        <View style={styles.machineTileContent}>
+                          <C.Typography text={machineName} variant="body" />
+                          <C.Typography text={location} variant="caption" />
+                        </View>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              ) : (
+                <C.Typography text="No machines match your search or filters." variant="caption" />
+              )}
+
+
             </>
           )}
         </View>

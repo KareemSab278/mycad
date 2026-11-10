@@ -1,6 +1,6 @@
 
-import { Api } from './apiMethods';
 import type { AccountInfo, LinkedMachine, MachinePage } from '../types';
+import { Api } from './apiMethods';
 import { accountPath } from './paths';
 
 const GetAll = (account: string, after?: string, signal?: AbortSignal) => {

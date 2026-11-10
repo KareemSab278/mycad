@@ -8,6 +8,25 @@ export const styles = StyleSheet.create({
   header: {
     gap: 8,
   },
+  machineGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  machineTile: {
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: 'hidden',
+    width: '31%',
+  },
+  machineImage: {
+    height: 100,
+    width: '100%',
+  },
+  machineTileContent: {
+    gap: 4,
+    padding: 8,
+  },
   cardContent: {
     gap: 12,
   },
