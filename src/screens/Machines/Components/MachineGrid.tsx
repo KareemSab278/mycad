@@ -68,7 +68,7 @@ export const MachineGrid = ({
   const [machineSearch, setMachineSearch] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
-  const showFilters = machines.length > 5;
+  const showFilters = machines.length > 9;
   const modelFilters = [...new Set(machines.map(({ machine }) => machine.model_code.trim() || 'Unknown model'))]
     .sort((first, second) => first.localeCompare(second));
 

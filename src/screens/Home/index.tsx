@@ -8,7 +8,11 @@ import type { AccountInfo, LinkedMachine, Profile } from '../../types';
 import * as C from './../../components';
 import { MachineList } from './components';
 
-export const Home = () => {
+type HomeProps = {
+  onOpenMachine?: (accountId: string, machineId: string) => void;
+};
+
+export const Home = ({ onOpenMachine }: HomeProps) => {
   const insets = useSafeAreaInsets();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
@@ -147,6 +151,10 @@ export const Home = () => {
               machines={selectedMachineResult?.machines ?? []}
               loading={Boolean(selectedAccount && !selectedMachineResult)}
               error={selectedMachineResult?.error ?? ''}
+              onMachinePress={(entry) => onOpenMachine?.(
+                entry.account.account_id,
+                entry.machine.machine_id,
+              )}
             />
           </>
         ) : null}

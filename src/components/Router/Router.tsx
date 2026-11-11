@@ -31,8 +31,15 @@ const routes = [
 ];
 
 type Route = (typeof routes)[number];
+type MachineSelection = {
+  accountId: string;
+  machineId: string;
+};
+
 type ScreenProps = {
   onOpenSupport?: () => void;
+  onOpenMachine?: (accountId: string, machineId: string) => void;
+  machineSelection?: MachineSelection | null;
 };
 
 const LandscapeNavigation = ({
@@ -89,14 +96,16 @@ export const Router = () => {
   const [transitionDirection, setTransitionDirection] = useState<1 | -1>(1);
   const [hasNavigated, setHasNavigated] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<Route | null>(null);
+  const [machineSelection, setMachineSelection] = useState<MachineSelection | null>(null);
   const ActiveScreen = activeRoute.Screen as ComponentType<ScreenProps>;
-  const selectRoute = (route: Route) => {
+  const selectRoute = (route: Route, selection: MachineSelection | null = null) => {
     if (pendingRoute) return;
 
     const currentIndex = routes.indexOf(activeRoute);
     const nextIndex = routes.indexOf(route);
     if (nextIndex === currentIndex) return;
 
+    setMachineSelection(selection);
     setTransitionDirection(nextIndex > currentIndex ? 1 : -1);
     setHasNavigated(true);
     setPendingRoute(route);
@@ -125,6 +134,10 @@ export const Router = () => {
   const openSupport = () => {
     const supportRoute = routes.find((route) => route.label === 'Support');
     if (supportRoute) selectRoute(supportRoute);
+  };
+  const openMachine = (accountId: string, machineId: string) => {
+    const machinesRoute = routes.find((route) => route.label === 'Machines');
+    if (machinesRoute) selectRoute(machinesRoute, { accountId, machineId });
   };
 
   useEffect(() => {
@@ -164,6 +177,8 @@ export const Router = () => {
         >
           <ActiveScreen
             onOpenSupport={openSupport}
+            onOpenMachine={openMachine}
+            machineSelection={machineSelection}
           />
         </Animated.View>
       </GestureDetector>

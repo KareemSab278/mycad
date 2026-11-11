@@ -1,5 +1,4 @@
 import type { AccountInfo, LinkedMachine } from '../../types';
-import { useNav } from '../../helpers/navigation';
 import { MachineGrid } from '../Machines/Components';
 import * as C from './../../components';
 
@@ -8,6 +7,7 @@ interface MachineListProps {
   machines: LinkedMachine[];
   loading: boolean;
   error: string;
+  onMachinePress: (entry: LinkedMachine) => void;
 }
 
 interface SignOutDialogProps {
@@ -46,8 +46,7 @@ export const SignOutDialog = ({ showSignOutAlert, closeSignOutDialog, signingOut
 );
 
 
-export const MachineList = ({ selectedAccount, machines, loading, error }: MachineListProps) => {
-  const nav = useNav();
+export const MachineList = ({ selectedAccount, machines, loading, error, onMachinePress }: MachineListProps) => {
   return (
     <>
       <C.Typography text={`Machines for ${selectedAccount.company_name}`} variant="title" />
@@ -59,12 +58,7 @@ export const MachineList = ({ selectedAccount, machines, loading, error }: Machi
       <MachineGrid
         key={selectedAccount.account_id}
         machines={machines}
-        onMachinePress={(entry) => nav.to('/Machines', {
-          params: {
-            account_id: entry.account.account_id,
-            machine_id: entry.machine.machine_id,
-          },
-        })}
+        onMachinePress={onMachinePress}
       />
     </>
   );

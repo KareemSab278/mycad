@@ -4,21 +4,32 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Account, Machine } from '../../api';
 import * as C from '../../components';
-import { useNav } from '../../helpers/navigation';
 import { useTheme } from '../../hooks/use-theme';
 import type { ServiceRequest } from '../../types';
 import type { AccountMachine, RequestType } from './Components';
 import { getMachineKey, MachineDetailsCard, MachineGrid, MachineRequestModal, ServiceRequestsCard } from './Components';
 import { styles } from './styles';
 
-export const Machines = () => {
+type MachineSelection = {
+  accountId: string;
+  machineId: string;
+};
+
+type MachinesProps = {
+  machineSelection?: MachineSelection | null;
+};
+
+export const Machines = ({ machineSelection }: MachinesProps) => {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
-  const nav = useNav();
   const {
     account_id: routeAccountId,
     machine_id: routeMachineId,
   } = useLocalSearchParams<{ account_id?: string | string[]; machine_id?: string | string[] }>();
+  const requestedAccountId = machineSelection?.accountId
+    ?? (Array.isArray(routeAccountId) ? routeAccountId[0] : routeAccountId);
+  const requestedMachineId = machineSelection?.machineId
+    ?? (Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId);
   const [machines, setMachines] = useState<AccountMachine[]>([]);
   const [activeMachineId, setActiveMachineId] = useState('');
   const [requestMachineId, setRequestMachineId] = useState('');
@@ -38,7 +49,6 @@ export const Machines = () => {
     const loadMachines = async () => {
       try {
         const accounts = await Account.GetAll();
-        const requestedAccountId = Array.isArray(routeAccountId) ? routeAccountId[0] : routeAccountId;
         const matchingAccounts = requestedAccountId
           ? accounts.filter((account) => account.account_id === requestedAccountId)
           : accounts;
@@ -46,9 +56,8 @@ export const Machines = () => {
 
         if (active) {
           setMachines(accountMachines);
-          const requestedId = Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId;
           const requestedMachine = accountMachines.find((entry) =>
-            entry.machine.machine_id === requestedId,
+            entry.machine.machine_id === requestedMachineId,
           ) ?? accountMachines[0];
           const requestedMachineKey = requestedMachine ? getMachineKey(requestedMachine) : '';
           setActiveMachineId(requestedMachineKey);
@@ -66,7 +75,7 @@ export const Machines = () => {
     return () => {
       active = false;
     };
-  }, [routeAccountId, routeMachineId]);
+  }, [requestedAccountId, requestedMachineId]);
 
   const activeMachine = machines.find((entry) => getMachineKey(entry) === activeMachineId) ?? machines[0];
   const requestMachine = machines.find((entry) => getMachineKey(entry) === requestMachineId) ?? activeMachine;
@@ -115,9 +124,6 @@ export const Machines = () => {
         <View style={styles.page}>
           <View style={styles.header}>
             <C.Typography text="Your machines" variant="heading" />
-            {routeMachineId ? (
-              <C.Buttons.Primary label="Back to Home" onPress={nav.back} />
-            ) : null}
             <C.Typography text="Installed machines linked to your accounts." />
           </View>
 
