@@ -91,11 +91,6 @@ export const MachineGrid = ({
     <View style={styles.machineGridContainer}>
       {showFilters ? (
         <>
-          <C.SearchField
-            placeholder="Search machines"
-            value={machineSearch}
-            onChangeText={setMachineSearch}
-          />
           <C.Selector
             label="Filter by model"
             placeholder="All models"
@@ -105,6 +100,11 @@ export const MachineGrid = ({
             ]}
             value={selectedModel}
             onValueChange={setSelectedModel}
+          />
+          <C.SearchField
+            placeholder="Search machines"
+            value={machineSearch}
+            onChangeText={setMachineSearch}
           />
         </>
       ) : null}

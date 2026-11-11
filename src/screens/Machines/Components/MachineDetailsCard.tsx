@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Image, View } from 'react-native';
 import * as C from '../../../components';
 import { styles } from '../styles';
@@ -10,54 +10,70 @@ type Props = {
 };
 export const MachineDetailsCard = ({ entry, onRequest }: Props) => {
   const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
+  const [actionsModalOpen, setActionsModalOpen] = useState(false);
+  const imageSource = imageBaseUrl
+    ? `${imageBaseUrl}/${encodeURIComponent(entry.machine.root_model || 0)}.png`
+    : undefined;
+  const [failedImageSource, setFailedImageSource] = useState<string>();
+  const displayedImageSource = imageSource === failedImageSource && imageBaseUrl
+    ? `${imageBaseUrl}/0.png`
+    : imageSource;
 
-  const [imageSource, setImageSource] = useState(
-    imageBaseUrl
-      ? `${imageBaseUrl}/${encodeURIComponent(entry.machine.root_model || 0)}.png`
-      : undefined,
-  );
+  const request = (type: RequestType) => {
+    onRequest(type, getMachineKey(entry));
+    setActionsModalOpen(false);
+  };
 
-  useEffect(() => {
-    setImageSource(
-      imageBaseUrl
-        ? `${imageBaseUrl}/${encodeURIComponent(entry.machine.root_model || 0)}.png`
-        : undefined,
-    );
-  }, [imageBaseUrl, entry.machine.root_model]);
   return (
-    <C.Card>
-      <View style={styles.cardContent}>
-        <View style={styles.machineHeading}>
-          <View style={{ ...styles.headingText, paddingLeft: 20 }}>
-            <C.Typography text={`Machine ${entry.machine.machine_id}`} variant="title" />
-            <C.Typography text={`Model: ${entry.machine.model_code}`} variant="caption" />
-            <C.Typography text={`${entry.account.company_name.trim()}`} variant="caption" />
-            <C.Typography text={`${entry.machine.location.trim()}`} variant="caption" />
+    <>
+      <C.Card>
+        <View style={styles.cardContent}>
+          <View style={styles.machineHeading}>
+            <View style={{ ...styles.headingText, paddingLeft: 20 }}>
+              <C.Typography text={`Machine ${entry.machine.machine_id}`} variant="title" />
+              <C.Typography text={`Model: ${entry.machine.model_code}`} variant="caption" />
+              <C.Typography text={`${entry.account.company_name.trim()}`} variant="caption" />
+              <C.Typography text={`${entry.machine.location.trim()}`} variant="caption" />
+            </View>
+
+            <Image
+              source={{ uri: displayedImageSource }}
+              onError={() => {
+                if (imageSource) setFailedImageSource(imageSource);
+              }}
+              resizeMode="contain"
+              style={styles.machineDetailsImageCard}
+            />
           </View>
 
-          <Image
-            source={{ uri: imageSource }}
-            onError={() => setImageSource(`${imageBaseUrl}/0.png`)}
-            resizeMode="contain"
-            style={styles.machineDetailsImageCard}
+          <C.Buttons.Secondary
+            label="Support"
+            onPress={() => setActionsModalOpen(true)}
           />
         </View>
+      </C.Card>
 
-        <View style={styles.actionStack}>
+      <C.Modal visible={actionsModalOpen} onClose={() => setActionsModalOpen(false)}>
+        <View style={styles.modalContent}>
+          <C.Typography text="What do you need help with?" variant="title" />
           <C.Buttons.Primary
             label="Request maintenance"
-            onPress={() => onRequest('Maintenance', getMachineKey(entry))}
+            onPress={() => request('Maintenance')}
           />
           <C.Buttons.Secondary
-            label="Ask for support"
-            onPress={() => onRequest('Support', getMachineKey(entry))}
+            label="Customer support"
+            onPress={() => request('Support')}
           />
           <C.Buttons.Secondary
             label="Request refund"
-            onPress={() => onRequest('Refund', getMachineKey(entry))}
+            onPress={() => request('Refund')}
+          />
+          <C.Buttons.Secondary
+            label="Cancel"
+            onPress={() => setActionsModalOpen(false)}
           />
         </View>
-      </View>
-    </C.Card>
-  )
+      </C.Modal>
+    </>
+  );
 };
