@@ -1,6 +1,6 @@
 
+import type { Saved, Scalar, SiteServiceRequest } from '../types';
 import { Api } from './apiMethods';
-import type { Scalar, Saved } from '../types';
 import { recordId } from './paths';
 
 const SubmitInvoiceQuery = (
@@ -14,4 +14,10 @@ const SubmitInvoiceQuery = (
   { key, signal },
 );
 
-export const Support = { SubmitInvoiceQuery };
+const GetAllSiteServiceRequests: (
+  signal?: AbortSignal,
+) => Promise<SiteServiceRequest[]> = async () => {
+  throw new Error('Site service requests are not implemented yet.');
+};
+
+export const Support = { SubmitInvoiceQuery, GetAllSiteServiceRequests };

@@ -1,5 +1,14 @@
 
-import type { AccountInfo, LinkedMachine, MachinePage } from '../types';
+import type {
+  AccountInfo,
+  LinkedMachine,
+  MachinePage,
+  MachineRefundRequestInput,
+  MachineServiceRequestInput,
+  Saved,
+  Scalar,
+  ServiceRequest,
+} from '../types';
 import { Api } from './apiMethods';
 import { accountPath } from './paths';
 
@@ -29,4 +38,49 @@ const GetAllForAccounts = async (accounts: AccountInfo[], signal?: AbortSignal):
   return linkedMachines;
 };
 
-export const Machine = { GetAll, GetAllForAccounts };
+const GetServiceRequests: (
+  account: string,
+  machine: Scalar,
+  signal?: AbortSignal,
+) => Promise<ServiceRequest[]> = async () => {
+  throw new Error('Machine service requests are not implemented yet.');
+};
+
+const SubmitMaintenanceRequest: (
+  account: string,
+  machine: Scalar,
+  body: MachineServiceRequestInput,
+  key: string,
+  signal?: AbortSignal,
+) => Promise<Saved> = async () => {
+  throw new Error('Machine maintenance requests are not implemented yet.');
+};
+
+const SubmitSupportRequest: (
+  account: string,
+  machine: Scalar,
+  body: MachineServiceRequestInput,
+  key: string,
+  signal?: AbortSignal,
+) => Promise<Saved> = async () => {
+  throw new Error('Machine support requests are not implemented yet.');
+};
+
+const SubmitRefundRequest: (
+  account: string,
+  machine: Scalar,
+  body: MachineRefundRequestInput,
+  key: string,
+  signal?: AbortSignal,
+) => Promise<Saved> = async () => {
+  throw new Error('Machine refund requests are not implemented yet.');
+};
+
+export const Machine = {
+  GetAll,
+  GetAllForAccounts,
+  GetServiceRequests,
+  SubmitMaintenanceRequest,
+  SubmitSupportRequest,
+  SubmitRefundRequest,
+};

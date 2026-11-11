@@ -11,3 +11,10 @@ export type SiteOrderItem = {
   machineIds: string[];
   quantity: number;
 };
+
+// still experiemtnal - do not know what the data key vals look like
+export type DeliverySchedulePatch = {
+  add?: SiteOrderItem[];
+  remove?: SiteOrderItem[];
+  update?: SiteOrderItem[];
+};

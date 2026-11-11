@@ -35,6 +35,23 @@ export type ServiceRequest = {
   date: string;
 };
 
+// still experiemtnal - do not know what the data key vals look like
+export type SiteServiceRequest = ServiceRequest & {
+  accountId: string;
+  siteId: string;
+};
+
+export type MachineServiceRequestInput = {
+  summary: string;
+};
+
+export type MachineRefundRequestInput = {
+  reason: string;
+  purchase_date: string;
+  transaction_id?: string;
+  additional_details?: string;
+};
+
 export type LinkedMachine = {
   account: AccountInfo;
   machine: Machine;

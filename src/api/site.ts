@@ -1,5 +1,5 @@
+import type { CareScheduleItem, Rule, RuleInput, Saved, Scalar } from '../types';
 import { Api } from './apiMethods';
-import type { Rule, RuleInput, Saved } from '../types';
 import { accountPath, recordId } from './paths';
 
 const siteAccessPath = (account: string) => `${accountPath(account)}/site-access`;
@@ -49,4 +49,19 @@ const Delete = (
   { key, signal },
 );
 
-export const Site = { GetAll, GetOne, Create, Update, Delete };
+const GetCareSchedule: (
+  account: string,
+  site: Scalar,
+  signal?: AbortSignal,
+) => Promise<CareScheduleItem[]> = async () => {
+  throw new Error('Site care schedules are not implemented yet.');
+};
+
+export const Site = {
+  GetAll,
+  GetOne,
+  Create,
+  Update,
+  Delete,
+  GetCareSchedule,
+};

@@ -55,10 +55,13 @@ The public barrel in `index.ts` exports these callers:
 | `Auth` | `LogIn`, `CheckToken`, `LogOut` |
 | `Account` | List accounts; get one account |
 | `Invoice` | List invoices with filters; get invoice details; download an invoice PDF |
-| `Machine` | List machines for an account, optionally using an `after` cursor |
-| `Site` | List, get, create, update, and delete site-access rules |
-| `Support` | Submit a query about an invoice |
+| `Machine` | List machines for an account, optionally using an `after` cursor; placeholders for service-request listing and maintenance, support, and refund submissions |
+| `Orders` | Placeholders for getting and updating a site's delivery schedule |
+| `Products` | Placeholder for listing products |
+| `Site` | List, get, create, update, and delete site-access rules; placeholder for care schedules |
+| `Support` | Submit a query about an invoice; placeholder for site service requests across linked accounts |
 | `User` | Get the current user's profile |
-| `Orders` | No operations are currently implemented |
+
+Placeholder operations reject with an explicit not-implemented error. They do not make network requests or return sample data; update their types and implementations when the backend endpoint contracts are available.
 
 Account codes used in account-scoped paths must match one uppercase letter followed by three digits. Record IDs must be positive decimal integers of at most 10 digits.

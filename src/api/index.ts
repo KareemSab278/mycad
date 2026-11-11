@@ -4,6 +4,7 @@ export { Account } from './account';
 export { Invoice } from './invoice';
 export { Machine } from './machine';
 export { Orders } from './orders';
+export { Products } from './products';
 export { Site } from './site';
 export { Support } from './support';
 export { User } from './user';
