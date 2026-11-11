@@ -1,12 +1,9 @@
+import { Search } from 'lucide-react-native';
 import type { TextInputProps } from 'react-native';
 import { TextInput, View } from 'react-native';
+import { useTheme } from '../../hooks/use-theme';
 import { styles } from './style';
 
-import { Search } from 'lucide-react-native';
-import { useTheme } from '../../hooks/use-theme';
-// Use to filter a list or collection of results.
-
-// Use to filter a list or collection of results.
 export const SearchField = ({
   style,
   placeholder = 'Search',

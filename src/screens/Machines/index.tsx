@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Account, Machine } from '../../api';
 import * as C from '../../components';
@@ -31,6 +31,7 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
   const requestedMachineId = machineSelection?.machineId
     ?? (Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId);
   const [machines, setMachines] = useState<AccountMachine[]>([]);
+  const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const [activeMachineId, setActiveMachineId] = useState('');
   const [requestMachineId, setRequestMachineId] = useState('');
   const [requestType, setRequestType] = useState<RequestType>('Maintenance');
@@ -42,6 +43,10 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
   const [transactionId, setTransactionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [accountError, setAccountError] = useState('');
+
+  const setScrollRef = (scrollView: ComponentRef<typeof ScrollView> | null) => {
+    scrollRef.current = scrollView;
+  };
 
   useEffect(() => {
     let active = true;
@@ -118,7 +123,7 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
 
   return (
     <>
-      <C.Container contentContainerStyle={{
+      <C.Container scrollViewRef={setScrollRef} contentContainerStyle={{
         paddingTop: insets.top + 12,
       }}>
         <View style={styles.page}>
@@ -141,10 +146,12 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
                     requests={machineRequests}
                     borderColor={theme.border}
                   />
-                  <MachineDetailsCard
-                    entry={activeMachine}
-                    onRequest={openRequest}
-                  />
+                  <Link href={`/Machines#${getMachineKey(activeMachine)}`} asChild>
+                    <MachineDetailsCard
+                      entry={activeMachine}
+                      onRequest={openRequest}
+                    />
+                  </Link>
 
                 </>
               ) : null}
@@ -152,7 +159,10 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
               <MachineGrid
                 machines={machines}
                 selectedMachineKey={machineKey}
-                onMachinePress={(entry) => setActiveMachineId(getMachineKey(entry))}
+                onMachinePress={(entry) => {
+                  setActiveMachineId(getMachineKey(entry));
+                  scrollRef.current?.scrollTo({ y: 0, animated: true,  });
+                }}
               />
 
             </>
