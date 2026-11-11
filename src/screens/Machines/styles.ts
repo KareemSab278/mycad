@@ -26,6 +26,15 @@ export const styles = StyleSheet.create({
     height: 100,
     width: '100%',
   },
+  machineDetailsImage: {
+    height: 100,
+    width: 140,
+  },
+  machineDetailsImageCard: {
+    height: 140,
+    width: 140,
+    paddingRight: 30,
+  },
   machineTileContent: {
     gap: 4,
     padding: 8,
@@ -34,7 +43,7 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   machineHeading: {
-    alignItems: 'flex-start',
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12,
