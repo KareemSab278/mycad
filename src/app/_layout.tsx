@@ -59,7 +59,6 @@ const AppNavigation = () => {
               <Stack.Screen name="Machines" />
               <Stack.Screen name="Orders" />
               <Stack.Screen name="ComponentsDemo" />
-              <Stack.Screen name="support" />
             </Stack.Protected>
             <Stack.Protected guard={status === 'signedOut'}>
               <Stack.Screen name="signIn" />

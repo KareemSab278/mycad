@@ -11,14 +11,63 @@ type Props = {
   selectedMachineKey?: string;
 };
 
+type MachineTileProps = {
+  entry: AccountMachine;
+  imageBaseUrl?: string;
+  isSelected: boolean;
+  onPress: () => void;
+};
+
+const MachineTile = ({ entry, imageBaseUrl, isSelected, onPress }: MachineTileProps) => {
+  const theme = useTheme();
+  const [imageSource, setImageSource] = useState(
+    imageBaseUrl
+      ? `${imageBaseUrl}/${encodeURIComponent(entry.machine.root_model || 0)}.png`
+      : undefined,
+  );
+  const machineName = `Machine ${entry.machine.machine_id}`;
+  const location = entry.machine.location.trim() || 'Location unavailable';
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${machineName}, ${location}`}
+      accessibilityState={{ selected: isSelected }}
+      onPress={onPress}
+      style={[
+        styles.machineTile,
+        {
+          backgroundColor: theme.backgroundElement,
+          borderColor: isSelected ? theme.button : theme.border,
+        },
+      ]}
+    >
+      {imageSource ? (
+        <Image
+          source={{ uri: imageSource }}
+          onError={() => setImageSource(`${imageBaseUrl}/0.png`)}
+          resizeMode="contain"
+          style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]}
+        />
+      ) : (
+        <View style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]} />
+      )}
+      <View style={styles.machineTileContent}>
+        <C.Typography text={machineName} variant="body" />
+        <C.Typography text={location} variant="caption" />
+      </View>
+    </Pressable>
+  );
+};
+
 export const MachineGrid = ({
   machines,
   onMachinePress,
   selectedMachineKey,
 }: Props) => {
-  const theme = useTheme();
   const [machineSearch, setMachineSearch] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
+  const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
   const showFilters = machines.length > 5;
   const modelFilters = [...new Set(machines.map(({ machine }) => machine.model_code.trim() || 'Unknown model'))]
     .sort((first, second) => first.localeCompare(second));
@@ -63,49 +112,14 @@ export const MachineGrid = ({
       {visibleMachines.length > 0 ? (
         <View style={styles.machineGrid}>
           {visibleMachines.map((entry) => {
-            const machine = entry.machine;
-            const machineName = `Machine ${machine.machine_id}`;
-            const location = machine.location.trim() || 'Location unavailable';
-            const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
-            const imageModel = machine.root_model || 0;
-            const imageUrl = imageBaseUrl
-              ? `${imageBaseUrl}/${encodeURIComponent(imageModel)}.png`
-              : undefined;
-            const isSelected = selectedMachineKey === getMachineKey(entry);
-
-            const [imageSource, setImageSource] = useState(imageUrl);
-
-
             return (
-              <Pressable
+              <MachineTile
                 key={getMachineKey(entry)}
-                accessibilityRole="button"
-                accessibilityLabel={`${machineName}, ${location}`}
-                accessibilityState={{ selected: isSelected }}
+                entry={entry}
+                imageBaseUrl={imageBaseUrl}
+                isSelected={selectedMachineKey === getMachineKey(entry)}
                 onPress={() => onMachinePress(entry)}
-                style={[
-                  styles.machineTile,
-                  {
-                    backgroundColor: theme.backgroundElement,
-                    borderColor: isSelected ? theme.button : theme.border,
-                  },
-                ]}
-              >
-                {imageSource ? (
-                  <Image
-                    source={{ uri: imageSource }}
-                    onError={() => setImageSource(`${imageBaseUrl}/0.png`)}
-                    resizeMode="contain"
-                    style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]}
-                  />
-                ) : (
-                  <View style={[styles.machineImage, { backgroundColor: theme.backgroundSelected }]} />
-                )}
-                <View style={styles.machineTileContent}>
-                  <C.Typography text={machineName} variant="body" />
-                  <C.Typography text={location} variant="caption" />
-                </View>
-              </Pressable>
+              />
             );
           })}
         </View>
