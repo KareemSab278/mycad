@@ -3,6 +3,7 @@ import { Image, Pressable, View } from 'react-native';
 import * as C from '../../../components';
 import { useTheme } from '../../../hooks/use-theme';
 import { styles } from '../styles';
+import { MachineFilters } from './MachineFilters';
 import { getMachineKey, type AccountMachine } from './types';
 
 type Props = {
@@ -67,6 +68,7 @@ export const MachineGrid = ({
 }: Props) => {
   const [machineSearch, setMachineSearch] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState('');
   const imageBaseUrl = process.env.EXPO_PUBLIC_MACHINE_IMAGE_URL?.replace(/\/+$/, '');
   const showFilters = machines.length > 9;
   const modelFilters = [...new Set(machines.map(({ machine }) => machine.model_code.trim() || 'Unknown model'))]
@@ -84,30 +86,27 @@ export const MachineGrid = ({
       account.company_name,
     ].join(' ').toLowerCase();
 
-    return matchesModel && searchableText.includes(machineSearch.trim().toLowerCase());
+    return matchesModel && searchableText.includes(machineSearch.trim().toLowerCase()) && (!selectedAccount || selectedAccount === account.account_id);
   });
 
   return (
     <View style={styles.machineGridContainer}>
-      {showFilters ? (
-        <>
-          <C.Selector
-            label="Filter by model"
-            placeholder="All models"
-            options={[
-              { label: 'All models', value: '' },
-              ...modelFilters.map((model) => ({ label: `Model: ${model}`, value: model })),
-            ]}
-            value={selectedModel}
-            onValueChange={setSelectedModel}
-          />
-          <C.SearchField
-            placeholder="Search machines"
-            value={machineSearch}
-            onChangeText={setMachineSearch}
-          />
-        </>
-      ) : null}
+
+      <MachineFilters
+        showFilters={showFilters}
+        machines={machines}
+        selectedAccount={selectedAccount}
+        setSelectedAccount={setSelectedAccount}
+        modelFilters={modelFilters}
+        selectedModel={selectedModel}
+        setSelectedModel={setSelectedModel}
+      />
+
+      <C.SearchField
+        placeholder="Search machines"
+        value={machineSearch}
+        onChangeText={setMachineSearch}
+      />
 
       {visibleMachines.length > 0 ? (
         <View style={styles.machineGrid}>

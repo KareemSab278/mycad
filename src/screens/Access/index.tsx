@@ -17,6 +17,7 @@ export const Access = () => {
   const { width } = useWindowDimensions();
   const wide = width >= 800;
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState('');
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [accountError, setAccountError] = useState('');
   const [ruleType, setRuleType] = useState<RuleType | null>(null);
@@ -39,7 +40,10 @@ export const Access = () => {
     const loadAccounts = async () => {
       try {
         const linkedAccounts = await Account.GetAll();
-        if (active) setAccounts(linkedAccounts);
+        if (active) {
+          setAccounts(linkedAccounts);
+          setSelectedAccountId(linkedAccounts[0]?.account_id ?? '');
+        }
       } catch (error) {
         console.error('Unable to load linked accounts:', error);
         if (active) setAccountError('Unable to load your linked accounts. Please try again later.');
@@ -53,6 +57,8 @@ export const Access = () => {
       active = false;
     };
   }, []);
+
+  const selectedAccount = accounts.find((account) => account.account_id === selectedAccountId);
 
   const setBreak = (index: number, field: keyof BreakPeriod, value: string) => {
     setBreaks((current) => current.map((period, i) => i === index ? { ...period, [field]: value } : period));
@@ -69,27 +75,52 @@ export const Access = () => {
       <C.Container style={styles.page} keyboardShouldPersistTaps="handled">
         <C.Typography text="Site Settings" variant="heading" />
 
-        <C.Box title="Linked accounts" description="Your signed-in account can access these customer accounts.">
+        <C.Box title={'1. ' + (accounts.length > 1 ? 'Your accounts' : 'Your account')}>
           {accountError ? (
             <C.Alert tone="error" title="Accounts unavailable" message={accountError} />
           ) : loadingAccounts ? (
             <C.Loader />
           ) : accounts.length ? (
-            accounts.map((account) => (
-              <View key={account.account_id} style={styles.siteButton}>
-                <C.Typography text={account.company_name} variant="body" />
-                <C.Typography text={`Account ID: ${account.account_id}`} variant="caption" />
-              </View>
-            ))
+            selectedAccount ? (
+              <>
+                {accounts.length > 1 ? (
+                  <C.Selector
+                    label="Select an account"
+                    placeholder="Select an account"
+                    options={accounts.map((account) => ({
+                      label: account.company_name,
+                      value: account.account_id,
+                    }))}
+                    value={selectedAccountId}
+                    onValueChange={(accountId) => {
+                      setSelectedAccountId(accountId);
+                      setRuleType(null);
+                      setSaveNotice(0);
+                    }}
+                  />
+                ) : null}
+                <C.Typography text={`${selectedAccount.account_id} - ${selectedAccount.company_name}`} variant="title" />
+                <C.Typography
+                  text={[
+                    selectedAccount.address1.trim(),
+                    selectedAccount.address2.trim(),
+                    selectedAccount.town.trim(),
+                    selectedAccount.county.trim(),
+                    selectedAccount.postcode.trim(),
+                  ].filter(Boolean).join(', ')}
+                  variant="caption"
+                />
+              </>
+            ) : null
           ) : (
             <C.Typography text="No linked accounts were found." variant="caption" />
           )}
         </C.Box>
 
-        <C.Box title="Site Access Rules" description="Configure the rules for accessing your site.">
-          <C.Typography text="Keep your site information up to date so our operators know when they can visit." />
+        <C.Box title="2. Site Access Rules" description="Configure site access rules for the selected account.">
+          <C.Typography text="Keep your site access information up to date so our operators know when they can visit." />
 
-          {ruleTypes.length > 0 &&
+          {selectedAccount && ruleTypes.length > 0 &&
             <C.Selector
               label="Select A Rule Type"
               placeholder="None Selected"
@@ -103,16 +134,20 @@ export const Access = () => {
 
 
 
-        <C.Box title="Rule Details">
-          {ruleType === null && (
+        <C.Box title="3. Rule Details">
+          {!selectedAccount && (
+            <C.Typography text="Select an account to configure site access rules." />
+          )}
+
+          {selectedAccount && ruleType === null && (
             <C.Typography text="Please select a rule type to continue." />
           )}
 
-          {ruleType === 'Closed Dates' && (
+          {selectedAccount && ruleType === 'Closed Dates' && (
             <ClosedDatesEditor dateRange={dateRange} {...informationProps} />
           )}
 
-          {ruleType === 'Staff Changes' && (
+          {selectedAccount && ruleType === 'Staff Changes' && (
             <StaffChangesEditor
               dateRange={dateRange}
               staffLevel={staffLevel}
@@ -126,7 +161,7 @@ export const Access = () => {
             />
           )}
 
-          {ruleType === 'Opening Hours' && (
+          {selectedAccount && ruleType === 'Opening Hours' && (
             <OpeningHoursEditor
               wide={wide}
               opening={opening}
@@ -141,9 +176,9 @@ export const Access = () => {
             />
           )}
 
-          {ruleType === 'Information' && <InformationEditor {...informationProps} />}
+          {selectedAccount && ruleType === 'Information' && <InformationEditor {...informationProps} />}
 
-          {ruleType !== null && (
+          {selectedAccount && ruleType !== null && (
             <View style={styles.buttons}>
               <C.Buttons.Primary label="Save" onPress={() => setSaveNotice((count) => count + 1)} />
             </View>

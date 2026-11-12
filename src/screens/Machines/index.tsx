@@ -155,7 +155,7 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
 
                 </>
               ) : null}
-
+              
               <MachineGrid
                 machines={machines}
                 selectedMachineKey={machineKey}
