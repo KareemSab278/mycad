@@ -1,14 +1,4 @@
-import type { AccountInfo, LinkedMachine } from '../../types';
-import { MachineGrid } from '../Machines/Components';
 import * as C from './../../components';
-
-interface MachineListProps {
-  selectedAccount: AccountInfo;
-  machines: LinkedMachine[];
-  loading: boolean;
-  error: string;
-  onMachinePress: (entry: LinkedMachine) => void;
-}
 
 interface SignOutDialogProps {
   showSignOutAlert: boolean;
@@ -44,22 +34,3 @@ export const SignOutDialog = ({ showSignOutAlert, closeSignOutDialog, signingOut
     />
   </C.Dialog>
 );
-
-
-export const MachineList = ({ selectedAccount, machines, loading, error, onMachinePress }: MachineListProps) => {
-  return (
-    <>
-      <C.Typography text={`Machines for ${selectedAccount.company_name}`} variant="title" />
-      {loading ? <C.Loader /> : null}
-      {error ? <C.Alert tone="error" title="Machines unavailable" message={error} /> : null}
-      {!loading && !error && machines.length === 0 ? (
-        <C.Typography text="No installed machines are linked to this account." variant="caption" />
-      ) : null}
-      <MachineGrid
-        key={selectedAccount.account_id}
-        machines={machines}
-        onMachinePress={onMachinePress}
-      />
-    </>
-  );
-};

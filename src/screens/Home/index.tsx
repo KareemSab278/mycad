@@ -6,9 +6,9 @@ import { Account, Auth, Machine, User } from '../../api';
 import { useAuth } from '../../hooks/auth-context';
 import type { AccountInfo, LinkedMachine, Profile } from '../../types';
 import * as C from './../../components';
-import { MachineList } from './components';
 
 type HomeProps = {
+  // leave just incase theres alerts for the machine info or anything for now
   onOpenMachine?: (accountId: string, machineId: string) => void;
 };
 
@@ -146,19 +146,40 @@ export const Home = ({ onOpenMachine }: HomeProps) => {
                 variant="caption"
               />
             </C.Box>
-            <MachineList
-              selectedAccount={selectedAccount}
-              machines={selectedMachineResult?.machines ?? []}
-              loading={Boolean(selectedAccount && !selectedMachineResult)}
-              error={selectedMachineResult?.error ?? ''}
-              onMachinePress={(entry) => onOpenMachine?.(
-                entry.account.account_id,
-                entry.machine.machine_id,
-              )}
-            />
           </>
         ) : null}
+
+        {/* 
+        thinking of putting any alerts for the account here, such as errors or notifications related to the selected account.
+        or show the upcoming service notifications, or when maintenance is required for the machines linked to the account.
+        or if there are any critical alerts related to the account or its linked machines.
+        or if support has completed any actions related to the account or its linked machines.
+        show next delivery for account and have btn to open the screen to view details or edit the delivery.
+        etc. for now ill show no actions for your account right now
+      */}
+
+        <C.Box title="Upcoming alerts">
+          <C.Typography text="Seems like there are no upcoming alerts for your account." variant="body" />
+        </C.Box>
       </C.Container>
+
+      {/* show links here to different pages - kinda like a main menu
+      
+        - what would you like to do today? 
+          - edit my next delivery
+          - view upcoming service notifications
+          - check critical alerts for my account
+          - view support actions related to my account
+          - view all account machines
+          - edit site access settings
+
+      they go to specific pages from here using the navigation helper.
+      */}
+
+
+
+
+
       <View pointerEvents="box-none" style={styles.userButton}>
         <C.UserModal
           email={profile?.email ?? ''}
