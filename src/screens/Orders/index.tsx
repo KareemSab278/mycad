@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as C from '../../components';
-import { useNav } from '../../helpers/navigation';
+import { useNav } from '../../hooks/use-nav';
 
 export const Orders = () => {
   const insets = useSafeAreaInsets();
