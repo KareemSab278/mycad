@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import * as A from '../../api';
+import { getAndSavePushTokenAndDeviceId } from '../../helpers/pushToken';
 import { useNav } from '../../hooks/use-nav';
 import type { LoginCredentials } from '../../types';
 import * as C from './../../components';
@@ -26,6 +27,7 @@ export const SignIn = ({ reauthentication = false, onSignedIn }: SignInProps) =>
     setLoading(true);
     try {
       const user = await A.Auth.LogIn(credentials.email, credentials.password);
+      await getAndSavePushTokenAndDeviceId();
       setError('');
       setMessage('Signed in successfully.');
       if (onSignedIn) {

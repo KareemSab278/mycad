@@ -8,3 +8,4 @@ export { Products } from './products';
 export { Site } from './site';
 export { Support } from './support';
 export { User } from './user';
+export { NotificationToken } from './notificationTokens';

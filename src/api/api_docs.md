@@ -61,6 +61,7 @@ The public barrel in `index.ts` exports these callers:
 | `Site` | List, get, create, update, and delete site-access rules; placeholder for care schedules |
 | `Support` | Submit a query about an invoice; placeholder for site service requests across linked accounts |
 | `User` | Get the current user's profile |
+| `NotificationToken` | Register the device's Expo push token |
 
 Placeholder operations reject with an explicit not-implemented error. They do not make network requests or return sample data; update their types and implementations when the backend endpoint contracts are available.
 
