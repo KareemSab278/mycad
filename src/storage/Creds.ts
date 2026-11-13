@@ -1,5 +1,6 @@
 import { Try } from '../helpers/ls';
 
+// for auth tokens storage and retrieval
 export const Creds = {
     remove: async () => await Try.remove('creds'),
     saveToken: async (token: string) => await Try.save('token', token),

@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
 import { Platform } from 'react-native';
 import { NotificationToken } from '../api';
+import * as S from '../storage';
 
 const DEV_MODE = process.env.EXPO_PUBLIC_DEV_MODE === 'true';
 
@@ -24,16 +25,24 @@ type PushTokenResult = {
 
 const getDeviceId = async (): Promise<string | null> => {
     try {
-        const deviceId = Platform.OS === 'android' ? Application.getAndroidId()
-            : Platform.OS === 'ios' ? await Application.getIosIdForVendorAsync()
-                : null;
-        return deviceId;
-        
+        if (Platform.OS === 'android') {
+            const res =  Application.getAndroidId();
+            DEV_MODE && console.log('Android Device ID:', res);
+            return res;
+        }
+
+        if (Platform.OS === 'ios') {
+            const res = await Application.getIosIdForVendorAsync();
+            DEV_MODE && console.log('iOS Device ID:', res);
+            return res;
+        }
+
+        return null;
     } catch {
-        DEV_MODE && console.log('Failed to get device ID');
         return null;
     }
 };
+
 
 export const getAndSavePushTokenAndDeviceId =
     async (): Promise<PushTokenResult> => {
@@ -80,6 +89,8 @@ export const getAndSavePushTokenAndDeviceId =
 
         DEV_MODE && console.log('Expo Push Token:', tokenResult.data);
         const deviceId = await getDeviceId();
+
+        await S.NotificationStorage.savePushToken(tokenResult.data);
 
         await NotificationToken.Register(tokenResult.data);
 

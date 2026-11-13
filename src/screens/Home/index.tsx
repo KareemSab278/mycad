@@ -28,6 +28,7 @@ export const Home = ({ onOpenMachine }: HomeProps) => {
   const [signOutError, setSignOutError] = useState(false);
   const router = useRouter();
   const { setStatus } = useAuth();
+  const nav = useRouter();
 
   useEffect(() => {
     let active = true;
@@ -94,9 +95,16 @@ export const Home = ({ onOpenMachine }: HomeProps) => {
     setSigningOut(true);
     setSignOutError(false);
     try {
-      await Auth.LogOut();
-      setStatus('signedOut');
-      router.replace('/signIn');
+      const loggedOut = await Auth.LogOut().then(() => true).catch(() => false);
+
+      if (loggedOut) {
+        setStatus('signedOut');
+        nav.replace('/signIn');
+      } else {
+        setSignOutError(true);
+        console.error('Sign out failed');
+      }
+
     } catch (error) {
       console.error('Unable to sign out:', error);
       setSignOutError(true);
@@ -186,7 +194,7 @@ export const Home = ({ onOpenMachine }: HomeProps) => {
           accountNames={accounts.map(account => account.company_name)}
           signingOut={signingOut}
           signOutError={signOutError}
-          onSignOut={() => { void handleSignOut(); }}
+          onSignOut={async () => { await handleSignOut(); }}
         />
       </View>
     </View>

@@ -10,7 +10,7 @@ type UserModalProps = {
   accountNames?: string[];
   signingOut: boolean;
   signOutError: boolean;
-  onSignOut: () => void;
+  onSignOut: () => Promise<void>;
 };
 
 export const UserModal = ({

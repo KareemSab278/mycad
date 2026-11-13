@@ -27,7 +27,11 @@ export const SignIn = ({ reauthentication = false, onSignedIn }: SignInProps) =>
     setLoading(true);
     try {
       const user = await A.Auth.LogIn(credentials.email, credentials.password);
-      await getAndSavePushTokenAndDeviceId();
+      try {
+        await getAndSavePushTokenAndDeviceId();
+      } catch (notificationError) {
+        console.warn('Push notification registration failed:', notificationError);
+      }
       setError('');
       setMessage('Signed in successfully.');
       if (onSignedIn) {
