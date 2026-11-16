@@ -1,5 +1,6 @@
 import { Api } from './apiMethods';
 import { User } from './user';
+// james needs to build this endpiont in the backend for me ltr
 
 export type RegisterNotificationTokenResponse = {
   success: boolean;

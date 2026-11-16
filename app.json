@@ -25,7 +25,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.kareemsab278.mycad"
+      "package": "com.kareemsab278.mycad",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",

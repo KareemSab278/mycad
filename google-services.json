@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "953531846233",
+    "project_id": "mycoinadrink",
+    "storage_bucket": "mycoinadrink.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953531846233:android:8201fa155059185042ab48",
+        "android_client_info": {
+          "package_name": "com.kareemsab278.mycad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbUejYdFYprOyrQja5EzwMvkK_KkuCmw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
