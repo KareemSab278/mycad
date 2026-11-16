@@ -10,6 +10,9 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.kareemsab278.mycad",
+      "entitlements": {
+        "aps-environment": "development"
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
