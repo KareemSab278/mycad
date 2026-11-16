@@ -39,7 +39,7 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
   const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [summary, setSummary] = useState('');
   const [reason, setReason] = useState('');
-  const [purchaseDate, setPurchaseDate] = useState('');
+  const [purchaseDate, setPurchaseDate] = useState<Date | null>(null);
   const [transactionId, setTransactionId] = useState('');
   const [loading, setLoading] = useState(true);
   const [accountError, setAccountError] = useState('');
@@ -86,14 +86,14 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
   const requestMachine = machines.find((entry) => getMachineKey(entry) === requestMachineId) ?? activeMachine;
   const machineKey = activeMachine ? getMachineKey(activeMachine) : undefined;
   const machineRequests = requests.filter((request) => request.machineId === machineKey);
-  const refundDetailsValid = requestType !== 'Refund' || (reason.trim() !== '' && purchaseDate.trim() !== '');
+  const refundDetailsValid = requestType !== 'Refund' || (reason.trim() !== '' && purchaseDate !== null);
 
   const openRequest = (type: RequestType, machineId: string) => {
     setRequestType(type);
     setRequestMachineId(machineId);
     setSummary('');
     setReason('');
-    setPurchaseDate('');
+    setPurchaseDate(null);
     setTransactionId('');
     setRequestModalOpen(true);
   };
@@ -102,7 +102,7 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
     const details = [
       requestType === 'Refund' ? reason.trim() : '',
       summary.trim(),
-      purchaseDate.trim() ? `Purchase date: ${purchaseDate.trim()}` : '',
+      purchaseDate ? `Purchase date and time: ${purchaseDate.toLocaleString()}` : '',
       transactionId.trim() ? `Transaction reference: ${transactionId.trim()}` : '',
     ].filter(Boolean).join('\n');
 

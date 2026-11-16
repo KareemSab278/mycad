@@ -62,4 +62,23 @@ export const styles = StyleSheet.create({
   disabledDay: {
     opacity: 0.4,
   },
+  timePicker: {
+    borderTopWidth: 1,
+    gap: 8,
+    paddingTop: 12,
+  },
+  timeFieldButton: {
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: 12,
+  },
+  timeSelection: {
+    gap: 12,
+  },
+  timeDoneButton: {
+    alignSelf: 'flex-end',
+    padding: 8,
+  },
 });

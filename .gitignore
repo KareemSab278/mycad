@@ -47,6 +47,7 @@ example
 notes.txt
 
 *.ipa
+*.apk
 
 requests-responses.json
 mycoinadrink-firebase-adminsdk-fbsvc-dc781c86a4.json

@@ -78,6 +78,17 @@ export const styles = StyleSheet.create({
   modalContent: {
     gap: 12,
   },
+  dateField: {
+    gap: 6,
+  },
+  datePickerButton: {
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 48,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
   summaryInput: {
     minHeight: 100,
   },
