@@ -5,7 +5,7 @@ import { useTheme } from '../../../hooks/use-theme';
 import { styles } from '../styles';
 import type { AccountMachine, RequestType } from './types';
 
-type Props = {
+interface Props {
   visible: boolean;
   onClose: () => void;
   requestMachine: AccountMachine | undefined;

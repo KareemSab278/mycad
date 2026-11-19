@@ -29,7 +29,7 @@ export const Auth = {
       !isValidToken(session.access_token) ||
       typeof session.user?.email !== 'string'
     ) {
-      throw createApiError(502, 'The API did not return a valid session.');
+      throw createApiError(502, 'The API did not return a valid session.', '/auth/login');
     }
 
     await LS.Creds.saveToken(session.access_token);

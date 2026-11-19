@@ -29,16 +29,19 @@ export const setUnauthorizedHandler = (handler: UnauthorizedHandler | null) => {
   unauthorizedHandler = handler;
 };
 
-export const createApiError = (status: number, message: string, requestId?: string): ApiError => {
+export const createApiError = (status: number, message: string, path?: string, requestId?: string): ApiError => {
   const error = new Error(message) as ApiError;
   error.name = 'ApiError';
   error.status = status;
   if (requestId) error.requestId = requestId;
   if (dev) {
-    console.error(`API Error: ${message}`);
-    console.error(`Request ID: ${requestId ?? 'N/A'}`);
-    console.error(`Stack Trace: ${error?.stack ?? 'N/A'}`);
-    console.error(`Status: ${status}`);
+    console.log(
+      `\n
+      --------------------- API ERROR ---------------------
+      PATH: ${path || 'N/A'}
+      MESSAGE: ${message}
+      -----------------------------------------------------`
+    );
   }
   return error;
 };
@@ -141,7 +144,7 @@ const request = async <T>(
     token = await LS.Creds.getToken();
     if (!isValidToken(token)) {
       await unauthorizedHandler?.(false);
-      throw createApiError(401, 'Please sign in again.');
+      throw createApiError(401, 'Please sign in again.', path);
     }
   }
 
@@ -186,7 +189,7 @@ const request = async <T>(
         ? problem.detail
         : 'The API request failed.';
       const requestId = response.headers.get('x-request-id') ?? problem?.request_id;
-      throw createApiError(response.status, message, requestId);
+      throw createApiError(response.status, message, path, requestId);
     }
 
     return await readResponse<T>(response, contentType, options);
@@ -195,7 +198,7 @@ const request = async <T>(
     const message = controller.signal.aborted
       ? 'The request was cancelled or timed out.'
       : 'Could not read the API response.';
-    throw createApiError(0, message);
+    throw createApiError(0, message, path);
   } finally {
     clearTimeout(timeout);
     options.signal?.removeEventListener('abort', abortRequest);

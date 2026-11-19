@@ -30,7 +30,8 @@ export const SignIn = ({ reauthentication = false, onSignedIn }: SignInProps) =>
       try {
         await getAndSavePushTokenAndDeviceId();
       } catch (notificationError) {
-        console.warn('Push notification registration failed:', notificationError);
+        setError('Push notification registration failed.');
+        console.warn('Push notification registration failed');
       }
       setError('');
       setMessage('Signed in successfully.');

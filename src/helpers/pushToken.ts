@@ -1,3 +1,16 @@
+/*
+    need to create new table in db that holds customer notification tokens. one customer can have tokens for multiple devices.
+    there needs to be a system in place to find all customers that require notifications (delivery upcoming, reminders, complaint updates)
+    probably need a background service or cron job to check for notifications and send them to the relevant devices.
+
+    maybe i could write it in rust and call it with php? rust can use all cores simutaneously to handle large sql tasks efficiently.
+        meaning it could handle large numbers of notifications efficiently and quickly.
+    
+    i could do a mock version in rust and call it with php to send notifications. could work as a prototype to test the system's efficiency.
+
+    if i can make the rust program 
+*/
+
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
@@ -33,7 +46,7 @@ const getDeviceId = async (): Promise<string | null> => {
 
         if (Platform.OS === 'ios') {
             const res = await Application.getIosIdForVendorAsync();
-            DEV_MODE && console.log('iOS Device ID:', res);
+            // DEV_MODE && console.log('iOS Device ID:', res);
             return res;
         }
 
@@ -87,7 +100,7 @@ export const getAndSavePushTokenAndDeviceId =
             projectId,
         });
 
-        DEV_MODE && console.log('Expo Push Token:', tokenResult.data);
+        // DEV_MODE && console.log('Expo Push Token:', tokenResult.data);
         const deviceId = await getDeviceId();
 
         await S.NotificationStorage.savePushToken(tokenResult.data);
