@@ -97,7 +97,6 @@ export const ServiceHistoryModal = ({ visible, onClose, scope }: Props) => {
                 >
                   <C.Typography text={`Machine ${request.machine_id}`} variant="title" />
                   <C.Typography text={request.summary} variant="body" />
-                  <C.Typography text={request.description + '\n'} variant="caption" />
                   <C.Typography
                     text={[
                       `Status: ${request.status}`,

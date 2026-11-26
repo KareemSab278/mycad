@@ -1,27 +1,23 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Account } from '../../../api';
 import * as C from '../../../components';
 import { useTheme } from '../../../hooks/use-theme';
-import type { AccountInfo, DeliveryScheduleItem } from '../../../types';
+import type { DeliveryScheduleItem } from '../../../types';
 import { styles } from '../styles';
 
-type DeliveryScheduleCardProps = {
-  accounts: AccountInfo[];
-  loadingAccounts: boolean;
-  accountError: string;
-  selectedAccountId: string;
-  onAccountChange: (accountId: string) => void;
+type DeliveryScheduleModalProps = {
+  accountId: string;
+  visible: boolean;
+  onClose: () => void;
 };
 
-export const DeliveryScheduleCard = ({
-  accounts,
-  loadingAccounts,
-  accountError,
-  selectedAccountId,
-  onAccountChange,
-}: DeliveryScheduleCardProps) => {
-  const [scheduleResult, setScheduleResult] = useState<{
+export const DeliveryScheduleModal = ({
+  accountId,
+  visible,
+  onClose,
+}: DeliveryScheduleModalProps) => {
+  const [result, setResult] = useState<{
     accountId: string;
     schedule: DeliveryScheduleItem[];
     error: string;
@@ -29,16 +25,16 @@ export const DeliveryScheduleCard = ({
   const theme = useTheme();
 
   useEffect(() => {
-    if (!selectedAccountId) return;
+    if (!visible || !accountId) return;
 
     const controller = new AbortController();
     let active = true;
 
-    void Account.GetDeliverySchedule(selectedAccountId, controller.signal)
+    void Account.GetDeliverySchedule(accountId, controller.signal)
       .then(({ delivery_schedule }) => {
         if (active) {
-          setScheduleResult({
-            accountId: selectedAccountId,
+          setResult({
+            accountId,
             schedule: delivery_schedule,
             error: '',
           });
@@ -47,8 +43,8 @@ export const DeliveryScheduleCard = ({
       .catch((requestError: unknown) => {
         console.error('Unable to load the delivery schedule:', requestError);
         if (active) {
-          setScheduleResult({
-            accountId: selectedAccountId,
+          setResult({
+            accountId,
             schedule: [],
             error: 'Unable to load the delivery schedule. Please try again later.',
           });
@@ -59,31 +55,16 @@ export const DeliveryScheduleCard = ({
       active = false;
       controller.abort();
     };
-  }, [selectedAccountId]);
+  }, [accountId, visible]);
 
-  const currentResult = scheduleResult?.accountId === selectedAccountId ? scheduleResult : null;
+  const currentResult = result?.accountId === accountId ? result : null;
 
   return (
-    <C.Card>
-      <View style={styles.cardContent}>
+    <C.Modal visible={visible} onClose={onClose}>
+      <View style={styles.modalContent}>
         <C.Typography text="Delivery schedule" variant="title" />
-        {accounts.length > 1 ? (
-          <C.Selector
-            label="Select an account"
-            options={accounts.map((account) => ({
-              label: account.company_name,
-              value: account.account_id,
-            }))}
-            value={selectedAccountId}
-            onValueChange={onAccountChange}
-          />
-        ) : null}
-        {loadingAccounts ? (
-          <C.Loader />
-        ) : accountError ? (
-          <C.Typography text={accountError} variant="caption" />
-        ) : accounts.length === 0 ? (
-          <C.Typography text="No linked business accounts were found." variant="caption" />
+        {!accountId ? (
+          <C.Typography text="Select an account to see its delivery schedule." variant="caption" />
         ) : !currentResult ? (
           <C.Loader />
         ) : currentResult.error ? (
@@ -91,35 +72,42 @@ export const DeliveryScheduleCard = ({
         ) : currentResult.schedule.length === 0 ? (
           <C.Typography text="No delivery schedule is available for this account." variant="caption" />
         ) : (
-          currentResult.schedule.map((item, index) => {
-            const upcomingDeliveries = [
-              item.next_delivery_1,
-              item.next_delivery_2,
-              item.next_delivery_3,
-            ].filter(Boolean);
+          <ScrollView
+            nestedScrollEnabled
+            style={styles.deliveryScheduleScroll}
+            contentContainerStyle={styles.deliveryScheduleContent}
+          >
+            {currentResult.schedule.map((item, index) => {
+              const upcomingDeliveries = [
+                item.next_delivery_1,
+                item.next_delivery_2,
+                item.next_delivery_3,
+              ].filter(Boolean);
 
-            return (
-              <View
-                key={`${item.customer_no}:${item.contact_no}:${item.site_name}:${index}`}
-                style={[styles.scheduleItem, { borderColor: theme.border }]}
-              >
-                <C.Typography text={item.site_name || `Route ${item.route_no}`} variant="title" />
-                <C.Typography
-                  text={`${item.delivery_weekday} · Every ${item.cycle_weeks} weeks`}
-                  variant="body"
-                />
-                {upcomingDeliveries.length > 0 ? (
+              return (
+                <View
+                  key={`${item.customer_no}:${item.contact_no}:${item.site_name}:${index}`}
+                  style={[styles.scheduleItem, { borderColor: theme.border }]}
+                >
+                  <C.Typography text={item.site_name || `Route ${item.route_no}`} variant="title" />
                   <C.Typography
-                    text={`Upcoming deliveries: ${upcomingDeliveries.join(', ')}`}
-                    variant="caption"
+                    text={`${item.delivery_weekday} · Every ${item.cycle_weeks} weeks`}
+                    variant="body"
                   />
-                ) : null}
-              </View>
-            );
-          })
+                  {upcomingDeliveries.length > 0 ? (
+                    <C.Typography
+                      text={`Upcoming deliveries: ${upcomingDeliveries.join(', ')}`}
+                      variant="caption"
+                    />
+                  ) : null}
+                </View>
+              );
+            })}
+          </ScrollView>
         )}
+        <C.Buttons.Secondary label="Close" onPress={onClose} />
       </View>
-    </C.Card>
+    </C.Modal>
   );
 };
 

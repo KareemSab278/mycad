@@ -7,7 +7,7 @@ import { InvoiceHistoryModal } from '../Home/InvoiceHistoryModal';
 import { ServiceHistoryModal } from '../Machines/Components/ServiceHistoryModal';
 import {
   CareScheduleCard,
-  DeliveryScheduleCard,
+  DeliveryScheduleModal,
   SupportActionCards,
   SupportRequestHistoryCard,
   SupportRequestModal,
@@ -21,7 +21,6 @@ export const Support = () => {
   const [contact, setContact] = useState<ContactDetails | null>(null);
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [selectedAccountId, setSelectedAccountId] = useState('');
-  const [serviceHistoryAccountId, setServiceHistoryAccountId] = useState('');
   const [accountError, setAccountError] = useState('');
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [machineId, setMachineId] = useState('');
@@ -30,6 +29,7 @@ export const Support = () => {
   const [invoicesVisible, setInvoicesVisible] = useState(false);
   const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [serviceHistoryVisible, setServiceHistoryVisible] = useState(false);
+  const [deliveryScheduleVisible, setDeliveryScheduleVisible] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -44,7 +44,6 @@ export const Support = () => {
         if (active) {
           setAccounts(accounts);
           setSelectedAccountId(accounts[0]?.account_id ?? '');
-          setServiceHistoryAccountId(accounts[0]?.account_id ?? '');
           setContact({
             email: user.email,
             accountName: accounts[0]?.company_name ?? 'No business account linked',
@@ -87,7 +86,12 @@ export const Support = () => {
       <ServiceHistoryModal
         visible={serviceHistoryVisible}
         onClose={() => setServiceHistoryVisible(false)}
-        scope={{ type: 'account', accountId: serviceHistoryAccountId }}
+        scope={{ type: 'account', accountId: selectedAccountId }}
+      />
+      <DeliveryScheduleModal
+        accountId={selectedAccountId}
+        visible={deliveryScheduleVisible}
+        onClose={() => setDeliveryScheduleVisible(false)}
       />
       <SupportRequestModal
         visible={helpModalVisible}
@@ -112,7 +116,7 @@ export const Support = () => {
             onShowInvoices={() => setInvoicesVisible(true)}
             onAskForHelp={() => setHelpModalVisible(true)}
           />
-          <C.Box title="Service call history">
+          <C.Box title="Account schedules & service calls">
             {loadingAccount ? (
               <C.Loader />
             ) : accountError ? (
@@ -127,8 +131,12 @@ export const Support = () => {
                     label: account.company_name,
                     value: account.account_id,
                   }))}
-                  value={serviceHistoryAccountId}
-                  onValueChange={setServiceHistoryAccountId}
+                  value={selectedAccountId}
+                  onValueChange={setSelectedAccountId}
+                />
+                <C.Buttons.Secondary
+                  label="View delivery schedule"
+                  onPress={() => setDeliveryScheduleVisible(true)}
                 />
                 <C.Buttons.Secondary
                   label="View service calls"
@@ -137,13 +145,6 @@ export const Support = () => {
               </>
             )}
           </C.Box>
-          <DeliveryScheduleCard
-            accounts={accounts}
-            loadingAccounts={loadingAccount}
-            accountError={accountError}
-            selectedAccountId={selectedAccountId}
-            onAccountChange={setSelectedAccountId}
-          />
           <CareScheduleCard />
           <SupportRequestHistoryCard requests={requests} />
         </View>

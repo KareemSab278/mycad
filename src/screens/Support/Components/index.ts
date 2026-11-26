@@ -1,4 +1,4 @@
-export { CareScheduleCard, DeliveryScheduleCard } from './ScheduleCards';
+export { CareScheduleCard, DeliveryScheduleModal } from './ScheduleCards';
 export { SupportActionCards } from './SupportActionCards';
 export { SupportRequestHistoryCard } from './SupportRequestHistoryCard';
 export { SupportRequestModal } from './SupportRequestModal';

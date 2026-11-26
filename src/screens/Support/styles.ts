@@ -19,6 +19,13 @@ export const styles = StyleSheet.create({
     flexShrink: 1,
     maxHeight: '100%',
   },
+  deliveryScheduleScroll: {
+    flexGrow: 0,
+    maxHeight: 300,
+  },
+  deliveryScheduleContent: {
+    gap: 8,
+  },
   request: {
     borderTopWidth: 1,
     gap: 6,
