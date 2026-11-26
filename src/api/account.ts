@@ -28,11 +28,10 @@ const GetAllServiceRequests = (
 const GetInfo = (account: string, signal?: AbortSignal) =>
   Api.Get<AccountInfo>(accountPath(account), { signal });
 
-// Requires an account code and returns scheduled delivery dates; see types/orders.ts for the shape.
-const GetDeliverySchedule = (account: string, signal?: AbortSignal) =>
-  withApiLogging('Account.GetDeliverySchedule', () =>
-    Api.Get<DeliveryScheduleResponse>(`${accountPath(account)}/delivery-schedule`, { signal }),
-  );
+// Returns up to 100 recent order documents for an account; see types/orders.ts for the shape.
+const GetDeliverySchedule = async (account: string, signal?: AbortSignal) => {
+    return await Api.Get<DeliveryScheduleResponse>(`${accountPath(account)}/delivery-schedule`, { signal });
+  };
 
 // Requires an account code and returns its latest maintenance row per machine; see types/machines.ts.
 const GetMaintenance = (account: string, signal?: AbortSignal) =>

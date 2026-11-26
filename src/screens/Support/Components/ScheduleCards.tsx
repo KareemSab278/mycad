@@ -3,14 +3,29 @@ import { ScrollView, View } from 'react-native';
 import { Account } from '../../../api';
 import * as C from '../../../components';
 import { useTheme } from '../../../hooks/use-theme';
-import type { DeliveryScheduleItem } from '../../../types';
+import type { DeliveryScheduleOrder, DeliveryScheduleResponse } from '../../../types';
 import { styles } from '../styles';
+
+const formatOrderDate = (yymmdd: number | null) => {
+  if (yymmdd === null) return 'Not scheduled';
+  const date = String(yymmdd).padStart(6, '0');
+  return `${date.slice(4, 6)}/${date.slice(2, 4)}/${date.slice(0, 2)}`;
+};
+
 
 type DeliveryScheduleModalProps = {
   accountId: string;
   visible: boolean;
   onClose: () => void;
 };
+
+
+const getDeliverySchedule = async (accountId: string, controller: AbortController, onFound: (res: DeliveryScheduleResponse) => void): Promise<DeliveryScheduleResponse> => {
+  const res = await Account.GetDeliverySchedule(accountId, controller.signal);
+  onFound(res);
+  return res;
+}
+
 
 export const DeliveryScheduleModal = ({
   accountId,
@@ -19,7 +34,7 @@ export const DeliveryScheduleModal = ({
 }: DeliveryScheduleModalProps) => {
   const [result, setResult] = useState<{
     accountId: string;
-    schedule: DeliveryScheduleItem[];
+    schedule: DeliveryScheduleOrder[];
     error: string;
   } | null>(null);
   const theme = useTheme();
@@ -30,27 +45,16 @@ export const DeliveryScheduleModal = ({
     const controller = new AbortController();
     let active = true;
 
-    void Account.GetDeliverySchedule(accountId, controller.signal)
-      .then(({ delivery_schedule }) => {
-        if (active) {
-          setResult({
-            accountId,
-            schedule: delivery_schedule,
-            error: '',
-          });
-        }
-      })
-      .catch((requestError: unknown) => {
-        console.error('Unable to load the delivery schedule:', requestError);
-        if (active) {
-          setResult({
-            accountId,
-            schedule: [],
-            error: 'Unable to load the delivery schedule. Please try again later.',
-          });
-        }
-      });
-
+    getDeliverySchedule(accountId, controller, (res) => {
+      if (active) {
+        console.log('Delivery schedule fetched for account:', accountId, res);
+        setResult({ accountId, schedule: res.delivery_schedule, error: '' });
+      }
+    }).catch((error) => {
+      console.error('Failed to fetch delivery schedule for account:', accountId, error);
+      if (active) setResult({ accountId, schedule: [], error: (error as Error).message });
+    });
+      
     return () => {
       active = false;
       controller.abort();
@@ -70,36 +74,41 @@ export const DeliveryScheduleModal = ({
         ) : currentResult.error ? (
           <C.Typography text={currentResult.error} variant="caption" />
         ) : currentResult.schedule.length === 0 ? (
-          <C.Typography text="No delivery schedule is available for this account." variant="caption" />
+          <C.Typography text="No recent orders were found for this account." variant="caption" />
         ) : (
           <ScrollView
             nestedScrollEnabled
             style={styles.deliveryScheduleScroll}
             contentContainerStyle={styles.deliveryScheduleContent}
           >
-            {currentResult.schedule.map((item, index) => {
-              const upcomingDeliveries = [
-                item.next_delivery_1,
-                item.next_delivery_2,
-                item.next_delivery_3,
-              ].filter(Boolean);
-
+            {currentResult.schedule.map(({ header, items }) => {
+              const deliveredDate = header.delivered_yymmdd === null
+                ? null
+                : formatOrderDate(header.delivered_yymmdd);
               return (
                 <View
-                  key={`${item.customer_no}:${item.contact_no}:${item.site_name}:${index}`}
+                  key={header.order_no}
                   style={[styles.scheduleItem, { borderColor: theme.border }]}
                 >
-                  <C.Typography text={item.site_name || `Route ${item.route_no}`} variant="title" />
+                  <C.Typography text={`Order ${header.order_no}`} variant="title" />
                   <C.Typography
-                    text={`${item.delivery_weekday} · Every ${item.cycle_weeks} weeks`}
+                    text={`Scheduled ${formatOrderDate(header.scheduled_yymmdd)} · Route ${header.route_no}`}
                     variant="body"
                   />
-                  {upcomingDeliveries.length > 0 ? (
+                  {deliveredDate ? (
+                    <C.Typography text={`Delivered ${deliveredDate}`} variant="caption" />
+                  ) : null}
+                  <C.Typography
+                    text={`${header.status_code} · ${header.qty_ordered} items · £${header.order_value.toFixed(2)}`}
+                    variant="caption"
+                  />
+                  {items.map((item, index) => (
                     <C.Typography
-                      text={`Upcoming deliveries: ${upcomingDeliveries.join(', ')}`}
+                      key={`${item.product_no}:${index}`}
+                      text={`${item.description} · ${item.qty_ordered} × £${item.unit_price.toFixed(2)}`}
                       variant="caption"
                     />
-                  ) : null}
+                  ))}
                 </View>
               );
             })}

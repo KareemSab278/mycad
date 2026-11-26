@@ -39,6 +39,8 @@ export const createApiError = (status: number, message: string, path?: string, r
       `\n
       --------------------- API ERROR ---------------------
       PATH: ${path || 'N/A'}
+      STATUS: ${status}
+      REQUEST ID: ${requestId ?? 'unavailable'}
       MESSAGE: ${message}
       -----------------------------------------------------`
     );
@@ -55,9 +57,18 @@ export const withApiLogging = async <T>(
   request: () => Promise<T>,
 ): Promise<T> => {
   try {
-    return await request();
+    let res = await request();
+    console.log(`API call ${operation} succeeded:`, res);
+    return res;
   } catch (error) {
-    console.error(`API call ${operation} failed:`, error);
+    if (isApiError(error)) {
+      console.error(
+        `API call ${operation} failed (HTTP ${error.status}, request ID ${error.requestId ?? 'unavailable'}):`,
+        error,
+      );
+    } else {
+      console.error(`API call ${operation} failed:`, error);
+    }
     throw error;
   }
 };
