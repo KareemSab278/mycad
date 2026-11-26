@@ -21,6 +21,55 @@ export type Machine = {
 
 export type MachineStatus = 'Online' | 'Service pending' | 'Issue reported' | 'Last serviced';
 
+export type MachineMaintenance = {
+  machine_id: string;
+  location: string;
+  date: string;
+  time: string;
+  site: string;
+};
+
+export type MachineMaintenanceResponse = {
+  maintenance: MachineMaintenance | null;
+};
+
+export type AccountMaintenanceRecord = {
+  machine_id: string;
+  location: string;
+  date: string | null;
+  time: string | null;
+  site: string | null;
+};
+
+export type AccountMaintenanceResponse = {
+  maintenance_records: AccountMaintenanceRecord[];
+};
+
+export type ServiceHistoryStatus = 'B' | 'C' | 'D';
+
+export type ServiceHistoryFilters = {
+  account?: string;
+  status?: ServiceHistoryStatus;
+};
+
+export type ServiceHistoryRecord = {
+  service_call_id: string;
+  account_id: string;
+  machine_id: string;
+  reported_date: string;
+  reported_time: string;
+  closed_date: string;
+  closed_time: string;
+  status: string;
+  call_type: string;
+  summary: string;
+};
+
+export type ServiceHistoryResponse = {
+  service_requests: ServiceHistoryRecord[];
+  next_before: string | null;
+};
+
 export type MachineRecord = Machine & Required<Pick<
   Machine,
   'machine_id' | 'account' | 'model_code' | 'arrangement' | 'status' | 'nextDelivery' | 'lastServiced'

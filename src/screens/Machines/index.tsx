@@ -5,9 +5,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Account, Machine } from '../../api';
 import * as C from '../../components';
 import { useTheme } from '../../hooks/use-theme';
-import type { ServiceRequest } from '../../types';
+import type { AccountInfo, ServiceRequest } from '../../types';
 import type { AccountMachine, RequestType } from './Components';
-import { getMachineKey, MachineDetailsCard, MachineGrid, MachineRequestModal, ServiceRequestsCard } from './Components';
+import {
+  AccountMaintenanceCard,
+  AccountServiceHistoryCard,
+  getMachineKey,
+  MachineDetailsCard,
+  MachineGrid,
+  MachineRequestModal,
+  ServiceRequestsCard,
+} from './Components';
 import { styles } from './styles';
 
 type MachineSelection = {
@@ -30,6 +38,8 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
     ?? (Array.isArray(routeAccountId) ? routeAccountId[0] : routeAccountId);
   const requestedMachineId = machineSelection?.machineId
     ?? (Array.isArray(routeMachineId) ? routeMachineId[0] : routeMachineId);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [maintenanceAccountId, setMaintenanceAccountId] = useState('');
   const [machines, setMachines] = useState<AccountMachine[]>([]);
   const scrollRef = useRef<ComponentRef<typeof ScrollView>>(null);
   const [activeMachineId, setActiveMachineId] = useState('');
@@ -60,6 +70,8 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
         const accountMachines = await Machine.GetAllForAccounts(matchingAccounts);
 
         if (active) {
+          setAccounts(accounts);
+          setMaintenanceAccountId(matchingAccounts[0]?.account_id ?? '');
           setMachines(accountMachines);
           const requestedMachine = accountMachines.find((entry) =>
             entry.machine.machine_id === requestedMachineId,
@@ -131,6 +143,17 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
             <C.Typography text="Your machines" variant="heading" />
             <C.Typography text="Installed machines linked to your accounts." />
           </View>
+
+          <AccountMaintenanceCard
+            accounts={accounts}
+            selectedAccountId={maintenanceAccountId}
+            onAccountChange={setMaintenanceAccountId}
+            accountError={accountError}
+          />
+          <AccountServiceHistoryCard
+            accountId={maintenanceAccountId}
+            accountError={accountError}
+          />
 
           {accountError ? (
             <C.Alert tone="error" title="Machines unavailable" message={accountError} />

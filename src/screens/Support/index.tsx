@@ -12,11 +12,14 @@ import {
   SupportRequestModal,
 } from './Components';
 import type { ContactDetails, SupportRequest } from './Components';
+import type { AccountInfo } from '../../types';
 import { styles } from './styles';
 
 export const Support = () => {
   const insets = useSafeAreaInsets();
   const [contact, setContact] = useState<ContactDetails | null>(null);
+  const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState('');
   const [accountError, setAccountError] = useState('');
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [machineId, setMachineId] = useState('');
@@ -36,6 +39,8 @@ export const Support = () => {
         ]);
 
         if (active) {
+          setAccounts(accounts);
+          setSelectedAccountId(accounts[0]?.account_id ?? '');
           setContact({
             email: user.email,
             accountName: accounts[0]?.company_name ?? 'No business account linked',
@@ -98,7 +103,13 @@ export const Support = () => {
             onShowInvoices={() => setInvoicesVisible(true)}
             onAskForHelp={() => setHelpModalVisible(true)}
           />
-          <DeliveryScheduleCard />
+          <DeliveryScheduleCard
+            accounts={accounts}
+            loadingAccounts={loadingAccount}
+            accountError={accountError}
+            selectedAccountId={selectedAccountId}
+            onAccountChange={setSelectedAccountId}
+          />
           <CareScheduleCard />
           <SupportRequestHistoryCard requests={requests} />
         </View>

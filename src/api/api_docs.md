@@ -4,7 +4,7 @@ This folder contains the app's API client. Import domain callers from `src/api` 
 
 ## Configuration and request behavior
 
-The client builds its HTTPS API base URL from `EXPO_PUBLIC_BASE_URL` and `EXPO_PUBLIC_ENDPOINT_PATH`. Requests use relative endpoint paths; the transport rejects URLs that escape the configured origin or endpoint path. Configure both environment variables for the target environment.
+The client builds its HTTPS API base URL from `EXPO_PUBLIC_BASE_URL` and `EXPO_PUBLIC_ENDPOINT_PATH`. For the mobile My Coinadrink API, the endpoint path is `/api/v1/mobile/my-coinadrink`; domain callers append their relative route paths. Configure both environment variables for the target environment.
 
 All `GET` requests are authenticated. Write requests are authenticated by default; `Auth.LogIn` opts out because no token exists yet. The client reads the current token from credential storage for each authenticated request, checks that it matches the expected token format, and sends it as a Bearer authorization token. This local format check does not establish whether the token is expired or still accepted; the backend makes that decision.
 
@@ -12,7 +12,7 @@ Authenticated writes require an idempotency key consisting of 32 lowercase hexad
 
 The transport:
 
-- Sends JSON request bodies and expects successful JSON responses to contain a `data` property.
+- Sends JSON request bodies when provided and expects successful JSON responses to contain a `data` property.
 - Returns PDF responses as an `ArrayBuffer` when requested.
 - Uses 15-second request timeouts, or 30 seconds for PDF requests.
 - Does not automatically retry failed requests.
@@ -53,9 +53,9 @@ The public barrel in `index.ts` exports these callers:
 | Caller | Operations |
 | --- | --- |
 | `Auth` | `LogIn`, `CheckToken`, `LogOut` |
-| `Account` | List accounts; get one account |
+| `Account` | List accounts; get one account; list an account's delivery schedule and maintenance history; fetch one page of service-call history for an account (up to 50 records; no automatic cursor paging) |
 | `Invoice` | List invoices with filters; get invoice details; download an invoice PDF |
-| `Machine` | List machines for an account, optionally using an `after` cursor; placeholders for service-request listing and maintenance, support, and refund submissions |
+| `Machine` | List machines for an account, optionally using an `after` cursor; get machine maintenance and a page of service-call history; service-request submission is a backend placeholder |
 | `Orders` | Placeholders for getting and updating a site's delivery schedule |
 | `Products` | Placeholder for listing products |
 | `Site` | List, get, create, update, and delete site-access rules; placeholder for care schedules |
@@ -63,6 +63,6 @@ The public barrel in `index.ts` exports these callers:
 | `User` | Get the current user's profile |
 | `NotificationToken` | Register the device's Expo push token |
 
-Placeholder operations reject with an explicit not-implemented error. They do not make network requests or return sample data; update their types and implementations when the backend endpoint contracts are available.
+Unimplemented placeholder operations reject with an explicit not-implemented error and do not make network requests or return sample data. The machine service-request submission caller targets the backend placeholder endpoint, which currently returns HTTP 501.
 
-Account codes used in account-scoped paths must match one uppercase letter followed by three digits. Record IDs must be positive decimal integers of at most 10 digits.
+Account codes used in account-scoped paths must match one uppercase letter followed by three digits. Record IDs must be positive decimal integers of at most 10 digits; machine IDs must be positive decimal integers of at most 9 digits.

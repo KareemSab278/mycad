@@ -49,11 +49,13 @@ const Delete = (
   { key, signal },
 );
 
+// Intended to load one site's care schedule; expects an account code and site ID, returning CareScheduleItem[].
 const GetCareSchedule: (
   account: string,
   site: Scalar,
   signal?: AbortSignal,
-) => Promise<CareScheduleItem[]> = async () => {
+) => Promise<CareScheduleItem[]> = (account: string, site: Scalar, signal?: AbortSignal) => {
+  console.error('Site.GetCareSchedule is not implemented; no API request was sent.');
   throw new Error('Site care schedules are not implemented yet.');
 };
 

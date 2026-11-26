@@ -50,6 +50,20 @@ export const createApiError = (status: number, message: string, path?: string, r
 export const isApiError = (error: unknown): error is ApiError =>
   error instanceof Error && 'status' in error && typeof error.status === 'number';
 
+export const withApiLogging = async <T>(
+  operation: string,
+  request: () => Promise<T>,
+): Promise<T> => {
+  try {
+    const res =  await request();
+    console.log(`API call ${operation} succeeded:`, res);
+    return res;
+  } catch (error) {
+    console.error(`API call ${operation} failed:`, error);
+    throw error;
+  }
+};
+
 const getApiBase = () => {
   if (!apiConfig.fullUrl) {
     throw new Error(
@@ -211,7 +225,7 @@ export const Api = {
   Get: <T>(path: string, options: ReadOptions = {}) =>
     request<T>(path, 'GET', options),
 
-  Post: <T>(path: string, body: object, options: WriteOptions = {}) =>
+  Post: <T>(path: string, body?: object, options: WriteOptions = {}) =>
     request<T>(path, 'POST', {
       body,
       authenticated: options.authenticated,

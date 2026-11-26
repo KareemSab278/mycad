@@ -3,14 +3,16 @@ import type {
   AccountInfo,
   LinkedMachine,
   MachinePage,
+  MachineMaintenanceResponse,
   MachineRefundRequestInput,
   MachineServiceRequestInput,
   Saved,
   Scalar,
-  ServiceRequest,
+  ServiceHistoryFilters,
+  ServiceHistoryResponse,
 } from '../types';
-import { Api } from './apiMethods';
-import { accountPath } from './paths';
+import { Api, withApiLogging } from './apiMethods';
+import { accountPath, machineId, serviceHistoryQuery } from './paths';
 
 const GetAll = (account: string, after?: string, signal?: AbortSignal) => {
   const query = after ? `?after=${encodeURIComponent(after)}` : '';
@@ -38,13 +40,30 @@ const GetAllForAccounts = async (accounts: AccountInfo[], signal?: AbortSignal):
   return linkedMachines;
 };
 
-const GetServiceRequests: (
-  account: string,
+// Requires a machine ID and returns its maintenance history; see types/machines.ts for the shape.
+const GetMaintenance = (machine: Scalar, signal?: AbortSignal) =>
+  withApiLogging('Machine.GetMaintenance', () =>
+    Api.Get<MachineMaintenanceResponse>(`/machines/${machineId(machine)}/maintenance`, { signal }),
+  );
+
+// Requires a machine ID and idempotency key to submit a service request; the response is not modeled yet.
+const SubmitServiceRequest = (machine: Scalar, key: string, signal?: AbortSignal) =>
+  withApiLogging('Machine.SubmitServiceRequest', () =>
+    Api.Post<never>(`/machines/${machineId(machine)}/service-requests`, undefined, { key, signal }),
+  );
+
+// Loads one page of a machine's service-call history; see types/machines.ts for filters and response.
+const GetServiceRequests = (
   machine: Scalar,
+  filters: ServiceHistoryFilters = {},
   signal?: AbortSignal,
-) => Promise<ServiceRequest[]> = async () => {
-  throw new Error('Machine service requests are not implemented yet.');
-};
+) =>
+  withApiLogging('Machine.GetServiceRequests', () =>
+    Api.Get<ServiceHistoryResponse>(
+      `/machines/${machineId(machine)}/service-requests${serviceHistoryQuery(filters)}`,
+      { signal },
+    ),
+  );
 
 const SubmitMaintenanceRequest: (
   account: string,
@@ -79,6 +98,8 @@ const SubmitRefundRequest: (
 export const Machine = {
   GetAll,
   GetAllForAccounts,
+  GetMaintenance,
+  SubmitServiceRequest,
   GetServiceRequests,
   SubmitMaintenanceRequest,
   SubmitSupportRequest,
