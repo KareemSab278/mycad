@@ -75,6 +75,13 @@ export const styles = StyleSheet.create({
     gap: 8,
     paddingTop: 12,
   },
+  serviceHistoryScroll: {
+    flexGrow: 0,
+    maxHeight: '85%',
+  },
+  serviceHistoryContent: {
+    gap: 8,
+  },
   modalContent: {
     gap: 12,
   },

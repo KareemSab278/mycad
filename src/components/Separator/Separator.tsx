@@ -2,7 +2,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
 import { styles } from './style';
 
-export type SeparatorVariant = 'sm' | 'md' | 'lg';
+export type SeparatorVariant = 'xs' | 'sm' | 'md' | 'lg';
 
 // Use as a horizontal visual divider; size controls its line thickness.
 export const Separator = ({
@@ -15,6 +15,7 @@ export const Separator = ({
   style?: StyleProp<ViewStyle>;
 }) => {
   const thickness = {
+    xs: styles.xs,
     sm: styles.sm,
     md: styles.md,
     lg: styles.lg,

@@ -3,6 +3,7 @@ import { Image, View } from 'react-native';
 import * as C from '../../../components';
 import { styles } from '../styles';
 import { getMachineKey, type AccountMachine, type RequestType } from './types';
+import { ServiceHistoryModal } from './ServiceHistoryModal';
 
 type Props = {
   entry: AccountMachine;
@@ -15,6 +16,7 @@ export const MachineDetailsCard = ({ entry, onRequest }: Props) => {
     ? `${imageBaseUrl}/${encodeURIComponent(entry.machine.root_model || 0)}.png`
     : undefined;
   const [failedImageSource, setFailedImageSource] = useState<string>();
+  const [serviceHistoryVisible, setServiceHistoryVisible] = useState(false);
   const displayedImageSource = imageSource === failedImageSource && imageBaseUrl
     ? `${imageBaseUrl}/0.png`
     : imageSource;
@@ -50,8 +52,22 @@ export const MachineDetailsCard = ({ entry, onRequest }: Props) => {
             label="Support"
             onPress={() => setActionsModalOpen(true)}
           />
+          <C.Buttons.Secondary
+            label="Machine service-call history"
+            onPress={() => setServiceHistoryVisible(true)}
+          />
         </View>
       </C.Card>
+
+      <ServiceHistoryModal
+        visible={serviceHistoryVisible}
+        onClose={() => setServiceHistoryVisible(false)}
+        scope={{
+          type: 'machine',
+          accountId: entry.account.account_id,
+          machineId: entry.machine.machine_id,
+        }}
+      />
 
       <C.Modal visible={actionsModalOpen} onClose={() => setActionsModalOpen(false)}>
         <View style={styles.modalContent}>

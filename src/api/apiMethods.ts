@@ -55,9 +55,7 @@ export const withApiLogging = async <T>(
   request: () => Promise<T>,
 ): Promise<T> => {
   try {
-    const res =  await request();
-    console.log(`API call ${operation} succeeded:`, res);
-    return res;
+    return await request();
   } catch (error) {
     console.error(`API call ${operation} failed:`, error);
     throw error;

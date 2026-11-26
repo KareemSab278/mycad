@@ -9,7 +9,6 @@ import type { AccountInfo, ServiceRequest } from '../../types';
 import type { AccountMachine, RequestType } from './Components';
 import {
   AccountMaintenanceCard,
-  AccountServiceHistoryCard,
   getMachineKey,
   MachineDetailsCard,
   MachineGrid,
@@ -150,10 +149,6 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
             onAccountChange={setMaintenanceAccountId}
             accountError={accountError}
           />
-          <AccountServiceHistoryCard
-            accountId={maintenanceAccountId}
-            accountError={accountError}
-          />
 
           {accountError ? (
             <C.Alert tone="error" title="Machines unavailable" message={accountError} />
@@ -164,27 +159,26 @@ export const Machines = ({ machineSelection }: MachinesProps) => {
 
               {activeMachine ? (
                 <>
-                  <ServiceRequestsCard
-                    machineId={activeMachine.machine.machine_id}
-                    requests={machineRequests}
-                    borderColor={theme.border}
-                  />
                   <Link href={`/Machines#${getMachineKey(activeMachine)}`} asChild>
                     <MachineDetailsCard
                       entry={activeMachine}
                       onRequest={openRequest}
                     />
                   </Link>
-
+                  <ServiceRequestsCard
+                    machineId={activeMachine.machine.machine_id}
+                    requests={machineRequests}
+                    borderColor={theme.border}
+                  />
                 </>
               ) : null}
-              
+
               <MachineGrid
                 machines={machines}
                 selectedMachineKey={machineKey}
                 onMachinePress={(entry) => {
                   setActiveMachineId(getMachineKey(entry));
-                  scrollRef.current?.scrollTo({ y: 0, animated: true,  });
+                  scrollRef.current?.scrollTo({ y: 0, animated: true, });
                 }}
               />
 

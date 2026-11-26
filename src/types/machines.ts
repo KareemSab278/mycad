@@ -60,9 +60,10 @@ export type ServiceHistoryRecord = {
   reported_time: string;
   closed_date: string;
   closed_time: string;
-  status: string;
+  status: 'Complete' | 'Pending' | 'Cancelled';
   call_type: string;
   summary: string;
+  description: string;
 };
 
 export type ServiceHistoryResponse = {

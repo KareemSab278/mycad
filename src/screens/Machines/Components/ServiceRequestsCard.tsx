@@ -4,22 +4,15 @@ import { styles } from '../styles';
 import type { ServiceRequest } from '../../../types';
 
 type Props = {
-  machineId: string | undefined;
+  machineId: string;
   requests: ServiceRequest[];
   borderColor: string;
 };
 
 export const ServiceRequestsCard = ({ machineId, requests, borderColor }: Props) => (
-  <C.Card>
+  <C.Box title="Service & purchase requests">
     <View style={styles.cardContent}>
-      <View style={styles.sectionHeading}>
-        <View style={styles.headingText}>
-          <C.Typography text="Service & purchase requests" variant="title" />
-          <C.Typography text={`Recent activity for ${machineId}`} variant="caption" />
-        </View>
-        <C.Typography text={`${requests.length} requests`} variant="caption" />
-      </View>
-
+      <C.Typography text={`Recent activity for machine ${machineId}`} variant="caption" />
       {requests.length ? requests.map((request) => (
         <View key={request.id} style={[styles.requestRow, { borderColor }]}>
           <View style={styles.headingText}>
@@ -32,5 +25,5 @@ export const ServiceRequestsCard = ({ machineId, requests, borderColor }: Props)
         <C.Typography text="No requests for this machine yet." variant="caption" />
       )}
     </View>
-  </C.Card>
+  </C.Box>
 );
